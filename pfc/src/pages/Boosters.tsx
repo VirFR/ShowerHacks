@@ -180,7 +180,7 @@ export function Boosters() {
     <>
       <PageHeader
         titre="Boosters"
-        sousTitre={`A new booster every 10 minutes, ${OBJETS_PAR_BOOSTER} items per booster.`}
+        sousTitre={`A new booster every 10 minutes, ${OBJETS_PAR_BOOSTER} cards per booster.`}
       />
 
       {/* Opening: the booster floats front and center, no card chrome around it */}
@@ -301,7 +301,7 @@ export function Boosters() {
                     </li>
                   ))}
                 </ul>
-                <span className="mt-1 text-[0.65rem] text-fond/60">{OBJETS_PAR_BOOSTER} items per pack</span>
+                <span className="mt-1 text-[0.65rem] text-fond/60">{OBJETS_PAR_BOOSTER} cards per pack</span>
               </div>
             </div>
           </div>
@@ -351,7 +351,7 @@ export function Boosters() {
 
         {etat === 'revele' && objetsObtenus.length > 0 && (
           <div className="animate-booster-pop w-full max-w-lg">
-            <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} items:</p>
+            <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} cards:</p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {objetsObtenus.map((objet, i) => (
                 <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
@@ -370,7 +370,7 @@ export function Boosters() {
               ? 'Keep dragging right to left — let go and grab it again if you need to ✋'
               : 'Drag the strip right to left to tear it open ✋')}
           {etat === 'ouverture' && 'Ripping…'}
-          {etat === 'cartes' && `Item ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`}
+          {etat === 'cartes' && `Card ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`}
         </p>
 
         {(etat === 'idle' || etat === 'revele') && (

@@ -25,7 +25,7 @@ export function Accueil() {
         <p className="text-sm uppercase tracking-widest text-accent-2">Quick match</p>
         <h2 className="mt-1 text-2xl font-bold">Face a random opponent</h2>
         <p className="mt-2 max-w-md text-sm text-texte-2">
-          Pick an item from your inventory, attack, and climb the leaderboard.
+          Pick a card from your inventory, attack, and climb the leaderboard.
         </p>
         <Link to="/battle" className="mt-5 inline-block">
           <Bouton taille="lg">▶ Play</Bouton>

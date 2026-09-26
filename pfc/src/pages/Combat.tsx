@@ -49,7 +49,7 @@ function Duel({ joueur, adversaires }: DuelProps) {
 
   return (
     <>
-      <PageHeader titre="Battle" sousTitre={`${joueur.pseudo}, pick your opponent and your item.`} />
+      <PageHeader titre="Battle" sousTitre={`${joueur.pseudo}, pick your opponent and your card.`} />
 
       {/* Opponent picker */}
       <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Pick an opponent">
@@ -96,7 +96,7 @@ function Duel({ joueur, adversaires }: DuelProps) {
         ) : (
           <>
             <p className="text-sm text-texte-2">
-              {selection ? `Ready? Attack ${adversaire.pseudo}.` : 'Select an item below.'}
+              {selection ? `Ready? Attack ${adversaire.pseudo}.` : 'Select a card below.'}
             </p>
             <Bouton taille="lg" className="mt-3" disabled={!selection} onClick={attaquer}>
               ⚔️ Attack
