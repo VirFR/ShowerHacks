@@ -154,7 +154,7 @@ export function Arena() {
       : 'Hold · Lock in'
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden bg-[#0a0914] text-texte [background-image:radial-gradient(ellipse_at_50%_45%,#2a1f5a_0%,#0a0914_60%)]">
+    <div className="theme-dark fixed inset-0 flex flex-col overflow-hidden bg-[#0f1a33] text-texte [background-image:radial-gradient(ellipse_at_50%_45%,#24407a_0%,#0f1a33_60%)]">
       {/* Opponent strip */}
       <header className="flex items-center justify-between gap-4 px-4 py-3 md:px-8 md:py-4">
         <div className="flex min-w-0 items-center gap-3">
@@ -306,5 +306,5 @@ function ForceTimeout({ depuis, onForce }: { depuis: string; onForce: () => void
 }
 
 function Plein({ children }: { children: React.ReactNode }) {
-  return <div className="fixed inset-0 flex flex-col items-center justify-center bg-fond p-6 text-center">{children}</div>
+  return <div className="theme-dark fixed inset-0 flex flex-col items-center justify-center bg-fond p-6 text-center">{children}</div>
 }

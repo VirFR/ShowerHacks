@@ -21,10 +21,10 @@ export function ListeComptes({ comptes, actuelId, onChoisir }: ListeComptesProps
             onClick={() => onChoisir(c.id)}
             aria-pressed={actuel}
             className={[
-              'flex items-center gap-4 rounded-2xl border p-4 text-left transition-all',
+              'flex items-center gap-4 rounded-xl border-2 p-4 text-left transition-all',
               actuel
-                ? 'cursor-default border-accent-2 bg-accent/15 ring-2 ring-accent/60'
-                : 'border-bordure bg-carte hover:border-accent/60 hover:bg-carte-2',
+                ? 'cursor-default border-ink bg-accent/15 ring-4 ring-or'
+                : 'border-ink bg-carte shadow-hard-sm hover:-translate-y-0.5 hover:bg-carte-2',
             ].join(' ')}
           >
             <Avatar pseudo={c.pseudo} avatarUrl={c.avatarUrl} taille="md" />

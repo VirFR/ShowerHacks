@@ -1,10 +1,10 @@
 import type { HTMLAttributes } from 'react'
 
-/** Generic dark, bordered container used for sections. */
+/** Generic panel: white, hard 2px outline and a flat offset shadow (sticker look). */
 export function Carte({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <section
-      className={`rounded-2xl border border-bordure bg-carte p-4 md:p-5 ${className}`}
+      className={`rounded-xl border-2 border-ink bg-carte p-4 shadow-hard md:p-5 ${className}`}
       {...props}
     />
   )

@@ -39,8 +39,8 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
       onDragLeave={() => onSurvol(null)}
       onDrop={(e) => onDrop(e, emplacement)}
       className={[
-        'flex h-44 flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-3 text-center transition-colors',
-        survole ? 'border-accent-2 bg-accent/20' : 'border-bordure bg-fond/40',
+        'flex h-44 flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-3 text-center transition-colors',
+        survole ? 'border-accent bg-sky-100' : 'border-bordure bg-fond/60',
       ].join(' ')}
     >
       {objet ? (
