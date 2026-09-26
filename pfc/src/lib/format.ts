@@ -73,14 +73,20 @@ export const CLASSE_RARETE: Record<Rarete, string> = {
   secret_rare: 'bg-gradient-to-r from-rose-300 via-amber-200 to-sky-300 bg-clip-text text-transparent font-semibold',
 }
 
-/** Card border/glow by rarity: gray, green, blue, purple, gold, prism. */
+/**
+ * Card frame by rarity: a thick border + a background tinted almost
+ * entirely in the rarity's color, and — from `rare` upward — a colored
+ * glow (halo) around the card that gets more intense with rarity.
+ */
 export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
-  commun: 'border-bordure hover:border-texte-2/70',
-  peu_commun: 'border-emerald-500/40 hover:border-emerald-400/70',
-  rare: 'border-sky-500/40 hover:border-sky-400/70',
-  epique: 'border-fuchsia-500/40 hover:border-fuchsia-400/70',
-  legendaire: 'border-amber-400/50 hover:border-amber-300/80 shadow-[0_0_16px_-4px] shadow-amber-400/40',
-  secret_rare: 'border-white/60 hover:border-white/90 shadow-[0_0_20px_-4px] shadow-white/40',
+  commun: 'border-slate-400/70 bg-gradient-to-b from-slate-600/50 via-carte to-carte',
+  peu_commun: 'border-emerald-400/80 bg-gradient-to-b from-emerald-800/60 via-carte to-carte',
+  rare: 'border-sky-400/90 bg-gradient-to-b from-sky-800/60 via-carte to-carte shadow-[0_0_18px_-2px] shadow-sky-400/50',
+  epique:
+    'border-fuchsia-400/90 bg-gradient-to-b from-fuchsia-800/60 via-carte to-carte shadow-[0_0_22px_-2px] shadow-fuchsia-400/60',
+  legendaire:
+    'border-amber-300 bg-gradient-to-b from-amber-800/60 via-carte to-carte shadow-[0_0_26px_-2px] shadow-amber-300/70',
+  secret_rare: 'border-white bg-gradient-to-b from-slate-700/60 via-carte to-carte shadow-[0_0_30px_-2px] shadow-white/70',
 }
 
 /** Rank thresholds (score needed to reach each rank). */

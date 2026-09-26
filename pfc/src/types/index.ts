@@ -36,7 +36,8 @@ export interface Objet {
   /** Emoji fallback used by the items team when the image fails to load. */
   icone: string
   rarete: Rarete
-  description?: string
+  /** Short flavor text shown on the card, under the picture. */
+  description: string
   /**
    * Explicit wins: ids of items this one always beats, whatever the chart
    * and the stats say (e.g. the hatchet eventually splits the shield).

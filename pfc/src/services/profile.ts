@@ -65,7 +65,7 @@ export function versObjet(inventaireId: string, item: ItemRow): Objet {
     imageUrl: item.image_url ?? '',
     icone: '',
     rarete: RARETE[item.rarity] ?? 'commun',
-    description: item.description ?? undefined,
+    description: item.description ?? '',
     victoiresExplicites: item.explicit_wins ?? undefined,
   }
 }
