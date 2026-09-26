@@ -10,6 +10,7 @@ import { expliquerCombat, resoudreCombat } from '@/lib/combat'
 import { CLASSE_RESULTAT, LIBELLE_RESULTAT } from '@/lib/format'
 import { useSession } from '@/lib/session'
 import type { Joueur, Objet, ResultatCombat } from '@/types'
+import { StatBadge } from '@/components/StatBadge'
 
 function tirerObjet(joueur: Joueur): Objet {
   return joueur.inventaire[Math.floor(Math.random() * joueur.inventaire.length)]
@@ -134,6 +135,10 @@ function Camp({ titre, objet }: { titre: string; objet: Objet | null }) {
         <>
           <ObjetImage objet={objet} className="h-24 w-24" />
           <p className="font-semibold">{objet.nom}</p>
+          <div className="flex gap-1.5">
+            <StatBadge type="attaque" valeur={objet.attaque} />
+            <StatBadge type="defense" valeur={objet.defense} />
+          </div>
           <BadgeCategorie categorie={objet.categorie} />
         </>
       ) : (

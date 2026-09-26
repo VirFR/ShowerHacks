@@ -5,26 +5,34 @@
  * between pages and will grow over time (crafting, real battles, auth…).
  */
 
-/** Item categories: the three classic families. */
-export type Categorie = 'pierre' | 'feuille' | 'ciseaux'
+/** Item categories, by theme (not by combat role). */
+export type Categorie = 'fight' | 'plantes' | 'ressources' | 'espace' | 'brainrot'
 
-export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux']
+export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'brainrot']
 
 export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
 /**
- * An item. There are no attack/defense stats: an item wins or loses purely
- * on its category, rock-paper-scissors style (see `lib/combat.ts`).
+ * An item. Combat is resolved from `attaque`/`defense` plus the circular
+ * tournament in `lib/combat.ts` — category is purely organizational.
  */
 export interface Objet {
   id: string
   nom: string
+  attaque: number
+  defense: number
   categorie: Categorie
   imageUrl: string
   /** Emoji fallback used when the image fails to load. */
   icone: string
   rarete: Rarete
-  description: string
+  /**
+   * Explicit wins: ids of items this one always beats, on top of the
+   * circular tournament (see `lib/combat.ts`). Gives an item a one-off
+   * logical exception (e.g. the hatchet eventually splits the shield)
+   * without breaking the overall balance of win rates.
+   */
+  victoiresExplicites?: string[]
 }
 
 export type Rang =

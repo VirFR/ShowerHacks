@@ -5,7 +5,7 @@ import { Carte } from '@/components/Carte'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { HISTORIQUE_MOCK, trouverObjet } from '@/mocks'
-import { BEATS, perdContre } from '@/lib/combat'
+import { StatBadge } from '@/components/StatBadge'
 import {
   CLASSE_RARETE,
   CLASSE_RESULTAT,
@@ -37,8 +37,9 @@ export function ObjetDetail() {
   const defaites = historique.filter((h) => h.resultat === 'defaite').length
   const egalites = historique.length - victoires - defaites
   const ratio = historique.length ? victoires / historique.length : 0
-  const bat = BEATS[objet.categorie]
-  const perd = perdContre(objet.categorie)
+  const victoiresExplicites = (objet.victoiresExplicites ?? [])
+    .map((id) => trouverObjet(id))
+    .filter((o): o is NonNullable<typeof o> => o !== undefined)
 
   return (
     <>
@@ -54,31 +55,18 @@ export function ObjetDetail() {
             <BadgeCategorie categorie={objet.categorie} />
           </div>
           <p className={`mt-1 text-sm font-medium ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
-          <p className="mt-3 text-sm text-texte-2">{objet.description}</p>
 
-          {/* Rock-paper-scissors matchups */}
-          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-xs uppercase tracking-wider text-succes">Beats</dt>
-              <dd className="mt-1 flex flex-wrap gap-1.5">
-                {bat.length === 0 ? (
-                  <span className="text-texte-2">Nothing</span>
-                ) : (
-                  bat.map((c) => <BadgeCategorie key={c} categorie={c} />)
-                )}
-              </dd>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <StatBadge type="attaque" valeur={objet.attaque} taille="md" />
+            <StatBadge type="defense" valeur={objet.defense} taille="md" />
+          </div>
+
+          {victoiresExplicites.length > 0 && (
+            <div className="mt-4 text-sm">
+              <p className="text-xs uppercase tracking-wider text-succes">Always beats</p>
+              <p className="mt-1 text-texte-2">{victoiresExplicites.map((o) => o.nom).join(', ')}</p>
             </div>
-            <div>
-              <dt className="text-xs uppercase tracking-wider text-echec">Loses to</dt>
-              <dd className="mt-1 flex flex-wrap gap-1.5">
-                {perd.length === 0 ? (
-                  <span className="text-texte-2">Nothing</span>
-                ) : (
-                  perd.map((c) => <BadgeCategorie key={c} categorie={c} />)
-                )}
-              </dd>
-            </div>
-          </dl>
+          )}
 
           <div className="mt-5 flex flex-wrap gap-2">
             <Link to="/battle">

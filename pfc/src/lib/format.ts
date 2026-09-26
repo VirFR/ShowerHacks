@@ -3,21 +3,27 @@ import type { Categorie, Rang, Rarete, ResultatCombat } from '@/types'
 /** Labels, colors and display helpers shared by the pages. */
 
 export const LIBELLE_CATEGORIE: Record<Categorie, string> = {
-  pierre: 'Rock',
-  feuille: 'Paper',
-  ciseaux: 'Scissors',
+  fight: 'Fight',
+  plantes: 'Plants',
+  ressources: 'Resources',
+  espace: 'Space',
+  brainrot: 'Brainrot',
 }
 
 export const ICONE_CATEGORIE: Record<Categorie, string> = {
-  pierre: '✊',
-  feuille: '✋',
-  ciseaux: '✌️',
+  fight: '⚔️',
+  plantes: '🌿',
+  ressources: '⛏️',
+  espace: '🌌',
+  brainrot: '🧠',
 }
 
 export const CLASSE_CATEGORIE: Record<Categorie, string> = {
-  pierre: 'bg-stone-500/20 text-stone-200 ring-stone-400/40',
-  feuille: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
-  ciseaux: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
+  fight: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
+  plantes: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
+  ressources: 'bg-amber-600/20 text-amber-200 ring-amber-500/40',
+  espace: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
+  brainrot: 'bg-lime-500/20 text-lime-200 ring-lime-400/40',
 }
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {
@@ -46,6 +52,16 @@ export const CLASSE_RARETE: Record<Rarete, string> = {
   epique: 'text-fuchsia-300',
   legendaire: 'text-or',
   secret_rare: 'bg-gradient-to-r from-rose-300 via-amber-200 to-sky-300 bg-clip-text text-transparent font-semibold',
+}
+
+/** Card border/glow by rarity: gray, green, blue, purple, gold, prism. */
+export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
+  commun: 'border-bordure hover:border-texte-2/70',
+  peu_commun: 'border-emerald-500/40 hover:border-emerald-400/70',
+  rare: 'border-sky-500/40 hover:border-sky-400/70',
+  epique: 'border-fuchsia-500/40 hover:border-fuchsia-400/70',
+  legendaire: 'border-amber-400/50 hover:border-amber-300/80 shadow-[0_0_16px_-4px] shadow-amber-400/40',
+  secret_rare: 'border-white/60 hover:border-white/90 shadow-[0_0_20px_-4px] shadow-white/40',
 }
 
 export const CLASSE_RANG: Record<Rang, string> = {
