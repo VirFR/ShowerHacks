@@ -71,12 +71,17 @@ export const COACH_LINES = {
   afterDraw: ['Same throw. Go again.', 'Copying me will not work.', 'Draw. One more.'],
 }
 
-export function coachLine(state: TutorialState): string {
+/** What the Coach says right after the last round, while the result is on screen. */
+export function coachReaction(state: TutorialState): string {
   const last = state.rounds[state.rounds.length - 1]
-  const decisive = state.score.player + state.score.coach
-  if (!last) return COACH_LINES.intro[0]
+  if (!last) return ''
   if (last.result === 'draw') return COACH_LINES.afterDraw[Math.min(state.rounds.length - 1, 2)]
   if (state.finished) return COACH_LINES.afterPlayerWin[2]
-  const idx = Math.min(decisive - 1, 2)
-  return `${last.result === 'player' ? COACH_LINES.afterPlayerWin[idx] : COACH_LINES.afterCoachWin[idx]} ${COACH_LINES.intro[Math.min(decisive, 2)]}`
+  const idx = Math.min(state.score.player + state.score.coach - 1, 2)
+  return last.result === 'player' ? COACH_LINES.afterPlayerWin[idx] : COACH_LINES.afterCoachWin[idx]
+}
+
+/** What the Coach says before the next throw. */
+export function coachIntro(state: TutorialState): string {
+  return COACH_LINES.intro[Math.min(state.score.player + state.score.coach, 2)]
 }

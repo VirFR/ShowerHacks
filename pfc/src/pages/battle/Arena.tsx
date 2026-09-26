@@ -14,7 +14,8 @@ import type { Battle } from '@/types'
 import { useDemarrerBot } from './useDemarrerBot'
 
 const DUREE_TOUR_S = 20
-const DUREE_REVEAL_MS = 3000
+/** How long a clash stays on screen before moving on (the player can skip with Continue). */
+const DUREE_REVEAL_MS = 9000
 
 /** /battle/:id — Full-screen arena (rendered outside the app layout). */
 export function Arena() {
@@ -46,6 +47,12 @@ export function Arena() {
     }
   }, [id, chargement])
 
+  const finie = battle?.status === 'finished'
+  const fermerReveal = useCallback(() => {
+    setReveal(null)
+    if (finie) setResultatVisible(true)
+  }, [finie])
+
   // Replay the latest turn whenever a new one lands.
   useEffect(() => {
     if (!battle) return
@@ -61,10 +68,7 @@ export function Arena() {
       setVerrouille(false)
       setSelection(null)
       setRetraite(false)
-      const t = window.setTimeout(() => {
-        setReveal(null)
-        if (battle.status === 'finished') setResultatVisible(true)
-      }, DUREE_REVEAL_MS)
+      const t = window.setTimeout(fermerReveal, DUREE_REVEAL_MS)
       return () => window.clearTimeout(t)
     }
     if (battle.status === 'finished' && !reveal) setResultatVisible(true)
@@ -187,6 +191,12 @@ export function Arena() {
       <main className="flex flex-1 items-center justify-center overflow-y-auto px-4">
         <div className="flex flex-col items-center gap-4">
           <ClashStage state={battle.state} chart={chart} mySide={mySide} reveal={reveal} adversairePret={eux.submitted} moiPret={verrouille || moi.submitted} />
+          {reveal && (
+            <Bouton key={battle.state.turns.length} taille="lg" onClick={fermerReveal} className="animate-rise-late">
+              {finie ? 'See the result' : 'Continue'}
+              <Icon name="arrowRight" size={18} strokeWidth={2.5} />
+            </Bouton>
+          )}
           {battle.kind === 'pvp' && battle.status === 'active' && !reveal && (verrouille || moi.submitted) && !eux.submitted && (
             <ForceTimeout depuis={battle.updatedAt} onForce={() => battleService.timeout(battle.id).then(() => battleService.charger(battle.id).then(setBattle)).catch((e) => setErreur(e instanceof Error ? e.message : 'Not yet.'))} />
           )}
