@@ -4,30 +4,23 @@ import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
-import { JOUEUR_COURANT, OBJETS_MOCK } from '@/mocks'
+import { ConnexionRequise } from '@/components/ConnexionRequise'
+import { useSession } from '@/lib/session'
 import type { Objet, ResultatAssemblage } from '@/types'
 
 type Emplacement = 'a' | 'b'
 
 /**
- * Résultat factice : deux objets de la même catégorie se combinent,
- * sinon la combinaison échoue. À remplacer par la vraie logique de crafting.
+ * Mock result: no recipe exists yet, so every combination fails.
+ * To be replaced by the real crafting logic (recipes, created items).
  */
 function assemblerMock(a: Objet, b: Objet): ResultatAssemblage {
   if (a.id === b.id) {
-    return { succes: false, message: 'Combinaison impossible : il faut deux objets différents.' }
+    return { succes: false, message: 'Can’t combine: you need two different items.' }
   }
-  if (a.categorie !== b.categorie) {
-    return { succes: false, message: 'Combinaison impossible : les catégories ne correspondent pas.' }
-  }
-  const candidats = OBJETS_MOCK.filter(
-    (o) => o.categorie === a.categorie && o.id !== a.id && o.id !== b.id,
-  )
-  const objetResultat = candidats[0] ?? OBJETS_MOCK.find((o) => o.categorie === 'special')
   return {
-    succes: true,
-    message: 'Combinaison réussie !',
-    objetResultat,
+    succes: false,
+    message: `Can’t combine: no known recipe for ${a.nom} + ${b.nom} (crafting coming soon).`,
   }
 }
 
@@ -40,7 +33,7 @@ interface SlotProps {
   onRetirer: (emplacement: Emplacement) => void
 }
 
-/** Emplacement de dépôt d'un objet (cible du drag & drop). */
+/** Drop slot for an item (drag & drop target). */
 function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: SlotProps) {
   return (
     <div
@@ -64,16 +57,16 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
             onClick={() => onRetirer(emplacement)}
             className="text-xs text-texte-2 hover:text-echec"
           >
-            Retirer
+            Remove
           </button>
         </>
       ) : (
         <>
           <p className="text-3xl text-texte-2">＋</p>
           <p className="text-xs text-texte-2">
-            Glisse un objet ici
+            Drag an item here
             <br />
-            ou clique dessus dans l’inventaire
+            or click one in your inventory
           </p>
         </>
       )}
@@ -81,8 +74,10 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
   )
 }
 
-/** /assemblage — Combiner deux objets (drag & drop ou sélection à deux clics). */
+/** /crafting — Combine two items (drag & drop or two-click selection). */
 export function Assemblage() {
+  const { joueur } = useSession()
+  const inventaire = joueur?.inventaire ?? []
   const [slotA, setSlotA] = useState<Objet | null>(null)
   const [slotB, setSlotB] = useState<Objet | null>(null)
   const [resultat, setResultat] = useState<ResultatAssemblage | null>(null)
@@ -90,7 +85,7 @@ export function Assemblage() {
 
   const placer = (objet: Objet, emplacement?: Emplacement) => {
     setResultat(null)
-    // Sélection à deux clics : premier clic → slot A, second → slot B.
+    // Two-click selection: first click → slot A, second → slot B.
     const cible: Emplacement = emplacement ?? (slotA && !slotB ? 'b' : 'a')
     if (cible === 'a') {
       setSlotA(objet)
@@ -113,7 +108,7 @@ export function Assemblage() {
     setResultat(null)
   }
 
-  // Drag & drop natif HTML5 : l'id de l'objet transite par dataTransfer.
+  // Native HTML5 drag & drop: the item id travels through dataTransfer.
   const onDragStart = (e: DragEvent, objet: Objet) => {
     e.dataTransfer.setData('text/plain', objet.id)
     e.dataTransfer.effectAllowed = 'move'
@@ -122,21 +117,23 @@ export function Assemblage() {
     e.preventDefault()
     setSurvol(null)
     const id = e.dataTransfer.getData('text/plain')
-    const objet = JOUEUR_COURANT.inventaire.find((o) => o.id === id)
+    const objet = inventaire.find((o) => o.id === id)
     if (objet) placer(objet, emplacement)
   }
 
   const propsSlot = { onSurvol: setSurvol, onDrop, onRetirer: retirer }
 
+  if (!joueur) return <ConnexionRequise />
+
   return (
     <>
       <PageHeader
-        titre="Assemblage"
-        sousTitre="Combine deux objets pour en créer un nouveau."
+        titre="Crafting"
+        sousTitre="Combine two items to create a new one."
         action={
           (slotA || slotB) && (
             <Bouton variante="fantome" taille="sm" onClick={reinitialiser}>
-              Réinitialiser
+              Reset
             </Bouton>
           )
         }
@@ -155,7 +152,7 @@ export function Assemblage() {
             disabled={!slotA || !slotB}
             onClick={() => slotA && slotB && setResultat(assemblerMock(slotA, slotB))}
           >
-            🧪 Combiner
+            🧪 Combine
           </Bouton>
         </div>
 
@@ -179,9 +176,9 @@ export function Assemblage() {
         )}
       </Carte>
 
-      <h2 className="mb-3 mt-6 font-semibold">Ton inventaire</h2>
+      <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {JOUEUR_COURANT.inventaire.map((objet) => (
+        {inventaire.map((objet) => (
           <div key={objet.id} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
             <ObjetCard
               objet={objet}

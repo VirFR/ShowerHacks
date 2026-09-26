@@ -1,6 +1,6 @@
 # ShowerHacks
 
-Monorepo du hackathon. Le jeu **PFC** (pierre-feuille-ciseaux évolué) se trouve dans le dossier [`pfc/`](./pfc).
+Hackathon monorepo. The **PFC** game (rock-paper-scissors, evolved) lives in the [`pfc/`](./pfc) folder.
 
 ```bash
 cd pfc
@@ -8,4 +8,4 @@ npm install
 npm run dev
 ```
 
-Voir [`pfc/README.md`](./pfc/README.md) pour les instructions complètes, la liste des pages et la répartition du travail.
+See [`pfc/README.md`](./pfc/README.md) for full instructions, the list of pages and how to split the work.

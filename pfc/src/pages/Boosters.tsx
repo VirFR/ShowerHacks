@@ -1,26 +1,26 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { BadgeCategorie } from '@/components/BadgeCategorie'
 import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
-import { StatBadge } from '@/components/StatBadge'
-import { BOOSTERS_MOCK, OBJETS_MOCK } from '@/mocks'
-import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
 import { tirerObjetPondere } from '@/lib/boosters'
 import { CLASSE_RARETE, formaterDuree, LIBELLE_RARETE } from '@/lib/format'
+import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
+import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
 
-/** /boosters — Stack de boosters, déchirure interactive, cartes révélées une par une. */
+/** /boosters — Booster stack, interactive tear-open, cards revealed one by one. */
 type EtatOuverture = 'idle' | 'dechirure' | 'ouverture' | 'cartes' | 'revele'
 
 interface EtatStack {
   actuel: number
-  /** Timestamp (ms) du prochain booster. */
+  /** Timestamp (ms) of the next booster. */
   prochainA: number
 }
 
 const MAX = BOOSTERS_MOCK.max
-/** Distance (px) à glisser pour déchirer le booster. */
+/** Distance (px) to drag to tear the booster open. */
 const SEUIL_DECHIRURE_PX = 90
 
 const RARETE_GLOW: Record<Rarete, string> = {
@@ -51,7 +51,7 @@ export function Boosters() {
   const { actuel, prochainA } = stack
   const plein = actuel >= MAX
 
-  // Tick du timer (1 s). Quand le compte à rebours atteint 0, +1 booster (mock).
+  // Timer tick (1 s). When the countdown hits 0, +1 booster (mock).
   useEffect(() => {
     const id = window.setInterval(() => {
       const now = Date.now()
@@ -68,26 +68,26 @@ export function Boosters() {
   const restant = plein ? 0 : Math.max(0, prochainA - maintenant)
   const progression = plein ? 1 : 1 - restant / BOOSTER_INTERVALLE_MS
 
-  /** Arme le booster : le joueur doit maintenant le déchirer. */
+  /** Arms the booster: the player now has to tear it open. */
   const commencerOuverture = () => {
     if (actuel <= 0) return
     setDragProgress(0)
     setEtat('dechirure')
   }
 
-  /** Finalise la déchirure (seuil de glisse atteint, ou clic direct en secours) : tire les objets. */
+  /** Finishes the tear (drag threshold reached, or a direct tap as a fallback): draws the items. */
   const terminerDechirure = () => {
     if (dechirureEnCours.current) return
     dechirureEnCours.current = true
     setEtat('ouverture')
     window.setTimeout(() => {
-      const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_MOCK))
+      const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
       setCarteRetournee(false)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
-        // Si le stack était plein, le timer repart de maintenant.
+        // If the stack was full, the timer restarts from now.
         prochainA: s.actuel >= MAX ? Date.now() + BOOSTER_INTERVALLE_MS : s.prochainA,
       }))
       setEtat('cartes')
@@ -121,7 +121,7 @@ export function Boosters() {
     setDragProgress(0)
   }
 
-  /** Touche/clique la carte : la révèle, puis passe à la suivante (ou au récap). */
+  /** Taps/clicks the card: reveals it, then advances to the next one (or the recap). */
   const onTapCarte = () => {
     if (!carteRetournee) {
       setCarteRetournee(true)
@@ -142,10 +142,10 @@ export function Boosters() {
     <>
       <PageHeader
         titre="Boosters"
-        sousTitre={`Un nouveau booster toutes les 10 minutes, ${OBJETS_PAR_BOOSTER} objets par booster.`}
+        sousTitre={`A new booster every 10 minutes, ${OBJETS_PAR_BOOSTER} items per booster.`}
       />
 
-      {/* Ouverture : le booster flotte au centre, sans carte autour, comme un vrai pack */}
+      {/* Opening: the booster floats front and center, no card chrome around it */}
       <div className="flex flex-col items-center justify-center gap-4 py-6 text-center">
         {(etat === 'idle' || etat === 'dechirure' || etat === 'ouverture') && (
           <div
@@ -158,7 +158,7 @@ export function Boosters() {
             onClick={() => etat === 'dechirure' && terminerDechirure()}
             role={etat === 'dechirure' ? 'button' : undefined}
             tabIndex={etat === 'dechirure' ? 0 : undefined}
-            aria-label={etat === 'dechirure' ? 'Déchirer le booster : glisse ou appuie' : undefined}
+            aria-label={etat === 'dechirure' ? 'Tear the booster open: drag or tap' : undefined}
             onKeyDown={(e) => {
               if (etat === 'dechirure' && (e.key === 'Enter' || e.key === ' ')) {
                 e.preventDefault()
@@ -166,14 +166,14 @@ export function Boosters() {
               }
             }}
           >
-            {/* Halo ambiant, qui grandit encore à mesure que ça se déchire */}
+            {/* Ambient glow, which grows further while tearing */}
             <div
               className="pointer-events-none absolute inset-0 rounded-[28px] bg-or blur-2xl transition-opacity"
               style={{ opacity: etat === 'dechirure' ? 0.25 + dragProgress * 0.65 : etat === 'ouverture' ? 0.9 : 0.25 }}
               aria-hidden
             />
 
-            {/* Moitié haute */}
+            {/* Top half */}
             <div
               className={[
                 'foil-pack pack-arche absolute inset-x-0 top-0 h-1/2 overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/40',
@@ -194,7 +194,7 @@ export function Boosters() {
               <div className="foil-crimp-vert absolute inset-y-2 right-1 rounded-full" aria-hidden />
             </div>
 
-            {/* Moitié basse */}
+            {/* Bottom half */}
             <div
               className={[
                 'foil-pack absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-[22px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
@@ -226,7 +226,7 @@ export function Boosters() {
                   aria-hidden
                 >
                   <span className="text-4xl drop-shadow-sm">✊✋✌️</span>
-                  <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">Booster PFC</span>
+                  <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
                 </div>
               </>
             )}
@@ -249,85 +249,82 @@ export function Boosters() {
           </div>
         )}
 
-          {etat === 'cartes' && objetActuel && (
-            <div
-              className="perspective-dist cursor-pointer select-none"
-              onClick={onTapCarte}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  onTapCarte()
-                }
-              }}
-              aria-label={carteRetournee ? `${objetActuel.nom}, touche pour continuer` : 'Carte face cachée, touche pour révéler'}
-            >
-              <div className={`flip-inner relative h-72 w-52 ${carteRetournee ? 'retournee' : ''}`}>
-                <div className="flip-face absolute inset-0 flex items-center justify-center rounded-2xl border border-bordure bg-gradient-to-br from-carte-2 to-fond-2 text-5xl shadow-xl">
-                  ✊✋✌️
-                </div>
-                <div className="flip-face flip-face-arriere absolute inset-0">
-                  <div
-                    className={[
-                      'relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border bg-carte p-4',
-                      RARETE_GLOW[objetActuel.rarete],
-                    ].join(' ')}
-                  >
-                    {objetActuel.rarete === 'secret_rare' && (
-                      <div
-                        className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 blur-md animate-shimmer"
-                        aria-hidden
-                      />
-                    )}
-                    {(objetActuel.rarete === 'epique' || objetActuel.rarete === 'legendaire') && (
-                      <div
-                        className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 bg-white/30 blur-md animate-shimmer"
-                        aria-hidden
-                      />
-                    )}
-                    <ObjetImage objet={objetActuel} className="h-28 w-28" />
-                    <div>
-                      <h3 className="font-bold">{objetActuel.nom}</h3>
-                      <p className={`text-xs ${CLASSE_RARETE[objetActuel.rarete]}`}>{LIBELLE_RARETE[objetActuel.rarete]}</p>
-                    </div>
-                    <div className="flex gap-1.5">
-                      <StatBadge type="attaque" valeur={objetActuel.attaque} />
-                      <StatBadge type="defense" valeur={objetActuel.defense} />
-                    </div>
+        {etat === 'cartes' && objetActuel && (
+          <div
+            className="perspective-dist cursor-pointer select-none"
+            onClick={onTapCarte}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onTapCarte()
+              }
+            }}
+            aria-label={carteRetournee ? `${objetActuel.nom}, tap to continue` : 'Face-down card, tap to reveal'}
+          >
+            <div className={`flip-inner relative h-72 w-52 ${carteRetournee ? 'retournee' : ''}`}>
+              <div className="flip-face absolute inset-0 flex items-center justify-center rounded-2xl border border-bordure bg-gradient-to-br from-carte-2 to-fond-2 text-5xl shadow-xl">
+                ✊✋✌️
+              </div>
+              <div className="flip-face flip-face-arriere absolute inset-0">
+                <div
+                  className={[
+                    'relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border bg-carte p-4',
+                    RARETE_GLOW[objetActuel.rarete],
+                  ].join(' ')}
+                >
+                  {objetActuel.rarete === 'secret_rare' && (
+                    <div
+                      className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 blur-md animate-shimmer"
+                      aria-hidden
+                    />
+                  )}
+                  {(objetActuel.rarete === 'epique' || objetActuel.rarete === 'legendaire') && (
+                    <div
+                      className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 bg-white/30 blur-md animate-shimmer"
+                      aria-hidden
+                    />
+                  )}
+                  <ObjetImage objet={objetActuel} className="h-28 w-28" />
+                  <div>
+                    <h3 className="font-bold">{objetActuel.nom}</h3>
+                    <p className={`text-xs ${CLASSE_RARETE[objetActuel.rarete]}`}>{LIBELLE_RARETE[objetActuel.rarete]}</p>
                   </div>
+                  <BadgeCategorie categorie={objetActuel.categorie} />
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {etat === 'revele' && objetsObtenus.length > 0 && (
-            <div className="animate-booster-pop w-full max-w-lg">
-              <p className="mb-2 text-sm font-semibold text-accent-2">Tu as obtenu {objetsObtenus.length} objets :</p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {objetsObtenus.map((objet, i) => (
-                  <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
-                ))}
-              </div>
+        {etat === 'revele' && objetsObtenus.length > 0 && (
+          <div className="animate-booster-pop w-full max-w-lg">
+            <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} items:</p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {objetsObtenus.map((objet, i) => (
+                <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          <p className="text-sm text-texte-2">
-            {etat === 'idle' &&
-              (actuel > 0
-                ? `Ouvre un booster pour découvrir ${OBJETS_PAR_BOOSTER} nouveaux objets.`
-                : 'Plus de booster disponible, patiente un peu.')}
-            {etat === 'dechirure' && 'Glisse le booster pour le déchirer ✋'}
-            {etat === 'ouverture' && 'Ça craque…'}
-            {etat === 'cartes' &&
-              (carteRetournee
-                ? `Objet ${indexCarte + 1} / ${objetsObtenus.length} — touche pour continuer`
-                : `Carte ${indexCarte + 1} / ${objetsObtenus.length} — touche pour révéler`)}
-          </p>
+        <p className="text-sm text-texte-2">
+          {etat === 'idle' &&
+            (actuel > 0
+              ? `Open a booster to discover ${OBJETS_PAR_BOOSTER} new items.`
+              : 'No boosters left, hang on a bit.')}
+          {etat === 'dechirure' && 'Drag the booster to tear it open ✋'}
+          {etat === 'ouverture' && 'Ripping…'}
+          {etat === 'cartes' &&
+            (carteRetournee
+              ? `Item ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`
+              : `Card ${indexCarte + 1} / ${objetsObtenus.length} — tap to reveal`)}
+        </p>
 
         {(etat === 'idle' || etat === 'revele') && (
           <Bouton taille="lg" disabled={actuel <= 0} onClick={commencerOuverture}>
-            {etat === 'revele' ? 'Ouvrir un autre' : 'Ouvrir'}
+            {etat === 'revele' ? 'Open another' : 'Open'}
           </Bouton>
         )}
       </div>
@@ -335,55 +332,54 @@ export function Boosters() {
       {/* Stack + timer */}
       <div className="grid gap-4 sm:grid-cols-2">
         <Carte>
-            <div className="flex items-baseline justify-between">
-              <h2 className="font-semibold">Stack</h2>
-              <p className="text-2xl font-black tabular-nums">
-                {actuel}
-                <span className="text-sm font-semibold text-texte-2"> / {MAX}</span>
-              </p>
-            </div>
-            <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} boosters sur ${MAX}`}>
-              {Array.from({ length: MAX }, (_, i) => (
-                <div
-                  key={i}
-                  className={[
-                    'flex aspect-square items-center justify-center rounded-xl text-xl transition-all',
-                    i < actuel
-                      ? 'bg-gradient-to-br from-accent to-accent-2 shadow-md shadow-accent/30'
-                      : 'border border-dashed border-bordure bg-fond/40 opacity-50 grayscale',
-                  ].join(' ')}
-                  aria-hidden
-                >
-                  🎁
-                </div>
-              ))}
-            </div>
-          </Carte>
+          <div className="flex items-baseline justify-between">
+            <h2 className="font-semibold">Stack</h2>
+            <p className="text-2xl font-black tabular-nums">
+              {actuel}
+              <span className="text-sm font-semibold text-texte-2"> / {MAX}</span>
+            </p>
+          </div>
+          <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} of ${MAX} boosters`}>
+            {Array.from({ length: MAX }, (_, i) => (
+              <div
+                key={i}
+                className={[
+                  'flex aspect-square items-center justify-center rounded-xl text-xl transition-all',
+                  i < actuel
+                    ? 'bg-gradient-to-br from-accent to-accent-2 shadow-md shadow-accent/30'
+                    : 'border border-dashed border-bordure bg-fond/40 opacity-50 grayscale',
+                ].join(' ')}
+                aria-hidden
+              >
+                🎁
+              </div>
+            ))}
+          </div>
+        </Carte>
 
-          <Carte>
-            <h2 className="font-semibold">Prochain booster</h2>
-            {plein ? (
-              <p className="mt-2 text-sm text-or">Stack plein ! Ouvre un booster pour relancer le timer.</p>
-            ) : (
-              <>
-                <p className="mt-2 text-4xl font-black tabular-nums">{formaterDuree(restant)}</p>
+        <Carte>
+          <h2 className="font-semibold">Next booster</h2>
+          {plein ? (
+            <p className="mt-2 text-sm text-or">Stack full! Open a booster to restart the timer.</p>
+          ) : (
+            <>
+              <p className="mt-2 text-4xl font-black tabular-nums">{formaterDuree(restant)}</p>
+              <div
+                className="mt-3 h-2 overflow-hidden rounded-full bg-fond"
+                role="progressbar"
+                aria-valuenow={Math.round(progression * 100)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
                 <div
-                  className="mt-3 h-2 overflow-hidden rounded-full bg-fond"
-                  role="progressbar"
-                  aria-valuenow={Math.round(progression * 100)}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                >
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-defense to-accent-2 transition-[width] duration-1000 ease-linear"
-                    style={{ width: `${progression * 100}%` }}
-                  />
-                </div>
-              </>
-            )}
-          </Carte>
-        </div>
+                  className="h-full rounded-full bg-gradient-to-r from-defense to-accent-2 transition-[width] duration-1000 ease-linear"
+                  style={{ width: `${progression * 100}%` }}
+                />
+              </div>
+            </>
+          )}
+        </Carte>
+      </div>
     </>
   )
 }
-
