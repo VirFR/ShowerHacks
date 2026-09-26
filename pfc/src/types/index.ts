@@ -6,10 +6,10 @@
  * (crafting, combat réel, auth…).
  */
 
-/** Catégories d'objets : les trois familles classiques + une famille spéciale. */
-export type Categorie = 'pierre' | 'feuille' | 'ciseaux' | 'special'
+/** Catégories d'objets (par thème, pas par rôle de combat). */
+export type Categorie = 'fight' | 'plantes' | 'ressources' | 'espace' | 'brainrot'
 
-export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux', 'special']
+export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'brainrot']
 
 export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
 
@@ -23,13 +23,11 @@ export interface Objet {
   /** Emoji utilisé en secours si l'image ne charge pas. */
   icone: string
   rarete: Rarete
-  description: string
   /**
-   * Victoires explicites : ids des objets que cet objet bat toujours,
-   * indépendamment de la règle pierre/feuille/ciseaux. Sert à donner à
-   * chaque nouvel objet son propre "lot" de victoires/défaites en plus
-   * des trois familles de base. Ces relations sont prioritaires sur la
-   * règle de catégorie dans `lib/combat.ts`.
+   * Victoires explicites : ids des objets que cet objet bat toujours, en
+   * plus du tournoi circulaire (voir `lib/combat.ts`). Sert à donner à un
+   * objet une exception logique ponctuelle (ex: la hache finit par fendre
+   * le bouclier) sans casser l'équilibre global des taux de victoire.
    */
   victoiresExplicites?: string[]
 }

@@ -52,7 +52,6 @@ export function ObjetDetail() {
             <BadgeCategorie categorie={objet.categorie} />
           </div>
           <p className={`mt-1 text-sm font-medium ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
-          <p className="mt-3 text-sm text-texte-2">{objet.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2">
             <StatBadge type="attaque" valeur={objet.attaque} taille="md" />

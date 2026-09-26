@@ -3,24 +3,27 @@ import type { Categorie, Rang, Rarete, ResultatCombat } from '@/types'
 /** Libellés, couleurs et helpers d'affichage partagés par les pages. */
 
 export const LIBELLE_CATEGORIE: Record<Categorie, string> = {
-  pierre: 'Pierre',
-  feuille: 'Feuille',
-  ciseaux: 'Ciseaux',
-  special: 'Spécial',
+  fight: 'Fight',
+  plantes: 'Plantes',
+  ressources: 'Ressources',
+  espace: 'Espace',
+  brainrot: 'Brainrot',
 }
 
 export const ICONE_CATEGORIE: Record<Categorie, string> = {
-  pierre: '✊',
-  feuille: '✋',
-  ciseaux: '✌️',
-  special: '✨',
+  fight: '⚔️',
+  plantes: '🌿',
+  ressources: '⛏️',
+  espace: '🌌',
+  brainrot: '🧠',
 }
 
 export const CLASSE_CATEGORIE: Record<Categorie, string> = {
-  pierre: 'bg-stone-500/20 text-stone-200 ring-stone-400/40',
-  feuille: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
-  ciseaux: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
-  special: 'bg-violet-500/20 text-violet-200 ring-violet-400/40',
+  fight: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
+  plantes: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
+  ressources: 'bg-amber-600/20 text-amber-200 ring-amber-500/40',
+  espace: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
+  brainrot: 'bg-lime-500/20 text-lime-200 ring-lime-400/40',
 }
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {

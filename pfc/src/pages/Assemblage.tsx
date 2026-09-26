@@ -23,7 +23,7 @@ function assemblerMock(a: Objet, b: Objet): ResultatAssemblage {
   const candidats = OBJETS_MOCK.filter(
     (o) => o.categorie === a.categorie && o.id !== a.id && o.id !== b.id,
   )
-  const objetResultat = candidats[0] ?? OBJETS_MOCK.find((o) => o.categorie === 'special')
+  const objetResultat = candidats[0] ?? OBJETS_MOCK.find((o) => o.categorie === 'fight')
   return {
     succes: true,
     message: 'Combinaison réussie !',

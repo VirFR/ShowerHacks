@@ -10,7 +10,7 @@ interface ObjetCardProps {
   /** Si fourni, la carte devient un bouton sélectionnable. Sinon, un lien vers /objet/:id. */
   onSelect?: (objet: Objet) => void
   selectionne?: boolean
-  /** Masque le libellé de rareté et la description (grille dense). */
+  /** Masque le libellé de rareté (grille dense). */
   compact?: boolean
 }
 
