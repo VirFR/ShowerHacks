@@ -1,5 +1,6 @@
 import { useState, type DragEvent } from 'react'
 import { Bouton } from '@/components/Bouton'
+import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
@@ -152,7 +153,8 @@ export function Assemblage() {
             disabled={!slotA || !slotB}
             onClick={() => slotA && slotB && setResultat(assemblerMock(slotA, slotB))}
           >
-            🧪 Combine
+            <Icon name="flask" size={18} />
+            Combine
           </Bouton>
         </div>
 

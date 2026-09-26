@@ -17,7 +17,8 @@
   --color-echec: #f87171;
   --color-or: #fbbf24;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Sora', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
 html,
@@ -76,8 +77,119 @@ body {
   animation: booster-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+/* Arena animations (battle screens) */
+@keyframes clash-enter-left {
+  0% {
+    transform: translateX(-140px) rotate(-8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(16px) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes clash-enter-right {
+  0% {
+    transform: translateX(140px) rotate(8deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-16px) rotate(-2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes clash-word {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+    filter: blur(6px);
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shatter {
+  0% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+    filter: blur(0) grayscale(0);
+  }
+  100% {
+    transform: scale(0.8) rotate(-6deg) translateY(30px);
+    opacity: 0;
+    filter: blur(4px) grayscale(1);
+  }
+}
+
+@keyframes rise {
+  0% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(192, 132, 252, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 18px rgba(192, 132, 252, 0);
+  }
+}
+
+.animate-clash-left {
+  animation: clash-enter-left 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-clash-right {
+  animation: clash-enter-right 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-clash-word {
+  animation: clash-word 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.5s;
+}
+.animate-shatter {
+  animation: shatter 0.7s ease-in both;
+  animation-delay: 1.4s;
+}
+.animate-rise {
+  animation: rise 0.4s ease-out both;
+}
+.animate-rise-late {
+  animation: rise 0.4s ease-out both;
+  animation-delay: 1s;
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1.4s ease-out infinite;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Booster pack styles (boosters page) */
 /* Léger flottement du booster fermé, pour inviter à l'ouvrir */
-@keyframes pack-float {
+@keyframes @keyframes pack-float {
   0%,
   100% {
     transform: translateY(0);
