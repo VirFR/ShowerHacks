@@ -4,8 +4,8 @@ import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
-import { StatBadge } from '@/components/StatBadge'
 import { HISTORIQUE_MOCK, trouverObjet } from '@/mocks'
+import { BEATS, perdContre } from '@/lib/combat'
 import {
   CLASSE_RARETE,
   CLASSE_RESULTAT,
@@ -15,7 +15,7 @@ import {
   LIBELLE_RESULTAT,
 } from '@/lib/format'
 
-/** /objet/:id — Fiche détail d'un objet. */
+/** /item/:id — Item detail page. */
 export function ObjetDetail() {
   const { id } = useParams<{ id: string }>()
   const objet = trouverObjet(id)
@@ -23,10 +23,10 @@ export function ObjetDetail() {
   if (!objet) {
     return (
       <>
-        <PageHeader titre="Objet introuvable" />
-        <p className="text-texte-2">Aucun objet ne correspond à l’identifiant « {id} ».</p>
-        <Link to="/inventaire" className="mt-4 inline-block">
-          <Bouton variante="secondaire">← Retour à l’inventaire</Bouton>
+        <PageHeader titre="Item not found" />
+        <p className="text-texte-2">No item matches the id “{id}”.</p>
+        <Link to="/inventory" className="mt-4 inline-block">
+          <Bouton variante="secondaire">← Back to inventory</Bouton>
         </Link>
       </>
     )
@@ -37,11 +37,13 @@ export function ObjetDetail() {
   const defaites = historique.filter((h) => h.resultat === 'defaite').length
   const egalites = historique.length - victoires - defaites
   const ratio = historique.length ? victoires / historique.length : 0
+  const bat = BEATS[objet.categorie]
+  const perd = perdContre(objet.categorie)
 
   return (
     <>
-      <Link to="/inventaire" className="mb-3 inline-block text-sm text-accent-2 hover:underline">
-        ← Inventaire
+      <Link to="/inventory" className="mb-3 inline-block text-sm text-accent-2 hover:underline">
+        ← Inventory
       </Link>
 
       <Carte className="flex flex-col gap-5 sm:flex-row">
@@ -54,17 +56,36 @@ export function ObjetDetail() {
           <p className={`mt-1 text-sm font-medium ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
           <p className="mt-3 text-sm text-texte-2">{objet.description}</p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            <StatBadge type="attaque" valeur={objet.attaque} taille="md" />
-            <StatBadge type="defense" valeur={objet.defense} taille="md" />
-          </div>
+          {/* Rock-paper-scissors matchups */}
+          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            <div>
+              <dt className="text-xs uppercase tracking-wider text-succes">Beats</dt>
+              <dd className="mt-1 flex flex-wrap gap-1.5">
+                {bat.length === 0 ? (
+                  <span className="text-texte-2">Nothing</span>
+                ) : (
+                  bat.map((c) => <BadgeCategorie key={c} categorie={c} />)
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-wider text-echec">Loses to</dt>
+              <dd className="mt-1 flex flex-wrap gap-1.5">
+                {perd.length === 0 ? (
+                  <span className="text-texte-2">Nothing</span>
+                ) : (
+                  perd.map((c) => <BadgeCategorie key={c} categorie={c} />)
+                )}
+              </dd>
+            </div>
+          </dl>
 
           <div className="mt-5 flex flex-wrap gap-2">
-            <Link to="/combat">
-              <Bouton>⚔️ Utiliser en combat</Bouton>
+            <Link to="/battle">
+              <Bouton>⚔️ Use in battle</Bouton>
             </Link>
-            <Link to="/assemblage">
-              <Bouton variante="secondaire">🧪 Assembler</Bouton>
+            <Link to="/crafting">
+              <Bouton variante="secondaire">🧪 Craft</Bouton>
             </Link>
           </div>
         </div>
@@ -73,22 +94,22 @@ export function ObjetDetail() {
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Carte className="text-center">
           <p className="text-3xl font-black text-succes">{victoires}</p>
-          <p className="text-xs text-texte-2">Victoires</p>
+          <p className="text-xs text-texte-2">Wins</p>
         </Carte>
         <Carte className="text-center">
           <p className="text-3xl font-black text-echec">{defaites}</p>
-          <p className="text-xs text-texte-2">Défaites</p>
+          <p className="text-xs text-texte-2">Losses</p>
         </Carte>
         <Carte className="text-center">
           <p className="text-3xl font-black">{formaterPourcentage(ratio)}</p>
-          <p className="text-xs text-texte-2">Ratio {egalites > 0 && `(${egalites} égalité${egalites > 1 ? 's' : ''})`}</p>
+          <p className="text-xs text-texte-2">Win rate {egalites > 0 && `(${egalites} draw${egalites > 1 ? 's' : ''})`}</p>
         </Carte>
       </div>
 
       <Carte className="mt-4">
-        <h2 className="font-semibold">Historique des combats</h2>
+        <h2 className="font-semibold">Battle history</h2>
         {historique.length === 0 ? (
-          <p className="mt-3 text-sm text-texte-2">Cet objet n’a pas encore combattu.</p>
+          <p className="mt-3 text-sm text-texte-2">This item hasn’t fought yet.</p>
         ) : (
           <ul className="mt-3 divide-y divide-bordure">
             {historique.map((h) => {
@@ -97,7 +118,7 @@ export function ObjetDetail() {
                 <li key={h.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                   <div className="min-w-0">
                     <p className="truncate">
-                      contre <span className="font-medium">{adverse?.nom ?? h.objetAdverseId}</span>{' '}
+                      vs <span className="font-medium">{adverse?.nom ?? h.objetAdverseId}</span>{' '}
                       <span className="text-texte-2">({h.adversairePseudo})</span>
                     </p>
                     <p className="text-xs text-texte-2">{formaterDate(h.date)}</p>

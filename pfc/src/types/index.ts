@@ -1,26 +1,27 @@
 /**
- * Types de base du jeu PFC.
+ * Core types of the PFC game.
  *
- * Ces interfaces sont volontairement minimales : elles servent de contrat
- * commun entre les pages et seront enrichies au fur et à mesure
- * (crafting, combat réel, auth…).
+ * These interfaces are intentionally minimal: they act as a shared contract
+ * between pages and will grow over time (crafting, real battles, auth…).
  */
 
-/** Catégories d'objets : les trois familles classiques. */
+/** Item categories: the three classic families. */
 export type Categorie = 'pierre' | 'feuille' | 'ciseaux'
 
 export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux']
 
 export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
 
+/**
+ * An item. There are no attack/defense stats: an item wins or loses purely
+ * on its category, rock-paper-scissors style (see `lib/combat.ts`).
+ */
 export interface Objet {
   id: string
   nom: string
-  attaque: number
-  defense: number
   categorie: Categorie
   imageUrl: string
-  /** Emoji utilisé en secours si l'image ne charge pas. */
+  /** Emoji fallback used when the image fails to load. */
   icone: string
   rarete: Rarete
   description: string
@@ -28,17 +29,17 @@ export interface Objet {
 
 export type Rang =
   | 'Bronze'
-  | 'Argent'
-  | 'Or'
-  | 'Platine'
-  | 'Diamant'
-  | 'Maître'
+  | 'Silver'
+  | 'Gold'
+  | 'Platinum'
+  | 'Diamond'
+  | 'Master'
 
 export interface Joueur {
   id: string
   pseudo: string
   score: number
-  /** Objets possédés par le joueur. */
+  /** Items owned by the player. */
   inventaire: Objet[]
   rang: Rang
   avatarUrl?: string
@@ -46,7 +47,7 @@ export interface Joueur {
   nbVictoires: number
 }
 
-/** Une entrée du classement (données agrégées d'un joueur). */
+/** One leaderboard row (aggregated player data). */
 export interface EntreeClassement {
   position: number
   joueurId: string
@@ -54,13 +55,13 @@ export interface EntreeClassement {
   score: number
   nbParties: number
   nbVictoires: number
-  /** Ratio victoires / parties, entre 0 et 1. */
+  /** Wins / games played, between 0 and 1. */
   ratio: number
 }
 
 export type ResultatCombat = 'victoire' | 'defaite' | 'egalite'
 
-/** Historique d'un duel, tel qu'affiché sur la fiche d'un objet. */
+/** A past duel, as shown on an item's detail page. */
 export interface HistoriqueCombat {
   id: string
   date: string
@@ -70,24 +71,24 @@ export interface HistoriqueCombat {
   resultat: ResultatCombat
 }
 
-/** Stack de boosters d'un joueur. */
+/** A player's booster stack. */
 export interface StackBoosters {
-  /** Nombre de boosters actuellement disponibles. */
+  /** Boosters currently available. */
   actuel: number
-  /** Taille maximale du stack. */
+  /** Maximum stack size. */
   max: number
-  /** Date ISO à laquelle le prochain booster sera ajouté. */
+  /** ISO date at which the next booster is added. */
   prochainA: string
 }
 
-/** Résultat mock d'une tentative d'assemblage de deux objets. */
+/** Mock result of an attempt to combine two items. */
 export interface ResultatAssemblage {
   succes: boolean
   message: string
   objetResultat?: Objet
 }
 
-/** Constantes de gameplay partagées. */
+/** Shared gameplay constants. */
 export const BOOSTERS_MAX = 8
 export const BOOSTER_INTERVALLE_MS = 10 * 60 * 1000 // 10 minutes
 export const OBJETS_PAR_BOOSTER = 5

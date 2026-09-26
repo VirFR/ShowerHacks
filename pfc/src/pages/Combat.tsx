@@ -1,11 +1,11 @@
 import { useState } from 'react'
+import { BadgeCategorie } from '@/components/BadgeCategorie'
 import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
-import { StatBadge } from '@/components/StatBadge'
 import { expliquerCombat, resoudreCombat } from '@/lib/combat'
 import { CLASSE_RESULTAT, LIBELLE_RESULTAT } from '@/lib/format'
 import { useSession } from '@/lib/session'
@@ -15,7 +15,7 @@ function tirerObjet(joueur: Joueur): Objet {
   return joueur.inventaire[Math.floor(Math.random() * joueur.inventaire.length)]
 }
 
-/** /combat — Écran de duel contre un autre compte. */
+/** /battle — Duel screen against another account. */
 export function Combat() {
   const { joueur, comptes } = useSession()
   if (!joueur) return <ConnexionRequise />
@@ -35,7 +35,7 @@ function Duel({ joueur, adversaires }: DuelProps) {
 
   const attaquer = () => {
     if (!selection) return
-    // L'adversaire joue un objet au hasard parmi son inventaire (mock).
+    // The opponent plays a random item from their inventory (mock).
     const tirage = tirerObjet(adversaire)
     setObjetAdverse(tirage)
     setResultat(resoudreCombat(selection, tirage))
@@ -49,11 +49,11 @@ function Duel({ joueur, adversaires }: DuelProps) {
 
   return (
     <>
-      <PageHeader titre="Combat" sousTitre={`${joueur.pseudo}, choisis ton adversaire et ton objet.`} />
+      <PageHeader titre="Battle" sousTitre={`${joueur.pseudo}, pick your opponent and your item.`} />
 
-      {/* Choix de l'adversaire */}
-      <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Choisir un adversaire">
-        <span className="text-sm text-texte-2">Adversaire :</span>
+      {/* Opponent picker */}
+      <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Pick an opponent">
+        <span className="text-sm text-texte-2">Opponent:</span>
         {adversaires.map((a) => (
           <button
             key={a.id}
@@ -76,37 +76,37 @@ function Duel({ joueur, adversaires }: DuelProps) {
         ))}
       </div>
 
-      {/* Arène */}
+      {/* Arena */}
       <Carte className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
         <Camp titre={joueur.pseudo} objet={selection} />
         <p className="text-2xl font-black text-accent-2">VS</p>
         <Camp titre={adversaire.pseudo} objet={objetAdverse} />
       </Carte>
 
-      {/* Zone de résultat */}
+      {/* Result area */}
       <Carte className="mt-4 text-center" aria-live="polite">
         {resultat && selection && objetAdverse ? (
           <>
             <p className={`text-3xl font-black ${CLASSE_RESULTAT[resultat]}`}>{LIBELLE_RESULTAT[resultat]}</p>
             <p className="mt-1 text-sm text-texte-2">{expliquerCombat(selection, objetAdverse)}</p>
             <Bouton variante="secondaire" className="mt-4" onClick={rejouer}>
-              Rejouer
+              Play again
             </Bouton>
           </>
         ) : (
           <>
             <p className="text-sm text-texte-2">
-              {selection ? `Prêt ? Attaque ${adversaire.pseudo}.` : 'Sélectionne un objet ci-dessous.'}
+              {selection ? `Ready? Attack ${adversaire.pseudo}.` : 'Select an item below.'}
             </p>
             <Bouton taille="lg" className="mt-3" disabled={!selection} onClick={attaquer}>
-              ⚔️ Attaquer
+              ⚔️ Attack
             </Bouton>
           </>
         )}
       </Carte>
 
-      {/* Inventaire */}
-      <h2 className="mb-3 mt-6 font-semibold">Ton inventaire</h2>
+      {/* Inventory */}
+      <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {joueur.inventaire.map((objet) => (
           <ObjetCard
@@ -134,10 +134,7 @@ function Camp({ titre, objet }: { titre: string; objet: Objet | null }) {
         <>
           <ObjetImage objet={objet} className="h-24 w-24" />
           <p className="font-semibold">{objet.nom}</p>
-          <div className="flex gap-1.5">
-            <StatBadge type="attaque" valeur={objet.attaque} />
-            <StatBadge type="defense" valeur={objet.defense} />
-          </div>
+          <BadgeCategorie categorie={objet.categorie} />
         </>
       ) : (
         <div className="flex h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-bordure text-3xl text-texte-2">

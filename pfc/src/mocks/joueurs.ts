@@ -3,9 +3,9 @@ import { BOOSTER_INTERVALLE_MS, BOOSTERS_MAX } from '@/types'
 import { INVENTAIRE_DEPART } from './objets'
 
 /**
- * Les quatre comptes de test. Tout le monde part du même point :
- * score 0, rang Bronze, les trois objets de base.
- * La connexion se fait depuis /profil (voir `lib/session.tsx`).
+ * The four test accounts. Everyone starts from the same point:
+ * score 0, Bronze rank, the three base items.
+ * Sign-in happens from /profile (see `lib/session.ts`).
  */
 const compte = (id: string, pseudo: string): Joueur => ({
   id,
@@ -28,7 +28,7 @@ export function trouverJoueur(id: string | undefined | null): Joueur | undefined
   return JOUEURS_MOCK.find((j) => j.id === id)
 }
 
-/** Classement dérivé des joueurs mock, trié par score décroissant puis pseudo. */
+/** Leaderboard derived from the mock players, sorted by descending score then nickname. */
 export const CLASSEMENT_MOCK: EntreeClassement[] = [...JOUEURS_MOCK]
   .sort((a, b) => b.score - a.score || a.pseudo.localeCompare(b.pseudo))
   .map((j, index) => ({
@@ -41,10 +41,10 @@ export const CLASSEMENT_MOCK: EntreeClassement[] = [...JOUEURS_MOCK]
     ratio: j.nbParties === 0 ? 0 : j.nbVictoires / j.nbParties,
   }))
 
-/** Aucun combat joué pour l'instant : l'historique se remplira avec la vraie logique. */
+/** No battle played yet: the history will fill up with the real logic. */
 export const HISTORIQUE_MOCK: HistoriqueCombat[] = []
 
-/** Stack de boosters de départ (le prochain arrive dans ~4 min). */
+/** Starting booster stack (the next one lands in ~4 min). */
 export const BOOSTERS_MOCK: StackBoosters = {
   actuel: 3,
   max: BOOSTERS_MAX,

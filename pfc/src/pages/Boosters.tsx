@@ -9,10 +9,10 @@ import { formaterDuree } from '@/lib/format'
 
 type EtatOuverture = 'idle' | 'ouverture' | 'revele'
 
-/** /boosters — Stack de boosters, ouverture animée, timer avant le prochain. */
+/** /boosters — Booster stack, animated opening, countdown to the next one. */
 interface EtatStack {
   actuel: number
-  /** Timestamp (ms) du prochain booster. */
+  /** Timestamp (ms) of the next booster. */
   prochainA: number
 }
 
@@ -30,7 +30,7 @@ export function Boosters() {
   const { actuel, prochainA } = stack
   const plein = actuel >= MAX
 
-  // Tick du timer (1 s). Quand le compte à rebours atteint 0, +1 booster (mock).
+  // Timer tick (1 s). When the countdown hits 0, +1 booster (mock).
   useEffect(() => {
     const id = window.setInterval(() => {
       const now = Date.now()
@@ -51,7 +51,7 @@ export function Boosters() {
     if (actuel <= 0 || etat === 'ouverture') return
     setEtat('ouverture')
     setObjetsObtenus([])
-    // Animation "shake" puis révélation de OBJETS_PAR_BOOSTER objets aléatoires (mock).
+    // "Shake" animation, then reveal OBJETS_PAR_BOOSTER random items (mock).
     window.setTimeout(() => {
       const tirage = Array.from(
         { length: OBJETS_PAR_BOOSTER },
@@ -60,7 +60,7 @@ export function Boosters() {
       setObjetsObtenus(tirage)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
-        // Si le stack était plein, le timer repart de maintenant.
+        // If the stack was full, the timer restarts from now.
         prochainA: s.actuel >= MAX ? Date.now() + BOOSTER_INTERVALLE_MS : s.prochainA,
       }))
       setEtat('revele')
@@ -71,11 +71,11 @@ export function Boosters() {
     <>
       <PageHeader
         titre="Boosters"
-        sousTitre={`Un nouveau booster toutes les 10 minutes, ${OBJETS_PAR_BOOSTER} objets par booster.`}
+        sousTitre={`A new booster every 10 minutes, ${OBJETS_PAR_BOOSTER} items per booster.`}
       />
 
       <div className="grid gap-4 md:grid-cols-[1fr_320px]">
-        {/* Ouverture */}
+        {/* Opening */}
         <Carte className="flex flex-col items-center justify-center gap-4 py-10 text-center">
           <div
             className={[
@@ -89,7 +89,7 @@ export function Boosters() {
 
           {etat === 'revele' && objetsObtenus.length > 0 ? (
             <div className="animate-booster-pop w-full max-w-lg">
-              <p className="mb-2 text-sm font-semibold text-accent-2">Tu as obtenu {objetsObtenus.length} objets :</p>
+              <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} items:</p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {objetsObtenus.map((objet, i) => (
                   <ObjetCard key={`${objet.id}-${i}`} objet={objet} compact />
@@ -98,12 +98,12 @@ export function Boosters() {
             </div>
           ) : (
             <p className="text-sm text-texte-2">
-              {actuel > 0 ? `Ouvre un booster pour découvrir ${OBJETS_PAR_BOOSTER} nouveaux objets.` : 'Plus de booster disponible, patiente un peu.'}
+              {actuel > 0 ? `Open a booster to discover ${OBJETS_PAR_BOOSTER} new items.` : 'No boosters left, hang on a bit.'}
             </p>
           )}
 
           <Bouton taille="lg" disabled={actuel <= 0 || etat === 'ouverture'} onClick={ouvrir}>
-            {etat === 'ouverture' ? 'Ouverture…' : etat === 'revele' ? 'Ouvrir un autre' : 'Ouvrir'}
+            {etat === 'ouverture' ? 'Opening…' : etat === 'revele' ? 'Open another' : 'Open'}
           </Bouton>
         </Carte>
 
@@ -117,7 +117,7 @@ export function Boosters() {
                 <span className="text-sm font-semibold text-texte-2"> / {MAX}</span>
               </p>
             </div>
-            <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} boosters sur ${MAX}`}>
+            <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} of ${MAX} boosters`}>
               {Array.from({ length: MAX }, (_, i) => (
                 <div
                   key={i}
@@ -136,9 +136,9 @@ export function Boosters() {
           </Carte>
 
           <Carte>
-            <h2 className="font-semibold">Prochain booster</h2>
+            <h2 className="font-semibold">Next booster</h2>
             {plein ? (
-              <p className="mt-2 text-sm text-or">Stack plein ! Ouvre un booster pour relancer le timer.</p>
+              <p className="mt-2 text-sm text-or">Stack full! Open a booster to restart the timer.</p>
             ) : (
               <>
                 <p className="mt-2 text-4xl font-black tabular-nums">{formaterDuree(restant)}</p>

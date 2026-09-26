@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import { JOUEURS_MOCK, trouverJoueur } from '@/mocks'
 import { ecrireJoueurId, lireJoueurId, SessionContext, type Session } from '@/lib/session'
 
-/** Fournit la session mock (compte de test connecté) à toute l'app. */
+/** Provides the mock session (signed-in test account) to the whole app. */
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [joueurId, setJoueurId] = useState<string | null>(() => lireJoueurId())
 

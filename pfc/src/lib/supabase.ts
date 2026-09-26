@@ -1,13 +1,13 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 /**
- * Client Supabase partagé.
+ * Shared Supabase client.
  *
- * Les identifiants viennent exclusivement des variables d'environnement
- * (voir `.env.example`). Aucune clé n'est écrite en dur dans le code.
+ * Credentials come exclusively from environment variables
+ * (see `.env.example`). No key is ever hard-coded.
  *
- * Tant que les variables ne sont pas renseignées, `supabase` vaut `null`
- * et l'app tourne entièrement sur les données mock de `src/mocks`.
+ * Until the variables are set, `supabase` is `null`
+ * and the app runs entirely on the mock data in `src/mocks`.
  */
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -20,19 +20,19 @@ export const supabase: SupabaseClient | null = supabaseConfigure
 
 if (!supabaseConfigure && import.meta.env.DEV) {
   console.warn(
-    '[PFC] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY non définies : ' +
-      'l’application utilise les données mock. Copiez .env.example vers .env pour configurer Supabase.',
+    '[PFC] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are not set: ' +
+      'the app is running on mock data. Copy .env.example to .env to configure Supabase.',
   )
 }
 
 /**
- * Renvoie le client ou lève une erreur explicite. À utiliser dans les
- * services qui exigent Supabase (auth, persistance) une fois implémentés.
+ * Returns the client or throws an explicit error. Use it in services
+ * that require Supabase (auth, persistence) once they are implemented.
  */
 export function getSupabase(): SupabaseClient {
   if (!supabase) {
     throw new Error(
-      'Supabase n’est pas configuré. Renseignez VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans .env.',
+      'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.',
     )
   }
   return supabase

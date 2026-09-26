@@ -1,46 +1,42 @@
 import type { Objet } from '@/types'
 
 /**
- * Les trois objets de base. Chaque joueur commence avec exactement ceux-là.
- * Les objets issus des boosters et de l'assemblage viendront s'ajouter plus tard.
+ * The three base items. Every player starts with exactly these.
+ * Items from boosters and crafting will be added later.
+ * Images point to /public/objets/*.svg; the `icone` emoji is used as a
+ * fallback when the image fails to load.
  */
 export const OBJETS_MOCK: Objet[] = [
   {
     id: 'pierre',
-    nom: 'Pierre',
-    attaque: 5,
-    defense: 5,
+    nom: 'Rock',
     categorie: 'pierre',
     imageUrl: '/objets/pierre.svg',
     icone: '🪨',
     rarete: 'commun',
-    description: 'Écrase les ciseaux. Se fait envelopper par la feuille.',
+    description: 'Crushes scissors. Gets wrapped by paper.',
   },
   {
     id: 'feuille',
-    nom: 'Feuille',
-    attaque: 5,
-    defense: 5,
+    nom: 'Paper',
     categorie: 'feuille',
     imageUrl: '/objets/feuille.svg',
     icone: '🍃',
     rarete: 'commun',
-    description: 'Enveloppe la pierre. Se fait découper par les ciseaux.',
+    description: 'Wraps rock. Gets cut by scissors.',
   },
   {
     id: 'ciseaux',
-    nom: 'Ciseaux',
-    attaque: 5,
-    defense: 5,
+    nom: 'Scissors',
     categorie: 'ciseaux',
     imageUrl: '/objets/ciseaux.svg',
     icone: '✂️',
     rarete: 'commun',
-    description: 'Découpent la feuille. Se font écraser par la pierre.',
+    description: 'Cut paper. Get crushed by rock.',
   },
 ]
 
-/** Inventaire de départ : une copie des trois objets de base. */
+/** Starting inventory: a copy of the three base items. */
 export const INVENTAIRE_DEPART: Objet[] = [...OBJETS_MOCK]
 
 export function trouverObjet(id: string | undefined): Objet | undefined {

@@ -2,17 +2,17 @@ import { createContext, useContext } from 'react'
 import type { Joueur } from '@/types'
 
 /**
- * Session mock : le joueur "connecté" est simplement l'un des comptes de test,
- * mémorisé dans localStorage. À remplacer par Supabase Auth plus tard.
- * Le provider vit dans `components/SessionProvider.tsx`.
+ * Mock session: the "signed-in" player is simply one of the test accounts,
+ * remembered in localStorage. To be replaced by Supabase Auth later.
+ * The provider lives in `components/SessionProvider.tsx`.
  */
 
 export const CLE_STOCKAGE_SESSION = 'pfc.joueurId'
 
 export interface Session {
-  /** Joueur connecté, ou null si personne. */
+  /** Signed-in player, or null if nobody is. */
   joueur: Joueur | null
-  /** Tous les comptes disponibles (écran de connexion, choix d'adversaire). */
+  /** Every available account (sign-in screen, opponent picker). */
   comptes: Joueur[]
   connecter: (joueurId: string) => void
   deconnecter: () => void
@@ -33,12 +33,12 @@ export function ecrireJoueurId(id: string | null) {
     if (id) window.localStorage.setItem(CLE_STOCKAGE_SESSION, id)
     else window.localStorage.removeItem(CLE_STOCKAGE_SESSION)
   } catch {
-    // Stockage indisponible (navigation privée…) : la session reste en mémoire.
+    // Storage unavailable (private browsing…): the session stays in memory.
   }
 }
 
 export function useSession(): Session {
   const ctx = useContext(SessionContext)
-  if (!ctx) throw new Error('useSession doit être utilisé sous <SessionProvider>')
+  if (!ctx) throw new Error('useSession must be used under <SessionProvider>')
   return ctx
 }

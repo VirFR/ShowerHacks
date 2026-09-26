@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react'
 
-/** Conteneur générique à fond sombre et bordure, utilisé pour les sections. */
+/** Generic dark, bordered container used for sections. */
 export function Carte({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <section
