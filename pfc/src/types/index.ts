@@ -26,6 +26,8 @@ export interface Objet {
   /** Emoji fallback used when the image fails to load. */
   icone: string
   rarete: Rarete
+  /** Short flavor text shown on the card, under the picture. */
+  description: string
   /**
    * Explicit wins: ids of items this one always beats, on top of the
    * circular tournament (see `lib/combat.ts`). Gives an item a one-off

@@ -203,6 +203,52 @@ body {
   clip-path: polygon(0% 0%, 100% 0%, 100% 38%, calc(100% - 10px) 50%, 100% 62%, 100% 100%, 0% 100%);
 }
 
+/* Booster reveal: each card spins into view (rotateY), legendary items spin
+   noticeably slower than the rest. */
+@keyframes card-spin-in {
+  0% {
+    transform: rotateY(-100deg) scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: rotateY(15deg) scale(1.03);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateY(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-card-spin-in {
+  animation: card-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-style: preserve-3d;
+}
+
+.animate-card-spin-in-slow {
+  animation: card-spin-in 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-style: preserve-3d;
+}
+
+/* Pulsing yellow halo behind a revealed legendary card */
+@keyframes legendary-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
+.animate-legendary-glow {
+  background: radial-gradient(closest-side, rgba(251, 191, 36, 0.9), rgba(251, 191, 36, 0.2) 70%, transparent 100%);
+  filter: blur(20px);
+  animation: legendary-glow-pulse 1.8s ease-in-out infinite;
+}
+
 /* Reflet arc-en-ciel des objets secret rare (holographique) */
 .shimmer-holo {
   background-image: linear-gradient(

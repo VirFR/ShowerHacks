@@ -14,32 +14,44 @@ interface ObjetCardProps {
   compact?: boolean
 }
 
-/** Item card shared by the inventory, battle and crafting pages. */
+/**
+ * Trading-card style item card, shared by the inventory, battle, crafting
+ * and booster-reveal screens: full name + rarity centered up top, a framed
+ * picture in the middle with the category badge overlaid on its top-right
+ * corner, and a short description + stats at the bottom. The border,
+ * background tint and glow all follow the item's rarity.
+ */
 export function ObjetCard({ objet, onSelect, selectionne = false, compact = false }: ObjetCardProps) {
   const contenu = (
     <>
-      <ObjetImage objet={objet} className="h-20 w-20" />
-      <div className="min-w-0 flex-1 text-left">
-        <h3 className="truncate font-semibold leading-tight">{objet.nom}</h3>
+      <div className="text-center">
+        <h3 className="text-sm font-bold leading-tight">{objet.nom}</h3>
         {!compact && (
-          <p className={`mt-0.5 text-xs ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
+          <p className={`text-[10px] font-semibold uppercase tracking-wide ${CLASSE_RARETE[objet.rarete]}`}>
+            {LIBELLE_RARETE[objet.rarete]}
+          </p>
         )}
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
-          <StatBadge type="attaque" valeur={objet.attaque} />
-          <StatBadge type="defense" valeur={objet.defense} />
-        </div>
-        <div className="mt-2">
+      </div>
+
+      <div className="relative my-2 flex flex-1 items-center justify-center overflow-hidden rounded-lg bg-fond/40 ring-1 ring-black/30">
+        <ObjetImage objet={objet} className="h-full w-full object-cover" />
+        <div className="absolute right-1.5 top-1.5">
           <BadgeCategorie categorie={objet.categorie} />
         </div>
+      </div>
+
+      {!compact && <p className="mb-1.5 line-clamp-2 text-center text-[11px] italic text-texte-2">{objet.description}</p>}
+
+      <div className="flex flex-wrap items-center justify-center gap-1.5">
+        <StatBadge type="attaque" valeur={objet.attaque} />
+        <StatBadge type="defense" valeur={objet.defense} />
       </div>
     </>
   )
 
   const classes = [
-    'flex w-full gap-3 rounded-2xl border bg-carte p-3 transition-all hover:bg-carte-2',
-    selectionne
-      ? 'border-accent-2 ring-2 ring-accent/60 shadow-lg shadow-accent/20'
-      : CLASSE_CARTE_RARETE[objet.rarete],
+    'flex aspect-[3/4] w-full flex-col rounded-2xl border-4 p-2.5 transition-all',
+    selectionne ? 'border-accent-2 ring-4 ring-accent/60 shadow-lg shadow-accent/30' : CLASSE_CARTE_RARETE[objet.rarete],
   ].join(' ')
 
   if (onSelect) {
