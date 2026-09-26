@@ -108,9 +108,9 @@ function Duel({ joueur, adversaires }: DuelProps) {
       {/* Inventory */}
       <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {joueur.inventaire.map((objet) => (
+        {joueur.inventaire.map((objet, i) => (
           <ObjetCard
-            key={objet.id}
+            key={`${objet.id}-${i}`}
             objet={objet}
             compact
             selectionne={selection?.id === objet.id}

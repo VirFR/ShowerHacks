@@ -2,11 +2,13 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { BadgeCategorie } from '@/components/BadgeCategorie'
 import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
+import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { tirerObjetPondere } from '@/lib/boosters'
 import { CLASSE_RARETE, formaterDuree, LIBELLE_RARETE } from '@/lib/format'
+import { useSession } from '@/lib/session'
 import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
 import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
 
@@ -33,6 +35,7 @@ const RARETE_GLOW: Record<Rarete, string> = {
 }
 
 export function Boosters() {
+  const { joueur, ajouterObjets } = useSession()
   const [stack, setStack] = useState<EtatStack>(() => ({
     actuel: BOOSTERS_MOCK.actuel,
     prochainA: new Date(BOOSTERS_MOCK.prochainA).getTime(),
@@ -83,6 +86,7 @@ export function Boosters() {
       const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
+      ajouterObjets(tirage)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
         // If the stack was full, the timer restarts from now.
@@ -131,6 +135,8 @@ export function Boosters() {
 
   const objetActuel = objetsObtenus[indexCarte]
   const transitionRessort = isDragging ? 'none' : 'transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1)'
+
+  if (!joueur) return <ConnexionRequise />
 
   return (
     <>

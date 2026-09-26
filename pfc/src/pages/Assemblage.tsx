@@ -178,8 +178,8 @@ export function Assemblage() {
 
       <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {inventaire.map((objet) => (
-          <div key={objet.id} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
+        {inventaire.map((objet, i) => (
+          <div key={`${objet.id}-${i}`} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
             <ObjetCard
               objet={objet}
               compact

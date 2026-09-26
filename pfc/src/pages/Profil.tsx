@@ -137,8 +137,8 @@ function CarteProfil({ joueur }: { joueur: Joueur }) {
 
       <h2 className="mb-3 mt-6 font-semibold">Best items</h2>
       <div className="grid gap-3 sm:grid-cols-3">
-        {meilleursObjets.map((objet) => (
-          <ObjetCard key={objet.id} objet={objet} />
+        {meilleursObjets.map((objet, i) => (
+          <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
         ))}
       </div>
     </>

@@ -57,8 +57,8 @@ export function Inventaire() {
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {objets.map((objet) => (
-            <ObjetCard key={objet.id} objet={objet} />
+          {objets.map((objet, i) => (
+            <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
           ))}
         </div>
       )}
