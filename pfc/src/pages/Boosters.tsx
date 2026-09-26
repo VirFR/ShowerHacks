@@ -145,96 +145,105 @@ export function Boosters() {
         sousTitre={`Un nouveau booster toutes les 10 minutes, ${OBJETS_PAR_BOOSTER} objets par booster.`}
       />
 
-      <div className="grid gap-4 md:grid-cols-[1fr_320px]">
-        {/* Ouverture */}
-        <Carte className="flex flex-col items-center justify-center gap-4 py-10 text-center">
-          {(etat === 'idle' || etat === 'dechirure' || etat === 'ouverture') && (
+      {/* Ouverture : le booster flotte au centre, sans carte autour, comme un vrai pack */}
+      <div className="flex flex-col items-center justify-center gap-4 py-6 text-center">
+        {(etat === 'idle' || etat === 'dechirure' || etat === 'ouverture') && (
+          <div
+            className={`relative h-72 w-52 sm:h-80 sm:w-60 ${etat === 'idle' ? 'animate-pack-float' : ''}`}
+            style={{ touchAction: 'none' }}
+            onPointerDown={onPointerDownPack}
+            onPointerMove={onPointerMovePack}
+            onPointerUp={onPointerUpPack}
+            onPointerCancel={onPointerUpPack}
+            onClick={() => etat === 'dechirure' && terminerDechirure()}
+            role={etat === 'dechirure' ? 'button' : undefined}
+            tabIndex={etat === 'dechirure' ? 0 : undefined}
+            aria-label={etat === 'dechirure' ? 'Déchirer le booster : glisse ou appuie' : undefined}
+            onKeyDown={(e) => {
+              if (etat === 'dechirure' && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault()
+                terminerDechirure()
+              }
+            }}
+          >
+            {/* Lueur qui grandit à mesure que ça se déchire */}
             <div
-              className={`relative h-56 w-44 ${etat === 'idle' ? 'animate-pack-float' : ''}`}
-              style={{ touchAction: 'none' }}
-              onPointerDown={onPointerDownPack}
-              onPointerMove={onPointerMovePack}
-              onPointerUp={onPointerUpPack}
-              onPointerCancel={onPointerUpPack}
-              onClick={() => etat === 'dechirure' && terminerDechirure()}
-              role={etat === 'dechirure' ? 'button' : undefined}
-              tabIndex={etat === 'dechirure' ? 0 : undefined}
-              aria-label={etat === 'dechirure' ? 'Déchirer le booster : glisse ou appuie' : undefined}
-              onKeyDown={(e) => {
-                if (etat === 'dechirure' && (e.key === 'Enter' || e.key === ' ')) {
-                  e.preventDefault()
-                  terminerDechirure()
-                }
-              }}
+              className="pointer-events-none absolute inset-0 rounded-[28px] bg-or blur-2xl transition-opacity"
+              style={{ opacity: etat === 'dechirure' ? dragProgress * 0.7 : etat === 'ouverture' ? 0.9 : 0 }}
+              aria-hidden
+            />
+
+            {/* Moitié haute */}
+            <div
+              className={[
+                'foil-pack absolute inset-x-0 top-0 h-1/2 overflow-hidden rounded-t-[28px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                etat === 'ouverture' ? 'animate-tear-burst-haut' : '',
+              ].join(' ')}
+              style={
+                etat === 'dechirure'
+                  ? {
+                      transform: `translateY(${-dragProgress * 60}px) rotate(${-dragProgress * 10}deg)`,
+                      transition: transitionRessort,
+                    }
+                  : undefined
+              }
             >
-              {/* Lueur qui grandit à mesure que ça se déchire */}
-              <div
-                className="pointer-events-none absolute inset-0 rounded-3xl bg-or blur-2xl transition-opacity"
-                style={{ opacity: etat === 'dechirure' ? dragProgress * 0.7 : etat === 'ouverture' ? 0.9 : 0 }}
-                aria-hidden
-              />
+              <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
+              <div className="foil-crimp absolute inset-x-3 top-1.5 rounded-full" aria-hidden />
+            </div>
 
-              {/* Moitié haute */}
-              <div
-                className={[
-                  'absolute inset-x-0 top-0 h-1/2 overflow-hidden rounded-t-3xl bg-gradient-to-br from-accent to-accent-2 shadow-2xl shadow-accent/40',
-                  etat === 'ouverture' ? 'animate-tear-burst-haut' : '',
-                ].join(' ')}
-                style={
-                  etat === 'dechirure'
-                    ? {
-                        transform: `translateY(${-dragProgress * 46}px) rotate(${-dragProgress * 10}deg)`,
-                        transition: transitionRessort,
-                      }
-                    : undefined
-                }
-              />
+            {/* Moitié basse */}
+            <div
+              className={[
+                'foil-pack absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-[28px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                etat === 'ouverture' ? 'animate-tear-burst-bas' : '',
+              ].join(' ')}
+              style={
+                etat === 'dechirure'
+                  ? {
+                      transform: `translateY(${dragProgress * 60}px) rotate(${dragProgress * 10}deg)`,
+                      transition: transitionRessort,
+                    }
+                  : undefined
+              }
+            >
+              <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
+              <div className="foil-crimp absolute inset-x-3 bottom-1.5 rounded-full" aria-hidden />
+            </div>
 
-              {/* Moitié basse */}
-              <div
-                className={[
-                  'absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-3xl bg-gradient-to-br from-accent to-accent-2 shadow-2xl shadow-accent/40',
-                  etat === 'ouverture' ? 'animate-tear-burst-bas' : '',
-                ].join(' ')}
-                style={
-                  etat === 'dechirure'
-                    ? {
-                        transform: `translateY(${dragProgress * 46}px) rotate(${dragProgress * 10}deg)`,
-                        transition: transitionRessort,
-                      }
-                    : undefined
-                }
-              />
-
-              {etat !== 'ouverture' && (
-                <>
-                  <div
-                    className="pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-white/70"
-                    aria-hidden
-                  />
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-7xl" aria-hidden>
-                    🎁
-                  </div>
-                </>
-              )}
-
-              {etat === 'ouverture' && (
-                <div className="pointer-events-none absolute inset-0 rounded-3xl bg-white animate-flash" aria-hidden />
-              )}
-
-              {etat === 'dechirure' && dragProgress < 0.15 && (
+            {etat !== 'ouverture' && (
+              <>
                 <div
-                  className="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-8 text-2xl text-white/90"
+                  className="pointer-events-none absolute inset-x-4 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-fond/50"
+                  aria-hidden
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond"
                   aria-hidden
                 >
-                  <span className="animate-bounce">▲</span>
-                  <span className="animate-bounce" style={{ animationDelay: '150ms' }}>
-                    ▼
-                  </span>
+                  <span className="text-4xl drop-shadow-sm">✊✋✌️</span>
+                  <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">Booster PFC</span>
                 </div>
-              )}
-            </div>
-          )}
+              </>
+            )}
+
+            {etat === 'ouverture' && (
+              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-white animate-flash" aria-hidden />
+            )}
+
+            {etat === 'dechirure' && dragProgress < 0.15 && (
+              <div
+                className="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-10 text-2xl text-fond/80"
+                aria-hidden
+              >
+                <span className="animate-bounce">▲</span>
+                <span className="animate-bounce" style={{ animationDelay: '150ms' }}>
+                  ▼
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
           {etat === 'cartes' && objetActuel && (
             <div
@@ -306,16 +315,16 @@ export function Boosters() {
                 : `Carte ${indexCarte + 1} / ${objetsObtenus.length} — touche pour révéler`)}
           </p>
 
-          {(etat === 'idle' || etat === 'revele') && (
-            <Bouton taille="lg" disabled={actuel <= 0} onClick={commencerOuverture}>
-              {etat === 'revele' ? 'Ouvrir un autre' : 'Ouvrir'}
-            </Bouton>
-          )}
-        </Carte>
+        {(etat === 'idle' || etat === 'revele') && (
+          <Bouton taille="lg" disabled={actuel <= 0} onClick={commencerOuverture}>
+            {etat === 'revele' ? 'Ouvrir un autre' : 'Ouvrir'}
+          </Bouton>
+        )}
+      </div>
 
-        {/* Stack + timer */}
-        <div className="flex flex-col gap-4">
-          <Carte>
+      {/* Stack + timer */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Carte>
             <div className="flex items-baseline justify-between">
               <h2 className="font-semibold">Stack</h2>
               <p className="text-2xl font-black tabular-nums">
@@ -364,7 +373,7 @@ export function Boosters() {
             )}
           </Carte>
         </div>
-      </div>
     </>
   )
 }
+
