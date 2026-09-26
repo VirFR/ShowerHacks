@@ -23,8 +23,8 @@ export function ObjetDetail() {
   if (!objet) {
     return (
       <>
-        <PageHeader titre="Item not found" />
-        <p className="text-texte-2">No item matches the id “{id}”.</p>
+        <PageHeader titre="Card not found" />
+        <p className="text-texte-2">No card matches the id “{id}”.</p>
         <Link to="/inventory" className="mt-4 inline-block">
           <Bouton variante="secondaire">← Back to inventory</Bouton>
         </Link>
@@ -97,7 +97,7 @@ export function ObjetDetail() {
       <Carte className="mt-4">
         <h2 className="font-semibold">Battle history</h2>
         {historique.length === 0 ? (
-          <p className="mt-3 text-sm text-texte-2">This item hasn’t fought yet.</p>
+          <p className="mt-3 text-sm text-texte-2">This card hasn’t fought yet.</p>
         ) : (
           <ul className="mt-3 divide-y divide-bordure">
             {historique.map((h) => {

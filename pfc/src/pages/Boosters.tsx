@@ -2,11 +2,13 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { BadgeCategorie } from '@/components/BadgeCategorie'
 import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
+import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
-import { tirerObjetPondere } from '@/lib/boosters'
-import { CLASSE_RARETE, formaterDuree, LIBELLE_RARETE } from '@/lib/format'
+import { RARETE_PONDERATION, tirerObjetPondere } from '@/lib/boosters'
+import { CLASSE_RARETE, formaterDuree, LIBELLE_RARETE, ORDRE_RARETE } from '@/lib/format'
+import { useSession } from '@/lib/session'
 import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
 import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
 
@@ -32,7 +34,17 @@ const RARETE_GLOW: Record<Rarete, string> = {
   secret_rare: 'border-white/70 shadow-2xl shadow-white/30',
 }
 
+/** Drop odds shown on the back of the pack, lowest rarity first. */
+const TOTAL_PONDERATION = Object.values(RARETE_PONDERATION).reduce((somme, poids) => somme + poids, 0)
+const CHANCES_RARETE = (Object.entries(RARETE_PONDERATION) as [Rarete, number][])
+  .sort((a, b) => ORDRE_RARETE[a[0]] - ORDRE_RARETE[b[0]])
+  .map(([rarete, poids]) => ({ rarete, pourcentage: Math.round((poids / TOTAL_PONDERATION) * 1000) / 10 }))
+
+/** Fraction of the strip's drag distance restored per Enter/Space press (keyboard fallback). */
+const PAS_CLAVIER = 0.34
+
 export function Boosters() {
+  const { joueur, ajouterObjets } = useSession()
   const [stack, setStack] = useState<EtatStack>(() => ({
     actuel: BOOSTERS_MOCK.actuel,
     prochainA: new Date(BOOSTERS_MOCK.prochainA).getTime(),
@@ -41,10 +53,14 @@ export function Boosters() {
   const [etat, setEtat] = useState<EtatOuverture>('idle')
   const [objetsObtenus, setObjetsObtenus] = useState<Objet[]>([])
   const [indexCarte, setIndexCarte] = useState(0)
+  /** Pack flipped over to inspect its back (only while idle, before arming the tear). */
+  const [retourne, setRetourne] = useState(false)
 
   const [dragProgress, setDragProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStartX = useRef<number | null>(null)
+  /** Tear progress at the start of the current grab, so releasing the strip doesn't undo it. */
+  const progressDepart = useRef(0)
   const dechirureEnCours = useRef(false)
 
   const { actuel, prochainA } = stack
@@ -70,11 +86,13 @@ export function Boosters() {
   /** Arms the booster: the player now has to tear it open. */
   const commencerOuverture = () => {
     if (actuel <= 0) return
+    setRetourne(false)
+    progressDepart.current = 0
     setDragProgress(0)
     setEtat('dechirure')
   }
 
-  /** Finishes the tear (drag threshold reached, or a direct tap as a fallback): draws the items. */
+  /** Finishes the tear once it's fully torn (drag progress reached 1): draws the items. */
   const terminerDechirure = () => {
     if (dechirureEnCours.current) return
     dechirureEnCours.current = true
@@ -83,6 +101,7 @@ export function Boosters() {
       const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
+      ajouterObjets(tirage)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
         // If the stack was full, the timer restarts from now.
@@ -93,18 +112,31 @@ export function Boosters() {
     }, 480)
   }
 
+  /** The strip can be grabbed straight from idle: no need to press "Open" first. */
+  const peutDechirer = (e: EtatOuverture) => e === 'idle' || e === 'dechirure'
+
   const onPointerDownBandelette = (e: PointerEvent<HTMLDivElement>) => {
-    if (etat !== 'dechirure') return
+    if (!peutDechirer(etat) || actuel <= 0) return
     e.currentTarget.setPointerCapture(e.pointerId)
     dragStartX.current = e.clientX
+    progressDepart.current = dragProgress
     setIsDragging(true)
   }
 
-  /** Only a right-to-left drag counts: pulling the strip the other way makes no progress. */
+  /**
+   * Only a right-to-left drag adds progress; pulling the other way gives it back.
+   * Progress builds on top of `progressDepart`, so releasing and re-grabbing the
+   * strip (several back-and-forths) keeps what was already torn instead of resetting it.
+   * The first bit of real movement is what actually arms the booster (from idle).
+   */
   const onPointerMoveBandelette = (e: PointerEvent<HTMLDivElement>) => {
-    if (etat !== 'dechirure' || dragStartX.current === null) return
+    if (!peutDechirer(etat) || dragStartX.current === null) return
     const dx = dragStartX.current - e.clientX
-    const nouvelleProgression = Math.min(1, Math.max(0, dx / SEUIL_DECHIRURE_PX))
+    const nouvelleProgression = Math.min(1, Math.max(0, progressDepart.current + dx / SEUIL_DECHIRURE_PX))
+    if (etat === 'idle' && nouvelleProgression > 0) {
+      setRetourne(false)
+      setEtat('dechirure')
+    }
     setDragProgress(nouvelleProgression)
     if (nouvelleProgression >= 1) {
       dragStartX.current = null
@@ -113,11 +145,21 @@ export function Boosters() {
     }
   }
 
+  /** Releasing the strip before it's fully torn keeps the current progress: it isn't lost. */
   const onPointerUpBandelette = () => {
     if (dragStartX.current === null) return
     dragStartX.current = null
     setIsDragging(false)
-    setDragProgress(0)
+  }
+
+  /** Keyboard fallback: each Enter/Space press pulls the strip a bit further, arming it from idle if needed. */
+  const avancerDechirureClavier = () => {
+    if (!peutDechirer(etat) || actuel <= 0) return
+    if (etat === 'idle') setRetourne(false)
+    setEtat('dechirure')
+    const suivant = Math.min(1, dragProgress + PAS_CLAVIER)
+    setDragProgress(suivant)
+    if (suivant >= 1) terminerDechirure()
   }
 
   /** Taps/clicks the card: advances to the next one (or the recap). */
@@ -132,17 +174,22 @@ export function Boosters() {
   const objetActuel = objetsObtenus[indexCarte]
   const transitionRessort = isDragging ? 'none' : 'transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1)'
 
+  if (!joueur) return <ConnexionRequise />
+
   return (
     <>
       <PageHeader
         titre="Boosters"
-        sousTitre={`A new booster every 10 minutes, ${OBJETS_PAR_BOOSTER} items per booster.`}
+        sousTitre={`A new booster every 10 minutes, ${OBJETS_PAR_BOOSTER} cards per booster.`}
       />
 
       {/* Opening: the booster floats front and center, no card chrome around it */}
       <div className="flex flex-col items-center justify-center gap-4 py-6 text-center">
         {(etat === 'idle' || etat === 'dechirure' || etat === 'ouverture') && (
-          <div className={`relative h-72 w-52 sm:h-80 sm:w-60 ${etat === 'idle' ? 'animate-pack-float' : ''}`}>
+          <div
+            className={`relative h-72 w-52 sm:h-80 sm:w-60 ${etat === 'idle' ? 'animate-pack-float' : ''}`}
+            style={{ perspective: '1200px' }}
+          >
             {/* Ambient glow, which grows further while tearing */}
             <div
               className="pointer-events-none absolute inset-0 rounded-xl bg-or blur-2xl transition-opacity"
@@ -150,62 +197,113 @@ export function Boosters() {
               aria-hidden
             />
 
-            {/* Body: the big lower 3/4 of the pack, stays put */}
-            <div className="foil-pack absolute inset-x-0 bottom-0 h-3/4 overflow-hidden rounded-b-xl shadow-2xl shadow-black/50 ring-1 ring-white/40">
-              <div className="foil-crimp absolute inset-x-3 bottom-1.5" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
-              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond" aria-hidden>
-                <span className="text-4xl drop-shadow-sm">✊✋✌️</span>
-                <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
-              </div>
-              {etat === 'ouverture' && (
-                <div className="pointer-events-none absolute inset-0 bg-white animate-flash" aria-hidden />
-              )}
-            </div>
-
-            {/* Tear strip: the top 1/4, dragged right-to-left to open */}
+            {/* Flip wrapper: while idle, tap the pack to inspect its back before opening it */}
             <div
-              className={[
-                'foil-pack pack-encoche-droite absolute inset-x-0 top-0 h-1/4 overflow-hidden rounded-t-xl shadow-2xl shadow-black/50 ring-1 ring-white/40',
-                etat === 'ouverture' ? 'animate-tear-burst-gauche' : '',
-              ].join(' ')}
+              className={`absolute inset-0 ${etat === 'idle' ? 'cursor-pointer' : ''}`}
               style={{
-                touchAction: 'none',
-                ...(etat === 'dechirure'
-                  ? {
-                      transform: `translateX(${-dragProgress * 70}px) rotate(${-dragProgress * 6}deg)`,
-                      transition: transitionRessort,
-                    }
-                  : undefined),
+                transformStyle: 'preserve-3d',
+                transition: 'transform 500ms cubic-bezier(0.4, 0.1, 0.2, 1)',
+                transform: retourne ? 'rotateY(180deg)' : 'rotateY(0deg)',
               }}
-              onPointerDown={onPointerDownBandelette}
-              onPointerMove={onPointerMoveBandelette}
-              onPointerUp={onPointerUpBandelette}
-              onPointerCancel={onPointerUpBandelette}
-              onClick={() => etat === 'dechirure' && terminerDechirure()}
-              role={etat === 'dechirure' ? 'button' : undefined}
-              tabIndex={etat === 'dechirure' ? 0 : undefined}
-              aria-label={etat === 'dechirure' ? 'Tear strip: drag right to left, or tap' : undefined}
+              onClick={() => etat === 'idle' && setRetourne((r) => !r)}
+              role={etat === 'idle' ? 'button' : undefined}
+              tabIndex={etat === 'idle' ? 0 : undefined}
+              aria-label={
+                etat === 'idle'
+                  ? retourne
+                    ? 'Back of the booster. Tap to flip back to the front.'
+                    : 'Tap to flip the booster and inspect its back.'
+                  : undefined
+              }
               onKeyDown={(e) => {
-                if (etat === 'dechirure' && (e.key === 'Enter' || e.key === ' ')) {
+                if (etat === 'idle' && (e.key === 'Enter' || e.key === ' ')) {
                   e.preventDefault()
-                  terminerDechirure()
+                  setRetourne((r) => !r)
                 }
               }}
             >
-              <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
-              <div className="foil-crimp absolute inset-x-3 top-1.5" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-1 left-1" aria-hidden />
-            </div>
-
-            {/* Perforated seam between the strip and the body */}
-            {etat !== 'ouverture' && (
+              {/* Front face: the pack as it gets torn open */}
               <div
-                className="pointer-events-none absolute inset-x-4 top-1/4 -translate-y-1/2 border-t-2 border-dashed border-fond/50"
-                aria-hidden
-              />
-            )}
+                className="absolute inset-0"
+                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+              >
+                {/* Body: the big lower 3/4 of the pack, stays put */}
+                <div className="foil-pack absolute inset-x-0 bottom-0 h-3/4 overflow-hidden rounded-b-xl shadow-2xl shadow-black/50 ring-1 ring-white/40">
+                  <div className="foil-crimp absolute inset-x-3 bottom-1.5" aria-hidden />
+                  <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
+                  <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond" aria-hidden>
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
+                  </div>
+                  {etat === 'ouverture' && (
+                    <div className="pointer-events-none absolute inset-0 bg-white animate-flash" aria-hidden />
+                  )}
+                </div>
+
+                {/* Tear strip: the top 1/4, dragged right-to-left to open */}
+                <div
+                  className={[
+                    'foil-pack pack-encoche-droite absolute inset-x-0 top-0 h-1/4 overflow-hidden rounded-t-xl shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                    etat === 'ouverture' ? 'animate-tear-burst-gauche' : '',
+                  ].join(' ')}
+                  style={{
+                    touchAction: 'none',
+                    ...(etat === 'dechirure'
+                      ? {
+                          transform: `translateX(${-dragProgress * 70}px) rotate(${-dragProgress * 6}deg)`,
+                          transition: transitionRessort,
+                        }
+                      : undefined),
+                  }}
+                  onPointerDown={onPointerDownBandelette}
+                  onPointerMove={onPointerMoveBandelette}
+                  onPointerUp={onPointerUpBandelette}
+                  onPointerCancel={onPointerUpBandelette}
+                  role={peutDechirer(etat) && actuel > 0 ? 'button' : undefined}
+                  tabIndex={peutDechirer(etat) && actuel > 0 ? 0 : undefined}
+                  aria-label={
+                    peutDechirer(etat) && actuel > 0
+                      ? `Tear strip, ${Math.round(dragProgress * 100)}% torn: drag right to left, you can let go and pull again`
+                      : undefined
+                  }
+                  onKeyDown={(e) => {
+                    if (peutDechirer(etat) && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault()
+                      avancerDechirureClavier()
+                    }
+                  }}
+                >
+                  <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
+                  <div className="foil-crimp absolute inset-x-3 top-1.5" aria-hidden />
+                  <div className="foil-crimp-vert absolute inset-y-1 left-1" aria-hidden />
+                </div>
+
+                {/* Perforated seam between the strip and the body */}
+                {etat !== 'ouverture' && (
+                  <div
+                    className="pointer-events-none absolute inset-x-4 top-1/4 -translate-y-1/2 border-t-2 border-dashed border-fond/50"
+                    aria-hidden
+                  />
+                )}
+              </div>
+
+              {/* Back face: drop odds, only reachable by flipping the pack while idle */}
+              <div
+                className="foil-pack absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-hidden rounded-xl p-4 text-center text-fond shadow-2xl shadow-black/50 ring-1 ring-white/40"
+                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+              >
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">Drop odds</span>
+                <ul className="mt-1 w-full max-w-[10.5rem] space-y-1 text-xs">
+                  {CHANCES_RARETE.map(({ rarete, pourcentage }) => (
+                    <li key={rarete} className="flex items-center justify-between gap-2">
+                      <span className="font-medium">{LIBELLE_RARETE[rarete]}</span>
+                      <span className="font-black tabular-nums">{pourcentage}%</span>
+                    </li>
+                  ))}
+                </ul>
+                <span className="mt-1 text-[0.65rem] text-fond/60">{OBJETS_PAR_BOOSTER} cards per pack</span>
+              </div>
+            </div>
           </div>
         )}
 
@@ -253,7 +351,7 @@ export function Boosters() {
 
         {etat === 'revele' && objetsObtenus.length > 0 && (
           <div className="animate-booster-pop w-full max-w-lg">
-            <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} items:</p>
+            <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} cards:</p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {objetsObtenus.map((objet, i) => (
                 <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
@@ -265,11 +363,14 @@ export function Boosters() {
         <p className="text-sm text-texte-2">
           {etat === 'idle' &&
             (actuel > 0
-              ? `Open a booster to discover ${OBJETS_PAR_BOOSTER} new items.`
+              ? 'Tap to flip it over, or drag the top strip right to left to tear it open ✋'
               : 'No boosters left, hang on a bit.')}
-          {etat === 'dechirure' && 'Drag the strip right to left to tear it open ✋'}
+          {etat === 'dechirure' &&
+            (dragProgress > 0
+              ? 'Keep dragging right to left — let go and grab it again if you need to ✋'
+              : 'Drag the strip right to left to tear it open ✋')}
           {etat === 'ouverture' && 'Ripping…'}
-          {etat === 'cartes' && `Item ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`}
+          {etat === 'cartes' && `Card ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`}
         </p>
 
         {(etat === 'idle' || etat === 'revele') && (
@@ -290,20 +391,23 @@ export function Boosters() {
             </p>
           </div>
           <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} of ${MAX} boosters`}>
-            {Array.from({ length: MAX }, (_, i) => (
-              <div
-                key={i}
-                className={[
-                  'flex aspect-square items-center justify-center rounded-xl text-xl transition-all',
-                  i < actuel
-                    ? 'bg-gradient-to-br from-accent to-accent-2 shadow-md shadow-accent/30'
-                    : 'border border-dashed border-bordure bg-fond/40 opacity-50 grayscale',
-                ].join(' ')}
-                aria-hidden
-              >
-                🎁
-              </div>
-            ))}
+            {Array.from({ length: MAX }, (_, i) =>
+              i < actuel ? (
+                <div
+                  key={i}
+                  className="foil-pack relative aspect-square overflow-hidden rounded-md shadow-md shadow-accent/30 ring-1 ring-white/40 transition-all"
+                  aria-hidden
+                >
+                  <div className="absolute inset-x-0 top-[30%] border-t border-dashed border-fond/40" aria-hidden />
+                </div>
+              ) : (
+                <div
+                  key={i}
+                  className="aspect-square rounded-md border border-dashed border-bordure bg-fond/40 opacity-50 transition-all"
+                  aria-hidden
+                />
+              ),
+            )}
           </div>
         </Carte>
 
