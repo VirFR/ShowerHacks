@@ -11,7 +11,7 @@ export type Categorie = 'pierre' | 'feuille' | 'ciseaux' | 'special'
 
 export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux', 'special']
 
-export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
+export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
 export interface Objet {
   id: string

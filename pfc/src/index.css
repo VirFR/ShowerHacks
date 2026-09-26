@@ -218,3 +218,34 @@ body {
     transparent 7px
   );
 }
+
+/* Bords scellés sur les côtés du pack (perpendiculaires à .foil-crimp) */
+.foil-crimp-vert {
+  width: 9px;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(23, 22, 42, 0.35) 0px,
+    rgba(23, 22, 42, 0.35) 2px,
+    transparent 2px,
+    transparent 7px
+  );
+}
+
+/* Sommet en arche de la pochette, façon paquet cartonné debout */
+.pack-arche {
+  border-radius: 50% 50% 18px 18px / 38% 38% 18px 18px;
+}
+
+/* Reflet arc-en-ciel des objets secret rare (holographique) */
+.shimmer-holo {
+  background-image: linear-gradient(
+    100deg,
+    transparent 15%,
+    rgba(255, 120, 150, 0.55) 30%,
+    rgba(255, 210, 120, 0.55) 42%,
+    rgba(140, 255, 170, 0.55) 54%,
+    rgba(120, 190, 255, 0.55) 66%,
+    rgba(220, 140, 255, 0.55) 80%,
+    transparent 95%
+  );
+}

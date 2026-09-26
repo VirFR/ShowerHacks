@@ -24,7 +24,7 @@ export const OBJETS_MOCK: Objet[] = [
     categorie: 'pierre',
     imageUrl: '/objets/obj-02.svg',
     icone: '🗿',
-    rarete: 'rare',
+    rarete: 'peu_commun',
     description: 'Dressé depuis des millénaires, il ne bouge plus mais encaisse tout.',
   },
   {
@@ -68,7 +68,7 @@ export const OBJETS_MOCK: Objet[] = [
     categorie: 'feuille',
     imageUrl: '/objets/obj-06.svg',
     icone: '📰',
-    rarete: 'rare',
+    rarete: 'peu_commun',
     description: 'Plié cent fois. Aucun ciseau n’a encore réussi à le traverser.',
   },
   {
@@ -101,7 +101,7 @@ export const OBJETS_MOCK: Objet[] = [
     categorie: 'ciseaux',
     imageUrl: '/objets/obj-09.svg',
     icone: '🦀',
-    rarete: 'rare',
+    rarete: 'peu_commun',
     description: 'Une pince naturelle, équilibrée et surprenamment robuste.',
   },
   {
@@ -123,7 +123,7 @@ export const OBJETS_MOCK: Objet[] = [
     categorie: 'special',
     imageUrl: '/objets/obj-11.svg',
     icone: '🧊',
-    rarete: 'epique',
+    rarete: 'rare',
     description: 'Gèle l’objet adverse sur place. Fond au premier rayon de soleil.',
   },
   {
@@ -134,7 +134,7 @@ export const OBJETS_MOCK: Objet[] = [
     categorie: 'special',
     imageUrl: '/objets/obj-12.svg',
     icone: '🎲',
-    rarete: 'legendaire',
+    rarete: 'secret_rare',
     description: 'Ses stats changent à chaque lancer. Enfin, en théorie.',
   },
 ]

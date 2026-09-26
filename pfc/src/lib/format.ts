@@ -25,16 +25,20 @@ export const CLASSE_CATEGORIE: Record<Categorie, string> = {
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {
   commun: 'Commun',
+  peu_commun: 'Peu commun',
   rare: 'Rare',
   epique: 'Épique',
   legendaire: 'Légendaire',
+  secret_rare: 'Secret rare',
 }
 
 export const CLASSE_RARETE: Record<Rarete, string> = {
   commun: 'text-texte-2',
+  peu_commun: 'text-emerald-300',
   rare: 'text-sky-300',
   epique: 'text-fuchsia-300',
   legendaire: 'text-or',
+  secret_rare: 'bg-gradient-to-r from-rose-300 via-amber-200 to-sky-300 bg-clip-text text-transparent font-semibold',
 }
 
 export const CLASSE_RANG: Record<Rang, string> = {

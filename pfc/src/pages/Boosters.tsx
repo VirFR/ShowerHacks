@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/PageHeader'
 import { StatBadge } from '@/components/StatBadge'
 import { BOOSTERS_MOCK, OBJETS_MOCK } from '@/mocks'
 import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
+import { tirerObjetPondere } from '@/lib/boosters'
 import { CLASSE_RARETE, formaterDuree, LIBELLE_RARETE } from '@/lib/format'
 
 /** /boosters — Stack de boosters, déchirure interactive, cartes révélées une par une. */
@@ -24,9 +25,11 @@ const SEUIL_DECHIRURE_PX = 90
 
 const RARETE_GLOW: Record<Rarete, string> = {
   commun: 'border-bordure',
+  peu_commun: 'border-succes/60 shadow-lg shadow-succes/25',
   rare: 'border-defense/70 shadow-lg shadow-defense/30',
   epique: 'border-accent-2 shadow-lg shadow-accent/40',
   legendaire: 'border-or shadow-lg shadow-or/50',
+  secret_rare: 'border-white/70 shadow-2xl shadow-white/30',
 }
 
 export function Boosters() {
@@ -78,10 +81,7 @@ export function Boosters() {
     dechirureEnCours.current = true
     setEtat('ouverture')
     window.setTimeout(() => {
-      const tirage = Array.from(
-        { length: OBJETS_PAR_BOOSTER },
-        () => OBJETS_MOCK[Math.floor(Math.random() * OBJETS_MOCK.length)],
-      )
+      const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_MOCK))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
       setCarteRetournee(false)
@@ -166,17 +166,17 @@ export function Boosters() {
               }
             }}
           >
-            {/* Lueur qui grandit à mesure que ça se déchire */}
+            {/* Halo ambiant, qui grandit encore à mesure que ça se déchire */}
             <div
               className="pointer-events-none absolute inset-0 rounded-[28px] bg-or blur-2xl transition-opacity"
-              style={{ opacity: etat === 'dechirure' ? dragProgress * 0.7 : etat === 'ouverture' ? 0.9 : 0 }}
+              style={{ opacity: etat === 'dechirure' ? 0.25 + dragProgress * 0.65 : etat === 'ouverture' ? 0.9 : 0.25 }}
               aria-hidden
             />
 
             {/* Moitié haute */}
             <div
               className={[
-                'foil-pack absolute inset-x-0 top-0 h-1/2 overflow-hidden rounded-t-[28px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                'foil-pack pack-arche absolute inset-x-0 top-0 h-1/2 overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/40',
                 etat === 'ouverture' ? 'animate-tear-burst-haut' : '',
               ].join(' ')}
               style={
@@ -190,12 +190,14 @@ export function Boosters() {
             >
               <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
               <div className="foil-crimp absolute inset-x-3 top-1.5 rounded-full" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 left-1 rounded-full" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 right-1 rounded-full" aria-hidden />
             </div>
 
             {/* Moitié basse */}
             <div
               className={[
-                'foil-pack absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-[28px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                'foil-pack absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-[22px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
                 etat === 'ouverture' ? 'animate-tear-burst-bas' : '',
               ].join(' ')}
               style={
@@ -209,6 +211,8 @@ export function Boosters() {
             >
               <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
               <div className="foil-crimp absolute inset-x-3 bottom-1.5 rounded-full" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 left-1 rounded-full" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 right-1 rounded-full" aria-hidden />
             </div>
 
             {etat !== 'ouverture' && (
@@ -270,6 +274,12 @@ export function Boosters() {
                       RARETE_GLOW[objetActuel.rarete],
                     ].join(' ')}
                   >
+                    {objetActuel.rarete === 'secret_rare' && (
+                      <div
+                        className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 blur-md animate-shimmer"
+                        aria-hidden
+                      />
+                    )}
                     {(objetActuel.rarete === 'epique' || objetActuel.rarete === 'legendaire') && (
                       <div
                         className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 bg-white/30 blur-md animate-shimmer"
@@ -296,7 +306,7 @@ export function Boosters() {
               <p className="mb-2 text-sm font-semibold text-accent-2">Tu as obtenu {objetsObtenus.length} objets :</p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {objetsObtenus.map((objet, i) => (
-                  <ObjetCard key={`${objet.id}-${i}`} objet={objet} compact />
+                  <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
                 ))}
               </div>
             </div>
