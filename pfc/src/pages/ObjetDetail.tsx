@@ -59,11 +59,11 @@ export function ObjetDetail() {
       </Link>
 
       <section
-        className={`flex flex-col gap-5 rounded-2xl border-4 p-4 sm:flex-row md:p-5 ${CLASSE_CARTE_RARETE[objet.rarete]}`}
+        className={`flex flex-col gap-5 rounded-xl border-[3px] p-4 shadow-hard sm:flex-row md:p-5 ${CLASSE_CARTE_RARETE[objet.rarete]}`}
       >
         <ObjetImage
           objet={objet}
-          className="h-40 w-40 shrink-0 self-center bg-fond/40 p-3 ring-1 ring-black/30 sm:self-start"
+          className="sticker-bg h-40 w-40 shrink-0 self-center border-2 border-ink/70 p-3 sm:self-start"
         />
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">

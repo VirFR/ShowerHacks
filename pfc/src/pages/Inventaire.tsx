@@ -40,12 +40,7 @@ export function Inventaire() {
             type="button"
             onClick={() => setFiltre(f.valeur)}
             aria-pressed={filtre === f.valeur}
-            className={[
-              'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-              filtre === f.valeur
-                ? 'bg-accent text-white'
-                : 'bg-carte text-texte-2 ring-1 ring-bordure hover:text-texte',
-            ].join(' ')}
+            className={filtre === f.valeur ? 'chip-active' : 'chip'}
           >
             {f.label}
           </button>

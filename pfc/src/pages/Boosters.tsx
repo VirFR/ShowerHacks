@@ -221,8 +221,8 @@ export function Boosters() {
                   <div className="foil-crimp absolute inset-x-3 bottom-1.5" aria-hidden />
                   <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
                   <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
-                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond" aria-hidden>
-                    <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-ink" aria-hidden>
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-ink/70">PFC Booster</span>
                   </div>
                   {etat === 'ouverture' && (
                     <div className="pointer-events-none absolute inset-0 bg-white animate-flash" aria-hidden />
@@ -270,7 +270,7 @@ export function Boosters() {
                 {/* Perforated seam between the strip and the body */}
                 {etat !== 'ouverture' && (
                   <div
-                    className="pointer-events-none absolute inset-x-4 top-1/4 -translate-y-1/2 border-t-2 border-dashed border-fond/50"
+                    className="pointer-events-none absolute inset-x-4 top-1/4 -translate-y-1/2 border-t-2 border-dashed border-ink/50"
                     aria-hidden
                   />
                 )}
@@ -278,10 +278,10 @@ export function Boosters() {
 
               {/* Back face: drop odds, only reachable by flipping the pack while idle */}
               <div
-                className="foil-pack absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-hidden rounded-xl p-4 text-center text-fond shadow-2xl shadow-black/50 ring-1 ring-white/40"
+                className="foil-pack absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-hidden rounded-xl p-4 text-center text-ink shadow-2xl shadow-black/50 ring-1 ring-white/40"
                 style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
               >
-                <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">Drop odds</span>
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-ink/70">Drop odds</span>
                 <ul className="mt-1 w-full max-w-[10.5rem] space-y-1 text-xs">
                   {CHANCES_RARETE.map(({ rarete, pourcentage }) => (
                     <li key={rarete} className="flex items-center justify-between gap-2">
@@ -290,7 +290,7 @@ export function Boosters() {
                     </li>
                   ))}
                 </ul>
-                <span className="mt-1 text-[0.65rem] text-fond/60">{OBJETS_PAR_BOOSTER} cards per pack</span>
+                <span className="mt-1 text-[0.65rem] text-ink/60">{OBJETS_PAR_BOOSTER} cards per pack</span>
               </div>
             </div>
           </div>
@@ -381,7 +381,7 @@ export function Boosters() {
                   className="foil-pack relative aspect-square overflow-hidden rounded-md shadow-md shadow-accent/30 ring-1 ring-white/40 transition-all"
                   aria-hidden
                 >
-                  <div className="absolute inset-x-0 top-[30%] border-t border-dashed border-fond/40" aria-hidden />
+                  <div className="absolute inset-x-0 top-[30%] border-t border-dashed border-ink/40" aria-hidden />
                 </div>
               ) : (
                 <div

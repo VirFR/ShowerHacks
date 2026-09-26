@@ -5,7 +5,7 @@ import { CLASSEMENT_MOCK } from '@/mocks'
 import { useSession } from '@/lib/session'
 import { formaterNombre, formaterPourcentage } from '@/lib/format'
 
-const MEDAILLES = ['text-or', 'text-slate-300', 'text-amber-600']
+const MEDAILLES = ['text-or', 'text-slate-500', 'text-amber-700']
 
 /** /leaderboard — Players ranked by score. */
 export function Classement() {
@@ -18,7 +18,7 @@ export function Classement() {
       <Carte className="overflow-x-auto p-0 md:p-0">
         <table className="w-full min-w-[520px] text-sm">
           <thead>
-            <tr className="border-b border-bordure text-left text-xs uppercase tracking-wider text-texte-2">
+            <tr className="border-b-2 border-ink bg-carte-2 text-left text-xs font-extrabold uppercase tracking-wider text-texte-2">
               <th className="px-4 py-3 font-medium">#</th>
               <th className="px-4 py-3 font-medium">Player</th>
               <th className="px-4 py-3 text-right font-medium">Score</th>
@@ -35,7 +35,7 @@ export function Classement() {
                   key={e.joueurId}
                   className={[
                     'border-b border-bordure/60 last:border-b-0',
-                    moi ? 'bg-accent/15 font-semibold' : 'hover:bg-carte-2',
+                    moi ? 'bg-amber-100 font-bold' : 'odd:bg-carte even:bg-carte-2/60 hover:bg-sky-50',
                   ].join(' ')}
                 >
                   <td className="px-4 py-3 tabular-nums">
