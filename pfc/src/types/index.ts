@@ -6,17 +6,9 @@
  */
 
 /** Item categories, by theme (not by combat role). */
-export type Categorie = 'fight' | 'plantes' | 'ressources' | 'espace' | 'brainrot' | 'animaux' | 'vehicules'
+export type Categorie = 'fight' | 'plantes' | 'ressources' | 'espace' | 'animaux' | 'vehicules'
 
-export const CATEGORIES: Categorie[] = [
-  'fight',
-  'plantes',
-  'ressources',
-  'espace',
-  'brainrot',
-  'animaux',
-  'vehicules',
-]
+export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'animaux', 'vehicules']
 
 export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 

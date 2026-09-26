@@ -7,7 +7,6 @@ export const LIBELLE_CATEGORIE: Record<Categorie, string> = {
   plantes: 'Plants',
   ressources: 'Resources',
   espace: 'Space',
-  brainrot: 'Brainrot',
   animaux: 'Animals',
   vehicules: 'Vehicles',
 }
@@ -17,7 +16,6 @@ export const ICONE_CATEGORIE: Record<Categorie, string> = {
   plantes: '🌿',
   ressources: '⛏️',
   espace: '🌌',
-  brainrot: '🧠',
   animaux: '🐾',
   vehicules: '🚀',
 }
@@ -27,7 +25,6 @@ export const CLASSE_CATEGORIE: Record<Categorie, string> = {
   plantes: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
   ressources: 'bg-amber-600/20 text-amber-200 ring-amber-500/40',
   espace: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
-  brainrot: 'bg-lime-500/20 text-lime-200 ring-lime-400/40',
   animaux: 'bg-orange-500/20 text-orange-200 ring-orange-400/40',
   vehicules: 'bg-cyan-500/20 text-cyan-200 ring-cyan-400/40',
 }
