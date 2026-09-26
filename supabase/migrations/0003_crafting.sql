@@ -62,8 +62,9 @@ on conflict do nothing;
 -- ---------------------------------------------------------------------------
 -- craft(a, b): combines two inventory copies owned by the caller and adds the
 -- result. The base cards (rock obj-01, leaf obj-04, scissors obj-07) are
--- infinite like Little Alchemy's elements: never consumed, and one copy may
--- be passed twice (rock + rock). Every other ingredient is consumed.
+-- infinite like Little Alchemy's elements: never consumed. Any copy may be
+-- passed twice (rock + rock, or Iron Ore + Iron Ore with a single Iron Ore):
+-- it is then consumed once. Every other ingredient is consumed.
 -- Unknown combination: nothing changes and the call raises 'no_recipe'.
 -- ---------------------------------------------------------------------------
 create or replace function public.craft(p_a uuid, p_b uuid)
@@ -94,10 +95,6 @@ begin
   if id_a is null or id_b is null then
     raise exception 'card_not_owned';
   end if;
-  if p_a = p_b and id_a not in (select unnest(base_cards)) then
-    raise exception 'two_cards_needed';
-  end if;
-
   select r.result into v_result
   from public.recipes r
   where r.item_a = least(id_a, id_b) and r.item_b = greatest(id_a, id_b);

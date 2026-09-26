@@ -24,7 +24,7 @@ export interface LivreRecettes {
 
 const MESSAGES_ERREUR: Record<string, string> = {
   no_recipe: 'Nothing happens: these two cards don’t combine.',
-  two_cards_needed: 'Pick two different cards.',
+  two_cards_needed: 'Pick two cards.',
   card_not_owned: 'One of these cards is no longer in your inventory.',
 }
 

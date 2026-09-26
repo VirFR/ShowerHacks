@@ -1,23 +1,22 @@
 import { useState } from 'react'
 import { ChoixVue, InventaireVue } from '@/components/InventaireVue'
-import { empiler, useModeVue } from '@/lib/inventaire'
+import { empiler, trierInventaire, useModeVue } from '@/lib/inventaire'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { useSession } from '@/lib/session'
 import { CATEGORIES, type Categorie } from '@/types'
-import { libelleCategorie, ORDRE_RARETE } from '@/lib/format'
+import { libelleCategorie } from '@/lib/format'
 
 type Filtre = Categorie | 'toutes'
 
-/** /inventory — Owned items as a grid or a list, filterable by category, common first and rarest last. */
+/** /inventory — Owned items as a grid or a list, filterable by category, rock, leaf and scissors first, then common to rarest. */
 export function Inventaire() {
   const { joueur } = useSession()
   const [filtre, setFiltre] = useState<Filtre>('toutes')
   const [mode, setMode] = useModeVue()
   const inventaire = joueur?.inventaire ?? []
 
-  const objets = (filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre))
-    .toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
+  const objets = trierInventaire(filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre))
 
   const filtres: { valeur: Filtre; label: string }[] = [
     { valeur: 'toutes', label: 'All' },

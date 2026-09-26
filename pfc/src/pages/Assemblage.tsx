@@ -5,21 +5,17 @@ import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ChoixVue, InventaireVue } from '@/components/InventaireVue'
-import { empiler, useModeVue, type Pile } from '@/lib/inventaire'
+import { empiler, trierInventaire, useModeVue, type Pile } from '@/lib/inventaire'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
-import { ORDRE_RARETE } from '@/lib/format'
 import { useSession } from '@/lib/session'
-import { estCarteDeBase, type Objet, type ResultatAssemblage } from '@/types'
+import type { Objet, ResultatAssemblage } from '@/types'
 
 type Emplacement = 'a' | 'b'
 
 /** Same inventory copy (two copies of one item are different cards). */
 const memeCopie = (a: Objet | null, b: Objet | null) => Boolean(a && b && a.inventaireId === b.inventaireId)
-
-/** A copy can't sit in both slots, except a base card (infinite: Mossy Rock + Mossy Rock). */
-const exclusif = (a: Objet | null, b: Objet) => memeCopie(a, b) && !estCarteDeBase(b)
 
 interface SlotProps {
   emplacement: Emplacement
@@ -74,7 +70,7 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
 /** /crafting — Combine two items (drag & drop or two-click selection). */
 export function Assemblage() {
   const { joueur, crafter } = useSession()
-  const inventaire = (joueur?.inventaire ?? []).toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
+  const inventaire = trierInventaire(joueur?.inventaire ?? [])
   const piles = empiler(inventaire)
   const [mode, setMode] = useModeVue()
   const [slotA, setSlotA] = useState<Objet | null>(null)
@@ -87,16 +83,12 @@ export function Assemblage() {
     setResultat(null)
     // Two-click selection: first click → slot A, second → slot B.
     const cible: Emplacement = emplacement ?? (slotA && !slotB ? 'b' : 'a')
-    // Picking the same item twice uses a second copy when there is one (Iron Ore + Iron Ore).
+    // The same item can fill both slots (Iron Ore + Iron Ore): a second copy is used
+    // when there is one, otherwise the single copy goes in both and is consumed once.
     const autre = cible === 'a' ? slotB : slotA
     const objet = pile.copies.find((c) => !memeCopie(c, autre)) ?? pile.copies[0]
-    if (cible === 'a') {
-      setSlotA(objet)
-      if (exclusif(slotB, objet)) setSlotB(null)
-    } else {
-      setSlotB(objet)
-      if (exclusif(slotA, objet)) setSlotA(null)
-    }
+    if (cible === 'a') setSlotA(objet)
+    else setSlotB(objet)
   }
 
   const retirer = (emplacement: Emplacement) => {
