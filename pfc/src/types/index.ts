@@ -96,6 +96,15 @@ export interface ResultatAssemblage {
   objetResultat?: Objet
 }
 
+/**
+ * A crafting recipe: combining the two ingredients (in either order) yields
+ * the item `resultatId`. See `lib/assemblage.ts` and `mocks/recettes.ts`.
+ */
+export interface Recette {
+  resultatId: string
+  ingredients: [string, string]
+}
+
 /** Shared gameplay constants. */
 export const BOOSTERS_MAX = 8
 export const BOOSTER_INTERVALLE_MS = 10 * 60 * 1000 // 10 minutes

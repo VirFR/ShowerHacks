@@ -8,8 +8,10 @@ import type { Joueur, Objet } from '@/types'
  */
 
 export const CLE_STOCKAGE_SESSION = 'pfc.joueurId'
-/** Items won from boosters, on top of each account's starting inventory. */
-export const CLE_STOCKAGE_INVENTAIRE_EXTRA = 'pfc.inventaireExtra'
+/** Each account's current inventory (starting items + boosters - crafted-away items). */
+export const CLE_STOCKAGE_INVENTAIRES = 'pfc.inventaires'
+/** Recipe ids (result item id) each account has discovered, for the recipe book. */
+export const CLE_STOCKAGE_RECETTES = 'pfc.recettesConnues'
 
 export interface Session {
   /** Signed-in player, or null if nobody is. */
@@ -18,8 +20,12 @@ export interface Session {
   comptes: Joueur[]
   connecter: (joueurId: string) => void
   deconnecter: () => void
-  /** Adds items (e.g. from an opened booster) to the signed-in player's inventory. */
+  /** Adds items (e.g. from an opened booster or a successful craft) to the signed-in player's inventory. */
   ajouterObjets: (objets: Objet[]) => void
+  /** Removes one owned instance per given id (e.g. the two ingredients consumed by a craft). */
+  retirerObjets: (ids: string[]) => void
+  /** Result item ids of the recipes the signed-in player has discovered. */
+  recettesConnues: string[]
 }
 
 export const SessionContext = createContext<Session | null>(null)
@@ -41,10 +47,10 @@ export function ecrireJoueurId(id: string | null) {
   }
 }
 
-/** Extra items won from boosters, keyed by player id. */
-export function lireInventairesExtra(): Record<string, Objet[]> {
+/** Each account's current inventory, keyed by player id. */
+export function lireInventaires(): Record<string, Objet[]> {
   try {
-    const brut = window.localStorage.getItem(CLE_STOCKAGE_INVENTAIRE_EXTRA)
+    const brut = window.localStorage.getItem(CLE_STOCKAGE_INVENTAIRES)
     if (!brut) return {}
     const valeur = JSON.parse(brut)
     return valeur && typeof valeur === 'object' ? valeur : {}
@@ -53,11 +59,31 @@ export function lireInventairesExtra(): Record<string, Objet[]> {
   }
 }
 
-export function ecrireInventairesExtra(inventaires: Record<string, Objet[]>) {
+export function ecrireInventaires(inventaires: Record<string, Objet[]>) {
   try {
-    window.localStorage.setItem(CLE_STOCKAGE_INVENTAIRE_EXTRA, JSON.stringify(inventaires))
+    window.localStorage.setItem(CLE_STOCKAGE_INVENTAIRES, JSON.stringify(inventaires))
   } catch {
-    // Storage unavailable (private browsing…): the extra items stay in memory.
+    // Storage unavailable (private browsing…): the inventory stays in memory.
+  }
+}
+
+/** Known recipes (by result item id), keyed by player id. */
+export function lireRecettesConnues(): Record<string, string[]> {
+  try {
+    const brut = window.localStorage.getItem(CLE_STOCKAGE_RECETTES)
+    if (!brut) return {}
+    const valeur = JSON.parse(brut)
+    return valeur && typeof valeur === 'object' ? valeur : {}
+  } catch {
+    return {}
+  }
+}
+
+export function ecrireRecettesConnues(recettes: Record<string, string[]>) {
+  try {
+    window.localStorage.setItem(CLE_STOCKAGE_RECETTES, JSON.stringify(recettes))
+  } catch {
+    // Storage unavailable (private browsing…): the recipe book stays in memory.
   }
 }
 

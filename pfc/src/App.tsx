@@ -9,6 +9,7 @@ import { Inventaire } from '@/pages/Inventaire'
 import { NotFound } from '@/pages/NotFound'
 import { ObjetDetail } from '@/pages/ObjetDetail'
 import { Profil } from '@/pages/Profil'
+import { Recettes } from '@/pages/Recettes'
 
 /**
  * Route table. Each page is an independent component in `src/pages`,
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: '/item/:id', element: <ObjetDetail /> },
       { path: '/boosters', element: <Boosters /> },
       { path: '/crafting', element: <Assemblage /> },
+      { path: '/recipes', element: <Recettes /> },
       { path: '/leaderboard', element: <Classement /> },
       { path: '/profile', element: <Profil /> },
       { path: '*', element: <NotFound /> },

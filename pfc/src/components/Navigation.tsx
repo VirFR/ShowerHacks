@@ -14,6 +14,7 @@ const LIENS_NAV: LienNav[] = [
   { to: '/inventory', label: 'Inventory', icone: '🎒' },
   { to: '/boosters', label: 'Boosters', icone: '🎁' },
   { to: '/crafting', label: 'Crafting', icone: '🧪' },
+  { to: '/recipes', label: 'Recipes', icone: '📖' },
   { to: '/leaderboard', label: 'Leaderboard', icone: '🏆' },
   { to: '/profile', label: 'Profile', icone: '👤' },
 ]
