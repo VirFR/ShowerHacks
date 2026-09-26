@@ -385,8 +385,8 @@ body {
   clip-path: polygon(0% 0%, 100% 0%, 100% 38%, calc(100% - 10px) 50%, 100% 62%, 100% 100%, 0% 100%);
 }
 
-/* Booster reveal: each card spins into view (rotateY), legendary items spin
-   noticeably slower than the rest. */
+/* Booster reveal: each card spins into view (rotateY); --duree-spin is set
+   inline per card, rarer items turning noticeably slower than common ones. */
 @keyframes card-spin-in {
   0% {
     transform: rotateY(-100deg) scale(0.8);
@@ -403,12 +403,7 @@ body {
 }
 
 .animate-card-spin-in {
-  animation: card-spin-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  transform-style: preserve-3d;
-}
-
-.animate-card-spin-in-slow {
-  animation: card-spin-in 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: card-spin-in var(--duree-spin, 0.6s) cubic-bezier(0.34, 1.56, 0.64, 1) both;
   transform-style: preserve-3d;
 }
 

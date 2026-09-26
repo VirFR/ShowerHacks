@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
@@ -10,8 +10,11 @@ import { useSession } from '@/lib/session'
 import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
 import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
 
-/** The two rarest tiers get the slower, more dramatic spin-in. */
-const SPIN_LENT: Partial<Record<Rarete, true>> = { legendaire: true, secret_rare: true }
+/** Card spin-in duration (s): each rarity tier turns a bit slower than the one below it. */
+const DUREE_SPIN_BASE = 0.6
+const DUREE_SPIN_PAR_PALIER = 0.2
+const dureeSpin = (rarete: Rarete): CSSProperties =>
+  ({ '--duree-spin': `${DUREE_SPIN_BASE + ORDRE_RARETE[rarete] * DUREE_SPIN_PAR_PALIER}s` }) as CSSProperties
 
 /** /boosters — Booster stack, interactive tear-open, cards revealed one by one. */
 type EtatOuverture = 'idle' | 'dechirure' | 'ouverture' | 'cartes' | 'revele'
@@ -101,7 +104,9 @@ export function Boosters() {
     dechirureEnCours.current = true
     setEtat('ouverture')
     window.setTimeout(() => {
-      const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK))
+      const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK)).sort(
+        (a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete],
+      )
       setObjetsObtenus(tirage)
       setIndexCarte(0)
       sauvegarder(tirage)
@@ -323,8 +328,8 @@ export function Boosters() {
               />
             )}
 
-            {/* The card spins into view; the two rarest tiers turn noticeably slower */}
-            <div key={indexCarte} className={SPIN_LENT[objetActuel.rarete] ? 'animate-card-spin-in-slow' : 'animate-card-spin-in'}>
+            {/* The card spins into view; the rarer it is, the slower it turns */}
+            <div key={indexCarte} className="animate-card-spin-in" style={dureeSpin(objetActuel.rarete)}>
               <ObjetCard objet={objetActuel} onSelect={onTapCarte} />
             </div>
           </div>
