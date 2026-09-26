@@ -130,28 +130,6 @@ body {
   animation: flash 0.45s ease-out forwards;
 }
 
-/* Cartes de booster : retournement 3D face cachée / objet révélé */
-.perspective-dist {
-  perspective: 1200px;
-}
-
-.flip-inner {
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.flip-inner.retournee {
-  transform: rotateY(180deg);
-}
-
-.flip-face {
-  backface-visibility: hidden;
-}
-
-.flip-face-arriere {
-  transform: rotateY(180deg);
-}
-
 @keyframes shimmer-sweep {
   0% {
     transform: translateX(-120%) rotate(15deg);
