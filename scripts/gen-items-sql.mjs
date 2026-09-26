@@ -1,6 +1,6 @@
 // Generates supabase/migrations/0002_items_seed.sql from the front-end catalog
 // (pfc/src/mocks/objets.ts + objetsBooster.ts), so the database matches the
-// items team's data. Run from the repository root: node scripts/gen-items-sql.mjs
+// items team's data, and 0004_recipes_seed.sql from pfc/src/mocks/recettes.ts. Run from the repository root: node scripts/gen-items-sql.mjs
 import { writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
@@ -11,14 +11,18 @@ const require = createRequire(join(root, 'pfc/package.json'))
 const { rolldown } = require('rolldown')
 
 // Bundle the catalog with rolldown (resolves the `@/` alias and strips types).
-const bundle = await rolldown({
-  input: join(root, 'pfc/src/mocks/objets.ts'),
-  resolve: { alias: { '@': join(root, 'pfc/src') } },
-  logLevel: 'silent',
-})
-const { output } = await bundle.generate({ format: 'esm' })
-await bundle.close()
-const { OBJETS_MOCK, CATALOGUE_MOCK } = await import(`data:text/javascript;base64,${Buffer.from(output[0].code).toString('base64')}`)
+async function charger(fichier) {
+  const bundle = await rolldown({
+    input: join(root, fichier),
+    resolve: { alias: { '@': join(root, 'pfc/src') } },
+    logLevel: 'silent',
+  })
+  const { output } = await bundle.generate({ format: 'esm' })
+  await bundle.close()
+  return import(`data:text/javascript;base64,${Buffer.from(output[0].code).toString('base64')}`)
+}
+const { OBJETS_MOCK, CATALOGUE_MOCK } = await charger('pfc/src/mocks/objets.ts')
+const { RECETTES } = await charger('pfc/src/mocks/recettes.ts')
 const OBJETS_BOOSTER_MOCK = CATALOGUE_MOCK.slice(OBJETS_MOCK.length)
 
 const RARITY = { commun: 'common', peu_commun: 'uncommon', rare: 'rare', epique: 'epic', legendaire: 'legendary', secret_rare: 'secret_rare' }
@@ -57,3 +61,22 @@ on conflict (id) do update set
 `
 writeFileSync(join(root, 'supabase/migrations/0002_items_seed.sql'), sql)
 console.log(`${rows.length} items written to supabase/migrations/0002_items_seed.sql`)
+
+// Recipes: pair stored sorted (item_a <= item_b), see 0003_crafting.sql.
+const lignesRecettes = RECETTES.map((r) => {
+  const [a, b] = [...r.ingredients].sort()
+  return `  (${q(a)}, ${q(b)}, ${q(r.resultatId)})`
+})
+const sqlRecettes = `-- PFC · crafting recipes seed, GENERATED from pfc/src/mocks/recettes.ts by scripts/gen-items-sql.mjs.
+-- Re-run the script after changing the recipes. Recipes no longer in the file are removed.
+
+delete from public.recipes where (item_a, item_b) not in (values
+${lignesRecettes.map((l) => l.replace(/, '[^']*'\)$/, ')')).join(',\n')}
+);
+
+insert into public.recipes (item_a, item_b, result) values
+${lignesRecettes.join(',\n')}
+on conflict (item_a, item_b) do update set result = excluded.result;
+`
+writeFileSync(join(root, 'supabase/migrations/0004_recipes_seed.sql'), sqlRecettes)
+console.log(`${lignesRecettes.length} recipes written to supabase/migrations/0004_recipes_seed.sql`)
