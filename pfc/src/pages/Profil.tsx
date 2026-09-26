@@ -3,6 +3,7 @@ import { Avatar } from '@/components/Avatar'
 import { Bouton } from '@/components/Bouton'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { Icon } from '@/components/Icon'
+import { ListeComptes } from '@/components/ListeComptes'
 import { Carte } from '@/components/Carte'
 import { CarteRang } from '@/components/CarteRang'
 import { ObjetCard } from '@/components/ObjetCard'
@@ -20,13 +21,7 @@ export function Profil() {
     return (
       <>
         <PageHeader titre="Sign in" sousTitre="One Google account, one player. Your first battle is a warm-up against the Coach." />
-        <ConnexionRequise message="Your profile, inventory and battles are tied to your Google account." />
-        {comptes.length > 0 && (
-          <>
-            <h2 className="mb-3 mt-8 font-semibold text-texte-2">Offline test accounts</h2>
-            <ListeComptes comptes={comptes} onChoisir={connecter} />
-          </>
-        )}
+        <ConnexionRequise message="Your profile, inventory and battles are tied to your account." />
       </>
     )
   }
@@ -50,46 +45,6 @@ export function Profil() {
         </>
       )}
     </>
-  )
-}
-
-interface ListeComptesProps {
-  comptes: Joueur[]
-  actuelId?: string
-  onChoisir: (id: string) => void
-}
-
-function ListeComptes({ comptes, actuelId, onChoisir }: ListeComptesProps) {
-  return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {comptes.map((c) => {
-        const actuel = c.id === actuelId
-        return (
-          <button
-            key={c.id}
-            type="button"
-            disabled={actuel}
-            onClick={() => onChoisir(c.id)}
-            aria-pressed={actuel}
-            className={[
-              'flex items-center gap-4 rounded-2xl border p-4 text-left transition-all',
-              actuel
-                ? 'cursor-default border-accent-2 bg-accent/15 ring-2 ring-accent/60'
-                : 'border-bordure bg-carte hover:border-accent/60 hover:bg-carte-2',
-            ].join(' ')}
-          >
-            <Avatar pseudo={c.pseudo} avatarUrl={c.avatarUrl} taille="md" />
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-semibold">{c.pseudo}</p>
-              <p className="text-xs text-texte-2">
-                {c.rang} · {c.score} pts · {c.inventaire.length} item{c.inventaire.length === 1 ? '' : 's'}
-              </p>
-            </div>
-            <span className="text-xs font-medium text-accent-2">{actuel ? 'Signed in' : 'Sign in →'}</span>
-          </button>
-        )
-      })}
-    </div>
   )
 }
 

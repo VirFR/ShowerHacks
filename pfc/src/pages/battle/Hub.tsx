@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Bouton } from '@/components/Bouton'
+import { BoutonConnexion } from '@/components/BoutonConnexion'
 import { Carte } from '@/components/Carte'
-import { GoogleMark, Icon } from '@/components/Icon'
+import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
 import { BattleCard } from '@/components/battle/BattleCard'
 import { versCarte } from '@/lib/combat'
@@ -15,8 +16,8 @@ import { useDemarrerBot } from './useDemarrerBot'
 
 /** /battle — Entry point: ranked duel, practice, your deck. */
 export function Hub() {
-  const { joueur, chart, connecterGoogle } = useSession()
-  if (!joueur) return <Vitrine onGoogle={connecterGoogle} chartCount={chartCategories(chart).length} />
+  const { joueur, chart } = useSession()
+  if (!joueur) return <Vitrine chartCount={chartCategories(chart).length} />
   return <HubConnecte />
 }
 
@@ -165,7 +166,7 @@ function Regle({ n, children }: { n: number; children: React.ReactNode }) {
 }
 
 /** What visitors see before signing in. */
-function Vitrine({ onGoogle, chartCount }: { onGoogle: () => Promise<void>; chartCount: number }) {
+function Vitrine({ chartCount }: { chartCount: number }) {
   return (
     <>
       <PageHeader titre="Battle" sousTitre="Five cards, one champion on the field, no hit points." />
@@ -181,10 +182,7 @@ function Vitrine({ onGoogle, chartCount }: { onGoogle: () => Promise<void>; char
           bluff with a retreat. Sign in to build a deck and fight live.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Bouton taille="lg" onClick={() => onGoogle()} variante="clair">
-            <GoogleMark />
-            Continue with Google
-          </Bouton>
+          <BoutonConnexion />
           <Link to="/leaderboard">
             <Bouton taille="lg" variante="secondaire">
               See the leaderboard
