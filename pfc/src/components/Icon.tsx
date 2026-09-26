@@ -29,6 +29,8 @@ export type IconName =
   | 'ghost'
   | 'refresh'
   | 'logout'
+  | 'grid'
+  | 'list'
 
 /** Stroke paths of the icon set (24×24 viewBox, currentColor). */
 const PATHS: Record<IconName, ReactNode> = {
@@ -198,6 +200,24 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M10 4H5v16h5" />
       <path d="M14 8l4 4-4 4" />
       <path d="M18 12H9" />
+    </>
+  ),
+  grid: (
+    <>
+      <path d="M4 4h6v6H4z" />
+      <path d="M14 4h6v6h-6z" />
+      <path d="M4 14h6v6H4z" />
+      <path d="M14 14h6v6h-6z" />
+    </>
+  ),
+  list: (
+    <>
+      <path d="M9 6h11" />
+      <path d="M9 12h11" />
+      <path d="M9 18h11" />
+      <path d="M4 6h.01" />
+      <path d="M4 12h.01" />
+      <path d="M4 18h.01" />
     </>
   ),
 }

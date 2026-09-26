@@ -4,6 +4,8 @@ import { Bouton } from '@/components/Bouton'
 import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
+import { ChoixVue, InventaireVue } from '@/components/InventaireVue'
+import { empiler, useModeVue, type Pile } from '@/lib/inventaire'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
@@ -73,16 +75,21 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
 export function Assemblage() {
   const { joueur, crafter } = useSession()
   const inventaire = (joueur?.inventaire ?? []).toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
+  const piles = empiler(inventaire)
+  const [mode, setMode] = useModeVue()
   const [slotA, setSlotA] = useState<Objet | null>(null)
   const [slotB, setSlotB] = useState<Objet | null>(null)
   const [resultat, setResultat] = useState<ResultatAssemblage | null>(null)
   const [survol, setSurvol] = useState<Emplacement | null>(null)
   const [enCours, setEnCours] = useState(false)
 
-  const placer = (objet: Objet, emplacement?: Emplacement) => {
+  const placer = (pile: Pile, emplacement?: Emplacement) => {
     setResultat(null)
     // Two-click selection: first click → slot A, second → slot B.
     const cible: Emplacement = emplacement ?? (slotA && !slotB ? 'b' : 'a')
+    // Picking the same item twice uses a second copy when there is one (Iron Ore + Iron Ore).
+    const autre = cible === 'a' ? slotB : slotA
+    const objet = pile.copies.find((c) => !memeCopie(c, autre)) ?? pile.copies[0]
     if (cible === 'a') {
       setSlotA(objet)
       if (exclusif(slotB, objet)) setSlotB(null)
@@ -123,17 +130,17 @@ export function Assemblage() {
     }
   }
 
-  // Native HTML5 drag & drop: the copy id travels through dataTransfer.
-  const onDragStart = (e: DragEvent, objet: Objet) => {
-    e.dataTransfer.setData('text/plain', objet.inventaireId ?? objet.id)
+  // Native HTML5 drag & drop: the item id travels through dataTransfer, `placer` picks the copy.
+  const onDragStart = (e: DragEvent, pile: Pile) => {
+    e.dataTransfer.setData('text/plain', pile.objet.id)
     e.dataTransfer.effectAllowed = 'move'
   }
   const onDrop = (e: DragEvent, emplacement: Emplacement) => {
     e.preventDefault()
     setSurvol(null)
     const id = e.dataTransfer.getData('text/plain')
-    const objet = inventaire.find((o) => (o.inventaireId ?? o.id) === id)
-    if (objet) placer(objet, emplacement)
+    const pile = piles.find((p) => p.objet.id === id)
+    if (pile) placer(pile, emplacement)
   }
 
   const propsSlot = { onSurvol: setSurvol, onDrop, onRetirer: retirer }
@@ -197,19 +204,17 @@ export function Assemblage() {
         )}
       </Carte>
 
-      <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {inventaire.map((objet, i) => (
-          <div key={objet.inventaireId ?? `${objet.id}-${i}`} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
-            <ObjetCard
-              objet={objet}
-              compact
-              selectionne={memeCopie(slotA, objet) || memeCopie(slotB, objet)}
-              onSelect={(o) => placer(o)}
-            />
-          </div>
-        ))}
+      <div className="mb-3 mt-6 flex items-center justify-between gap-2">
+        <h2 className="font-semibold">Your inventory</h2>
+        <ChoixVue mode={mode} onChange={setMode} />
       </div>
+      <InventaireVue
+        piles={piles}
+        mode={mode}
+        estSelectionne={(p) => p.copies.some((c) => memeCopie(slotA, c) || memeCopie(slotB, c))}
+        onSelect={(p) => placer(p)}
+        onDragStart={onDragStart}
+      />
     </>
   )
 }
