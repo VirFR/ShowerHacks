@@ -4,12 +4,83 @@ import { Carte } from '@/components/Carte'
 import { CarteRang } from '@/components/CarteRang'
 import { ObjetCard } from '@/components/ObjetCard'
 import { PageHeader } from '@/components/PageHeader'
-import { CLASSEMENT_MOCK, JOUEUR_COURANT } from '@/mocks'
+import { CLASSEMENT_MOCK } from '@/mocks'
 import { formaterPourcentage } from '@/lib/format'
+import { useSession } from '@/lib/session'
+import type { Joueur } from '@/types'
 
-/** /profil — Carte de profil du joueur + bouton "Défier un ami". */
+/** /profil — Connexion à un compte de test, puis carte de profil. */
 export function Profil() {
-  const joueur = JOUEUR_COURANT
+  const { joueur, comptes, connecter, deconnecter } = useSession()
+
+  if (!joueur) {
+    return (
+      <>
+        <PageHeader titre="Connexion" sousTitre="Choisis ton compte de test (pas de mot de passe pour l’instant)." />
+        <ListeComptes comptes={comptes} onChoisir={connecter} />
+      </>
+    )
+  }
+
+  return (
+    <>
+      <PageHeader
+        titre="Profil"
+        action={
+          <Bouton variante="fantome" taille="sm" onClick={deconnecter}>
+            Se déconnecter
+          </Bouton>
+        }
+      />
+      <CarteProfil joueur={joueur} />
+
+      <h2 className="mb-3 mt-8 font-semibold">Changer de compte</h2>
+      <ListeComptes comptes={comptes} actuelId={joueur.id} onChoisir={connecter} />
+    </>
+  )
+}
+
+interface ListeComptesProps {
+  comptes: Joueur[]
+  actuelId?: string
+  onChoisir: (id: string) => void
+}
+
+function ListeComptes({ comptes, actuelId, onChoisir }: ListeComptesProps) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {comptes.map((c) => {
+        const actuel = c.id === actuelId
+        return (
+          <button
+            key={c.id}
+            type="button"
+            disabled={actuel}
+            onClick={() => onChoisir(c.id)}
+            aria-pressed={actuel}
+            className={[
+              'flex items-center gap-4 rounded-2xl border p-4 text-left transition-all',
+              actuel
+                ? 'cursor-default border-accent-2 bg-accent/15 ring-2 ring-accent/60'
+                : 'border-bordure bg-carte hover:border-accent/60 hover:bg-carte-2',
+            ].join(' ')}
+          >
+            <Avatar pseudo={c.pseudo} taille="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-semibold">{c.pseudo}</p>
+              <p className="text-xs text-texte-2">
+                {c.rang} · {c.score} pts · {c.inventaire.length} objets
+              </p>
+            </div>
+            <span className="text-xs font-medium text-accent-2">{actuel ? 'Connecté' : 'Se connecter →'}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function CarteProfil({ joueur }: { joueur: Joueur }) {
   const [defiEnvoye, setDefiEnvoye] = useState(false)
 
   const position = CLASSEMENT_MOCK.find((e) => e.joueurId === joueur.id)?.position
@@ -26,12 +97,8 @@ export function Profil() {
 
   return (
     <>
-      <PageHeader titre="Profil" />
-
       <Carte className="flex flex-col gap-5 sm:flex-row sm:items-center">
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-defense text-4xl font-black text-white shadow-lg">
-          {joueur.pseudo.charAt(0).toUpperCase()}
-        </div>
+        <Avatar pseudo={joueur.pseudo} taille="lg" />
         <div className="flex-1">
           <h2 className="text-2xl font-bold">{joueur.pseudo}</h2>
           <p className="text-sm text-texte-2">
@@ -74,5 +141,19 @@ export function Profil() {
         ))}
       </div>
     </>
+  )
+}
+
+function Avatar({ pseudo, taille }: { pseudo: string; taille: 'sm' | 'lg' }) {
+  return (
+    <div
+      className={[
+        'flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-defense font-black text-white shadow-lg',
+        taille === 'lg' ? 'h-24 w-24 text-4xl' : 'h-12 w-12 text-lg',
+      ].join(' ')}
+      aria-hidden
+    >
+      {pseudo.charAt(0).toUpperCase()}
+    </div>
   )
 }

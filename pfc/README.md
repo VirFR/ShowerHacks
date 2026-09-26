@@ -3,7 +3,17 @@
 Squelette de l'application web du jeu **PFC** : React 19 + Vite + TypeScript + Tailwind CSS v4 côté front, Supabase côté backend/DB.
 
 > État actuel : navigation fonctionnelle entre toutes les pages, données **mock** uniquement.
-> Pas encore de logique de combat réel, de crafting ni d'authentification.
+> Quatre comptes de test (guilhem, airbus, virgile, mathieu) sélectionnables depuis `/profil`,
+> trois objets de base (Pierre, Feuille, Ciseaux) et la règle classique pour les duels.
+> Pas encore de crafting, de persistance des scores ni de vraie authentification.
+
+## Comptes de test et session
+
+- Les comptes sont définis dans `src/mocks/joueurs.ts`. Chacun démarre à 0 point, rang Bronze, avec les trois objets de base.
+- La "connexion" se fait depuis `/profil` en cliquant sur un compte : aucun mot de passe. Le compte choisi est mémorisé dans `localStorage` (clé `pfc.joueurId`), donc chaque navigateur ou onglet privé peut incarner un joueur différent.
+- Le hook `useSession()` (`src/lib/session.ts`) expose `joueur`, `comptes`, `connecter(id)` et `deconnecter()`. Le provider est monté dans `main.tsx`.
+- Les pages qui ont besoin d'un joueur (accueil, combat, inventaire, assemblage) affichent `ConnexionRequise` tant que personne n'est connecté.
+- La règle pierre > ciseaux > feuille > pierre vit dans `src/lib/combat.ts`. L'adversaire joue un objet au hasard dans son inventaire ; les scores ne sont pas encore enregistrés.
 
 ## Prérequis
 
@@ -60,13 +70,13 @@ Variables d'environnement à déclarer dans Vercel (**Settings → Environment V
 | Route          | Page                    | Contenu actuel                                                     |
 | -------------- | ----------------------- | ------------------------------------------------------------------ |
 | `/accueil`     | `pages/Accueil.tsx`     | Bouton Jouer, stack de boosters (x/10), aperçu du rang             |
-| `/combat`      | `pages/Combat.tsx`      | Sélection d'un objet, objet adverse mock, bouton Attaquer, résultat |
+| `/combat`      | `pages/Combat.tsx`      | Choix de l'adversaire parmi les comptes, sélection d'un objet, Attaquer, résultat |
 | `/inventaire`  | `pages/Inventaire.tsx`  | Grille des objets possédés, filtre par catégorie                   |
 | `/objet/:id`   | `pages/ObjetDetail.tsx` | Fiche détail : stats, description, historique V/D mock             |
 | `/boosters`    | `pages/Boosters.tsx`    | Stack (max 10), bouton Ouvrir animé, timer 10 min                  |
 | `/assemblage`  | `pages/Assemblage.tsx`  | Drag & drop ou deux clics, résultat mock réussi/impossible         |
 | `/classement`  | `pages/Classement.tsx`  | Tableau score / parties / ratio                                    |
-| `/profil`      | `pages/Profil.tsx`      | Carte de profil, meilleurs objets, bouton Défier un ami            |
+| `/profil`      | `pages/Profil.tsx`      | Connexion à un compte de test, carte de profil, changement de compte |
 
 ## Structure du code
 
@@ -77,8 +87,10 @@ pfc/
 │   ├── components/       # UI partagée : Layout, Navigation, ObjetCard, Bouton, StatBadge…
 │   ├── lib/
 │   │   ├── supabase.ts   # Client Supabase (variables d'env)
+│   │   ├── session.ts    # Session mock (compte connecté, localStorage)
+│   │   ├── combat.ts     # Règle pierre/feuille/ciseaux de base
 │   │   └── format.ts     # Libellés, couleurs, helpers d'affichage
-│   ├── mocks/            # Données factices : 12 objets, 8 joueurs, classement, historique
+│   ├── mocks/            # Données factices : 3 objets de base, 4 comptes, classement
 │   ├── pages/            # Une page par route
 │   ├── types/            # Interfaces : Objet, Joueur, EntreeClassement, StackBoosters…
 │   ├── App.tsx           # Table des routes (react-router)
@@ -99,4 +111,4 @@ Chaque page est indépendante et ne partage que les composants de `src/component
 3. **Données / Supabase** : schéma des tables (objets, joueurs, inventaires, combats), remplacement progressif des mocks par des requêtes (`lib/supabase.ts`, `mocks/`).
 4. **Auth / Profil / Social** : connexion Supabase Auth, profil éditable, défi d'un ami, classement temps réel (`pages/Profil.tsx`, `pages/Classement.tsx`).
 
-Les fonctions `resultatMock` (Combat) et `assemblerMock` (Assemblage) sont les points d'entrée à remplacer par la vraie logique.
+`resoudreCombat` (`lib/combat.ts`) et `assemblerMock` (`pages/Assemblage.tsx`) sont les points d'entrée à enrichir ; `SessionProvider` est à remplacer par Supabase Auth.

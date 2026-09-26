@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { useSession } from '@/lib/session'
 
 interface LienNav {
   to: string
@@ -22,6 +23,8 @@ const LIENS_NAV: LienNav[] = [
  * du breakpoint `md`. Un seul composant, deux mises en page via Tailwind.
  */
 export function Navigation() {
+  const { joueur } = useSession()
+
   return (
     <nav
       aria-label="Navigation principale"
@@ -57,6 +60,16 @@ export function Navigation() {
           </li>
         ))}
       </ul>
+
+      <div className="hidden px-5 pt-6 text-xs text-texte-2 md:block">
+        {joueur ? (
+          <>
+            Connecté : <span className="font-semibold text-texte">{joueur.pseudo}</span>
+          </>
+        ) : (
+          'Non connecté'
+        )}
+      </div>
     </nav>
   )
 }

@@ -1,12 +1,15 @@
 import { Carte } from '@/components/Carte'
 import { PageHeader } from '@/components/PageHeader'
-import { CLASSEMENT_MOCK, JOUEUR_COURANT } from '@/mocks'
+import { CLASSEMENT_MOCK } from '@/mocks'
+import { useSession } from '@/lib/session'
 import { formaterPourcentage } from '@/lib/format'
 
 const MEDAILLES = ['🥇', '🥈', '🥉']
 
 /** /classement — Tableau des joueurs par score. */
 export function Classement() {
+  const { joueur } = useSession()
+
   return (
     <>
       <PageHeader titre="Classement" sousTitre={`${CLASSEMENT_MOCK.length} joueurs classés`} />
@@ -25,7 +28,7 @@ export function Classement() {
           </thead>
           <tbody>
             {CLASSEMENT_MOCK.map((e) => {
-              const moi = e.joueurId === JOUEUR_COURANT.id
+              const moi = e.joueurId === joueur?.id
               return (
                 <tr
                   key={e.joueurId}

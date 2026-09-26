@@ -3,12 +3,16 @@ import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
 import { CarteRang } from '@/components/CarteRang'
 import { PageHeader } from '@/components/PageHeader'
-import { BOOSTERS_MOCK, JOUEUR_COURANT } from '@/mocks'
+import { ConnexionRequise } from '@/components/ConnexionRequise'
+import { BOOSTERS_MOCK } from '@/mocks'
+import { useSession } from '@/lib/session'
 
 /** /accueil — Lobby : bouton Jouer, aperçu boosters, aperçu rang. */
 export function Accueil() {
-  const joueur = JOUEUR_COURANT
+  const { joueur } = useSession()
   const boosters = BOOSTERS_MOCK
+
+  if (!joueur) return <ConnexionRequise />
 
   return (
     <>
