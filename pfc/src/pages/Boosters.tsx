@@ -38,7 +38,7 @@ const RARETE_GLOW: Record<Rarete, string> = {
 const TOTAL_PONDERATION = Object.values(RARETE_PONDERATION).reduce((somme, poids) => somme + poids, 0)
 const CHANCES_RARETE = (Object.entries(RARETE_PONDERATION) as [Rarete, number][])
   .sort((a, b) => ORDRE_RARETE[a[0]] - ORDRE_RARETE[b[0]])
-  .map(([rarete, poids]) => ({ rarete, pourcentage: (poids / TOTAL_PONDERATION) * 100 }))
+  .map(([rarete, poids]) => ({ rarete, pourcentage: Math.round((poids / TOTAL_PONDERATION) * 1000) / 10 }))
 
 /** Fraction of the strip's drag distance restored per Enter/Space press (keyboard fallback). */
 const PAS_CLAVIER = 0.34
