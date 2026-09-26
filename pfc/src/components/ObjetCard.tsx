@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { Objet } from '@/types'
-import { CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
+import { CLASSE_CARTE_RARETE, CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
 import { BadgeCategorie } from './BadgeCategorie'
 import { ObjetImage } from './ObjetImage'
 import { StatBadge } from './StatBadge'
@@ -38,10 +38,10 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
   )
 
   const classes = [
-    'flex w-full gap-3 rounded-2xl border bg-carte p-3 transition-all',
+    'flex w-full gap-3 rounded-2xl border bg-carte p-3 transition-all hover:bg-carte-2',
     selectionne
       ? 'border-accent-2 ring-2 ring-accent/60 shadow-lg shadow-accent/20'
-      : 'border-bordure hover:border-accent/60 hover:bg-carte-2',
+      : CLASSE_CARTE_RARETE[objet.rarete],
   ].join(' ')
 
   if (onSelect) {

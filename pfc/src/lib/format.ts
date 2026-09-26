@@ -31,10 +31,18 @@ export const LIBELLE_RARETE: Record<Rarete, string> = {
 }
 
 export const CLASSE_RARETE: Record<Rarete, string> = {
-  commun: 'text-texte-2',
+  commun: 'text-emerald-300',
   rare: 'text-sky-300',
   epique: 'text-fuchsia-300',
   legendaire: 'text-or',
+}
+
+/** Bordure/halo de la carte selon sa rareté : vert, bleu, violet, or. */
+export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
+  commun: 'border-emerald-500/40 hover:border-emerald-400/70',
+  rare: 'border-sky-500/40 hover:border-sky-400/70',
+  epique: 'border-fuchsia-500/40 hover:border-fuchsia-400/70',
+  legendaire: 'border-amber-400/50 hover:border-amber-300/80 shadow-[0_0_16px_-4px] shadow-amber-400/40',
 }
 
 export const CLASSE_RANG: Record<Rang, string> = {

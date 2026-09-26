@@ -1,30 +1,24 @@
-import type { Categorie, Objet, ResultatCombat } from '@/types'
+import type { Objet, ResultatCombat } from '@/types'
+import { OBJETS_MOCK } from '@/mocks/objets'
 
 /**
- * Ordre de dominance classique pierre-feuille-ciseaux.
- * `DOMINANCE[a]` est la catégorie que `a` bat.
+ * Position de chaque objet sur le "cercle" du tournoi (ordre de OBJETS_MOCK).
+ * Voir `resoudreParTournoiCirculaire` pour l'usage.
  */
-const DOMINANCE: Record<Exclude<Categorie, 'special'>, Exclude<Categorie, 'special'>> = {
-  pierre: 'ciseaux',
-  ciseaux: 'feuille',
-  feuille: 'pierre',
-}
-
-function battParCategorie(a: Categorie, b: Categorie): boolean {
-  if (a === 'special' || b === 'special') return false
-  return DOMINANCE[a] === b
-}
+const POSITION = new Map(OBJETS_MOCK.map((o, index) => [o.id, index]))
 
 /**
  * Résout un combat binaire entre deux objets : victoire, défaite ou égalité
  * (point de vue de `a`).
  *
- * Ordre de résolution :
- * 1. Victoires explicites : chaque objet peut battre certains objets
- *    précis, indépendamment de sa catégorie (voir `Objet.victoiresExplicites`).
- * 2. Règle pierre/feuille/ciseaux entre catégories (la catégorie `special`
- *    n'a pas de dominance fixe, elle passe toujours par les points 1 et 3).
- * 3. Repli sur les statistiques (attaque de l'un contre défense de l'autre).
+ * 1. Victoires explicites : un objet peut battre certains objets précis en
+ *    plus du tournoi (voir `Objet.victoiresExplicites`), pour des exceptions
+ *    ponctuelles qui font sens (ex: la hache finit par fendre le bouclier).
+ * 2. Tournoi circulaire : à défaut de relation explicite, chaque objet bat
+ *    la moitié des autres objets et perd contre l'autre moitié (voir
+ *    `resoudreParTournoiCirculaire`). Chaque carte a donc toujours un
+ *    résultat binaire face à toutes les autres, avec un taux de victoire
+ *    garanti entre 40 % et 60 %, quel que soit le nombre total de cartes.
  */
 export function resoudreCombat(a: Objet, b: Objet): ResultatCombat {
   if (a.id === b.id) return 'egalite'
@@ -34,11 +28,41 @@ export function resoudreCombat(a: Objet, b: Objet): ResultatCombat {
   if (aBatB && !bBatA) return 'victoire'
   if (bBatA && !aBatB) return 'defaite'
 
-  if (battParCategorie(a.categorie, b.categorie)) return 'victoire'
-  if (battParCategorie(b.categorie, a.categorie)) return 'defaite'
+  return resoudreParTournoiCirculaire(a, b)
+}
 
-  const scoreA = a.attaque - b.defense
-  const scoreB = b.attaque - a.defense
-  if (scoreA === scoreB) return 'egalite'
-  return scoreA > scoreB ? 'victoire' : 'defaite'
+/**
+ * Tournoi circulaire : les objets sont placés sur un cercle (ordre de
+ * `OBJETS_MOCK`). Un objet bat tous ceux situés jusqu'à la moitié du cercle
+ * "devant" lui, et perd contre ceux situés dans l'autre moitié. Avec un
+ * nombre pair d'objets, les deux positions parfaitement opposées (à égale
+ * distance dans les deux sens) sont départagées par leur position pour
+ * qu'une seule des deux gagne — sans quoi ni l'une ni l'autre ne l'emporte.
+ *
+ * Résultat : sur N-1 adversaires, chaque objet en bat toujours exactement
+ * la moitié (± 1 sur un nombre pair d'objets), donc un taux de victoire
+ * proche de 50 %, jamais sous 40 % ni au-dessus de 60 %.
+ */
+function resoudreParTournoiCirculaire(a: Objet, b: Objet): ResultatCombat {
+  const posA = POSITION.get(a.id)
+  const posB = POSITION.get(b.id)
+  const n = POSITION.size
+
+  // Repli si un objet n'est pas (encore) intégré au tournoi : comparaison
+  // de stats classique, pour ne jamais planter l'affichage.
+  if (posA === undefined || posB === undefined) {
+    const scoreA = a.attaque - b.defense
+    const scoreB = b.attaque - a.defense
+    if (scoreA === scoreB) return 'egalite'
+    return scoreA > scoreB ? 'victoire' : 'defaite'
+  }
+
+  const distance = (posB - posA + n) % n
+  const moitie = n / 2
+
+  if (distance === moitie) {
+    return posA < posB ? 'victoire' : 'defaite'
+  }
+
+  return distance < moitie ? 'victoire' : 'defaite'
 }
