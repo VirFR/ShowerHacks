@@ -231,19 +231,6 @@ body {
   animation: flash 0.45s ease-out forwards;
 }
 
-@keyframes shimmer-sweep {
-  0% {
-    transform: translateX(-120%) rotate(15deg);
-  }
-  100% {
-    transform: translateX(220%) rotate(15deg);
-  }
-}
-
-.animate-shimmer {
-  animation: shimmer-sweep 1.6s ease-in-out infinite;
-}
-
 /* Emballage du booster : effet feuille d'aluminium métallisée */
 .foil-pack {
   background-image: linear-gradient(
@@ -342,35 +329,24 @@ body {
   transform-style: preserve-3d;
 }
 
-/* Pulsing yellow halo behind a revealed legendary card */
-@keyframes legendary-glow-pulse {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.94);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.08);
-  }
+/* Static halo behind a revealed rare-or-better card: fixed in place, no
+   sweep or pulse, just highlights the whole card at a rarity-tinted color. */
+.rarity-glow {
+  filter: blur(24px);
 }
 
-.animate-legendary-glow {
-  background: radial-gradient(closest-side, rgba(251, 191, 36, 0.9), rgba(251, 191, 36, 0.2) 70%, transparent 100%);
-  filter: blur(20px);
-  animation: legendary-glow-pulse 1.8s ease-in-out infinite;
+.rarity-glow-rare {
+  background: radial-gradient(closest-side, rgba(56, 189, 248, 0.55), rgba(56, 189, 248, 0.15) 70%, transparent 100%);
 }
 
-/* Reflet arc-en-ciel des objets secret rare (holographique) */
-.shimmer-holo {
-  background-image: linear-gradient(
-    100deg,
-    transparent 15%,
-    rgba(255, 120, 150, 0.55) 30%,
-    rgba(255, 210, 120, 0.55) 42%,
-    rgba(140, 255, 170, 0.55) 54%,
-    rgba(120, 190, 255, 0.55) 66%,
-    rgba(220, 140, 255, 0.55) 80%,
-    transparent 95%
-  );
+.rarity-glow-epique {
+  background: radial-gradient(closest-side, rgba(232, 121, 249, 0.6), rgba(232, 121, 249, 0.18) 70%, transparent 100%);
+}
+
+.rarity-glow-legendaire {
+  background: radial-gradient(closest-side, rgba(251, 191, 36, 0.75), rgba(251, 191, 36, 0.2) 70%, transparent 100%);
+}
+
+.rarity-glow-secret {
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(196, 181, 253, 0.25) 70%, transparent 100%);
 }

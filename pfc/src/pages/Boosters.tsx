@@ -298,37 +298,28 @@ export function Boosters() {
 
         {etat === 'cartes' && objetActuel && (
           <div className="perspective-dist relative w-52 sm:w-60">
-            {/* Ambient pulsing glow behind legendary cards */}
-            {objetActuel.rarete === 'legendaire' && (
-              <div className="pointer-events-none absolute -inset-4 animate-legendary-glow rounded-3xl" aria-hidden />
+            {/* Static glow behind rare-and-up cards: fixed in place, highlights
+                the whole card, no sweep or pulse */}
+            {objetActuel.rarete !== 'commun' && objetActuel.rarete !== 'peu_commun' && (
+              <div
+                className={`pointer-events-none absolute -inset-6 rounded-3xl rarity-glow rarity-glow-${
+                  objetActuel.rarete === 'secret_rare' ? 'secret' : objetActuel.rarete
+                }`}
+                aria-hidden
+              />
             )}
 
-            {/* The card spins into view; legendary items turn noticeably slower */}
+            {/* The card turns over into view; legendary and secret rare cards turn noticeably slower */}
             <div
               key={indexCarte}
-              className={objetActuel.rarete === 'legendaire' ? 'animate-card-spin-in-slow' : 'animate-card-spin-in'}
+              className={
+                objetActuel.rarete === 'legendaire' || objetActuel.rarete === 'secret_rare'
+                  ? 'animate-card-spin-in-slow'
+                  : 'animate-card-spin-in'
+              }
             >
               <ObjetCard objet={objetActuel} onSelect={onTapCarte} />
             </div>
-
-            {objetActuel.rarete === 'secret_rare' && (
-              <div
-                className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl blur-md animate-shimmer"
-                aria-hidden
-              />
-            )}
-            {objetActuel.rarete === 'epique' && (
-              <div
-                className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl bg-white/30 blur-md animate-shimmer"
-                aria-hidden
-              />
-            )}
-            {objetActuel.rarete === 'legendaire' && (
-              <div
-                className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl bg-amber-300/50 blur-md animate-shimmer"
-                aria-hidden
-              />
-            )}
           </div>
         )}
 
