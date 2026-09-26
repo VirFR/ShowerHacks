@@ -1,11 +1,11 @@
 import type { Objet } from '@/types'
 
 /**
- * Booster-only item pool (62 items). Combat is resolved by the circular
- * tournament in `lib/combat.ts` using `attaque`/`defense` and the position
- * of every item (starters + this pool) in the tournament order — rarity
- * here only affects how likely an item is to drop from a booster (see
- * `lib/boosters.ts`).
+ * Booster-only item pool (40 items per category; brainrot cards are set
+ * aside in `objetsBrainrot.ts`). Combat is resolved by the category chart in
+ * `lib/engine/chart.ts`, explicit wins, then `attaque`/`defense` (see
+ * `lib/combat.ts`) — rarity here only affects how likely an item is to drop
+ * from a booster (see `lib/boosters.ts`).
  */
 export const OBJETS_BOOSTER_MOCK: Objet[] = [
   {
@@ -62,6 +62,17 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     icone: '⚔️',
     rarete: 'epique',
     description: "Cuts paper before it even hits the floor.",
+  },
+  {
+    id: 'obj-09',
+    nom: 'Crab Claw',
+    attaque: 6,
+    defense: 6,
+    categorie: 'fight',
+    imageUrl: '/objets/obj-09.svg',
+    icone: '🦀',
+    rarete: 'rare',
+    description: "A natural pincer, balanced and surprisingly tough.",
   },
   {
     id: 'obj-10',
@@ -258,6 +269,28 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     description: "Fixes, sticks, immobilizes. The universal answer.",
   },
   {
+    id: 'obj-27',
+    nom: 'Flashlight',
+    attaque: 4,
+    defense: 4,
+    categorie: 'fight',
+    imageUrl: '/objets/obj-27.svg',
+    icone: '🔦',
+    rarete: 'peu_commun',
+    description: "A beam that blinds more than it hurts.",
+  },
+  {
+    id: 'obj-28',
+    nom: 'Power Drill',
+    attaque: 9,
+    defense: 4,
+    categorie: 'fight',
+    imageUrl: '/objets/obj-28.svg',
+    icone: '🛠️',
+    rarete: 'rare',
+    description: "Pierces almost anything that doesn't move fast enough.",
+  },
+  {
     id: 'obj-29',
     nom: 'Crossbow',
     attaque: 10,
@@ -300,6 +333,17 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     icone: '🥊',
     rarete: 'rare',
     description: "One hook is enough to knock anyone off balance.",
+  },
+  {
+    id: 'obj-33',
+    nom: 'Circular Saw',
+    attaque: 10,
+    defense: 4,
+    categorie: 'fight',
+    imageUrl: '/objets/obj-33.svg',
+    icone: '🪚',
+    rarete: 'rare',
+    description: "A blade spinning faster than any reflex.",
   },
   {
     id: 'obj-34',
@@ -1235,50 +1279,6 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     icone: '🚀',
     rarete: 'secret_rare',
     description: 'Leaves the planet, then lands itself to do it again.',
-  },
-  {
-    id: 'obj-129',
-    nom: 'Spear',
-    attaque: 6,
-    defense: 4,
-    categorie: 'fight',
-    imageUrl: '/objets/obj-129.svg',
-    icone: '🔱',
-    rarete: 'commun',
-    description: 'Keeps things at a distance, permanently.',
-  },
-  {
-    id: 'obj-131',
-    nom: 'Longbow',
-    attaque: 8,
-    defense: 4,
-    categorie: 'fight',
-    imageUrl: '/objets/obj-131.svg',
-    icone: '🏹',
-    rarete: 'peu_commun',
-    description: 'Won wars long before gunpowder existed.',
-  },
-  {
-    id: 'obj-132',
-    nom: 'Mace',
-    attaque: 8,
-    defense: 5,
-    categorie: 'fight',
-    imageUrl: '/objets/obj-132.svg',
-    icone: '🔨',
-    rarete: 'peu_commun',
-    description: 'Armor doesn’t care about edges. It cares about this.',
-  },
-  {
-    id: 'obj-135',
-    nom: 'Flintlock Pistol',
-    attaque: 9,
-    defense: 3,
-    categorie: 'fight',
-    imageUrl: '/objets/obj-135.svg',
-    icone: '🔫',
-    rarete: 'rare',
-    description: 'One shot, then a long reload. Made it count.',
   },
   {
     id: 'obj-139',

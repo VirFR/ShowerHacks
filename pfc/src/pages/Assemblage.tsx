@@ -1,4 +1,5 @@
 import { useState, type DragEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Bouton } from '@/components/Bouton'
 import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
@@ -6,31 +7,17 @@ import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
-import { trouverRecette } from '@/lib/assemblage'
 import { ORDRE_RARETE } from '@/lib/format'
 import { useSession } from '@/lib/session'
-import { trouverObjet } from '@/mocks'
-import type { Objet, ResultatAssemblage } from '@/types'
+import { estCarteDeBase, type Objet, type ResultatAssemblage } from '@/types'
 
 type Emplacement = 'a' | 'b'
 
-/**
- * Little-Alchemy-style resolution: any two owned cards can be tried, no
- * prior knowledge of the recipe required. A match consumes both ingredients
- * and produces the result (see `retirerObjets`/`ajouterObjets` in the page
- * component, which also unlocks the recipe in the recipe book).
- */
-function assembler(a: Objet, b: Objet): ResultatAssemblage {
-  if (a.id === b.id) {
-    return { succes: false, message: 'Can’t combine: you need two different cards.' }
-  }
-  const recette = trouverRecette(a.id, b.id)
-  const resultat = recette ? trouverObjet(recette.resultatId) : undefined
-  if (!recette || !resultat) {
-    return { succes: false, message: `Can’t combine: no known recipe for ${a.nom} + ${b.nom}.` }
-  }
-  return { succes: true, message: `You crafted ${resultat.nom}!`, objetResultat: resultat }
-}
+/** Same inventory copy (two copies of one item are different cards). */
+const memeCopie = (a: Objet | null, b: Objet | null) => Boolean(a && b && a.inventaireId === b.inventaireId)
+
+/** A copy can't sit in both slots, except a base card (infinite: Mossy Rock + Mossy Rock). */
+const exclusif = (a: Objet | null, b: Objet) => memeCopie(a, b) && !estCarteDeBase(b)
 
 interface SlotProps {
   emplacement: Emplacement
@@ -84,12 +71,13 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
 
 /** /crafting — Combine two items (drag & drop or two-click selection). */
 export function Assemblage() {
-  const { joueur, ajouterObjets, retirerObjets } = useSession()
+  const { joueur, crafter } = useSession()
   const inventaire = (joueur?.inventaire ?? []).toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
   const [slotA, setSlotA] = useState<Objet | null>(null)
   const [slotB, setSlotB] = useState<Objet | null>(null)
   const [resultat, setResultat] = useState<ResultatAssemblage | null>(null)
   const [survol, setSurvol] = useState<Emplacement | null>(null)
+  const [enCours, setEnCours] = useState(false)
 
   const placer = (objet: Objet, emplacement?: Emplacement) => {
     setResultat(null)
@@ -97,10 +85,10 @@ export function Assemblage() {
     const cible: Emplacement = emplacement ?? (slotA && !slotB ? 'b' : 'a')
     if (cible === 'a') {
       setSlotA(objet)
-      if (slotB?.id === objet.id) setSlotB(null)
+      if (exclusif(slotB, objet)) setSlotB(null)
     } else {
       setSlotB(objet)
-      if (slotA?.id === objet.id) setSlotA(null)
+      if (exclusif(slotA, objet)) setSlotA(null)
     }
   }
 
@@ -116,29 +104,35 @@ export function Assemblage() {
     setResultat(null)
   }
 
-  /** Tries the combination: on success, consumes the two ingredients and adds the crafted card. */
-  const combiner = () => {
-    if (!slotA || !slotB) return
-    const issue = assembler(slotA, slotB)
-    setResultat(issue)
-    if (issue.succes && issue.objetResultat) {
-      retirerObjets([slotA.id, slotB.id])
-      ajouterObjets([issue.objetResultat])
-      setSlotA(null)
-      setSlotB(null)
+  /**
+   * Tries the combination (any two owned cards, no prior knowledge needed).
+   * On success both ingredients are consumed and the crafted card is added.
+   */
+  const combiner = async () => {
+    if (!slotA || !slotB || enCours) return
+    setEnCours(true)
+    try {
+      const issue = await crafter(slotA, slotB)
+      setResultat(issue)
+      if (issue.succes) {
+        setSlotA(null)
+        setSlotB(null)
+      }
+    } finally {
+      setEnCours(false)
     }
   }
 
-  // Native HTML5 drag & drop: the item id travels through dataTransfer.
+  // Native HTML5 drag & drop: the copy id travels through dataTransfer.
   const onDragStart = (e: DragEvent, objet: Objet) => {
-    e.dataTransfer.setData('text/plain', objet.id)
+    e.dataTransfer.setData('text/plain', objet.inventaireId ?? objet.id)
     e.dataTransfer.effectAllowed = 'move'
   }
   const onDrop = (e: DragEvent, emplacement: Emplacement) => {
     e.preventDefault()
     setSurvol(null)
     const id = e.dataTransfer.getData('text/plain')
-    const objet = inventaire.find((o) => o.id === id)
+    const objet = inventaire.find((o) => (o.inventaireId ?? o.id) === id)
     if (objet) placer(objet, emplacement)
   }
 
@@ -150,7 +144,7 @@ export function Assemblage() {
     <>
       <PageHeader
         titre="Crafting"
-        sousTitre="Combine two cards to create a new one."
+        sousTitre="Combine two cards to create a new one. Rock, leaf and scissors are infinite: they are never used up."
         action={
           (slotA || slotB) && (
             <Bouton variante="fantome" taille="sm" onClick={reinitialiser}>
@@ -168,7 +162,7 @@ export function Assemblage() {
         </div>
 
         <div className="mt-5 text-center">
-          <Bouton taille="lg" disabled={!slotA || !slotB} onClick={combiner}>
+          <Bouton taille="lg" disabled={!slotA || !slotB || enCours} onClick={combiner}>
             <Icon name="flask" size={18} />
             Combine
           </Bouton>
@@ -185,6 +179,15 @@ export function Assemblage() {
             <p className={`text-lg font-bold ${resultat.succes ? 'text-succes' : 'text-echec'}`}>
               {resultat.message}
             </p>
+            {resultat.nouvelleDecouverte && (
+              <p className="mt-1 text-sm text-texte-2">
+                New discovery! Its recipe is now in your{' '}
+                <Link to="/recipes" className="text-accent-2 hover:underline">
+                  recipe book
+                </Link>
+                .
+              </p>
+            )}
             {resultat.objetResultat && (
               <div className="mx-auto mt-3 max-w-xs">
                 <ObjetCard objet={resultat.objetResultat} />
@@ -197,11 +200,11 @@ export function Assemblage() {
       <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {inventaire.map((objet, i) => (
-          <div key={`${objet.id}-${i}`} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
+          <div key={objet.inventaireId ?? `${objet.id}-${i}`} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
             <ObjetCard
               objet={objet}
               compact
-              selectionne={slotA?.id === objet.id || slotB?.id === objet.id}
+              selectionne={memeCopie(slotA, objet) || memeCopie(slotB, objet)}
               onSelect={(o) => placer(o)}
             />
           </div>
