@@ -313,19 +313,6 @@ body {
   animation: flash 0.45s ease-out forwards;
 }
 
-@keyframes shimmer-sweep {
-  0% {
-    transform: translateX(-120%) rotate(15deg);
-  }
-  100% {
-    transform: translateX(220%) rotate(15deg);
-  }
-}
-
-.animate-shimmer {
-  animation: shimmer-sweep 1.6s ease-in-out infinite;
-}
-
 /* Emballage du booster : feuille d'or métallisée (mêmes bandes clair/sombre
    que l'ancien argent, juste recolorées, pour garder le rendu "aluminium brossé") */
 .foil-pack {
@@ -425,72 +412,33 @@ body {
   transform-style: preserve-3d;
 }
 
-/* Pulsing ambient halo behind a revealed card, from `rare` upward. Same
-   pulse shape for every tier; only the color and intensity escalate. */
-@keyframes glow-pulse {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(0.95);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
-}
-
-.animate-glow-rare {
-  background: radial-gradient(closest-side, rgba(56, 189, 248, 0.7), rgba(56, 189, 248, 0.15) 70%, transparent 100%);
-  filter: blur(14px);
-  animation: glow-pulse 2.2s ease-in-out infinite;
-}
-
-.animate-glow-epic {
-  background: radial-gradient(closest-side, rgba(232, 121, 249, 0.8), rgba(232, 121, 249, 0.18) 70%, transparent 100%);
+/* Static halo behind a revealed rare-or-better card: fixed in place, no
+   sweep or pulse, just highlights the whole card at a rarity-tinted color. */
+.rarity-glow {
   filter: blur(18px);
-  animation: glow-pulse 2s ease-in-out infinite;
 }
 
-.animate-glow-legendary {
-  background: radial-gradient(closest-side, rgba(251, 191, 36, 0.9), rgba(251, 191, 36, 0.2) 70%, transparent 100%);
-  filter: blur(20px);
-  animation: glow-pulse 1.8s ease-in-out infinite;
+/* Stops hold most of their color out to ~60% of the box, since the opaque
+   card itself covers roughly the inner two-thirds: what's left needs to
+   still read as a halo in the visible ring around the card. */
+.rarity-glow-rare {
+  background: radial-gradient(closest-side, rgba(2, 132, 199, 0.8) 55%, rgba(2, 132, 199, 0.4) 80%, transparent 100%);
 }
 
-/* Secret rare: same pulse, plus a slow hue-rotate so the white glow drifts through color. */
-@keyframes glow-pulse-hue {
-  0% {
-    opacity: 0.4;
-    transform: scale(0.95);
-    filter: blur(22px) hue-rotate(0deg);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.08);
-    filter: blur(22px) hue-rotate(180deg);
-  }
-  100% {
-    opacity: 0.4;
-    transform: scale(0.95);
-    filter: blur(22px) hue-rotate(360deg);
-  }
+.rarity-glow-epique {
+  background: radial-gradient(closest-side, rgba(192, 38, 211, 0.8) 55%, rgba(192, 38, 211, 0.4) 80%, transparent 100%);
 }
 
-.animate-glow-secret {
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.9), rgba(196, 181, 253, 0.3) 70%, transparent 100%);
-  animation: glow-pulse-hue 2.6s ease-in-out infinite;
+.rarity-glow-legendaire {
+  background: radial-gradient(closest-side, rgba(217, 119, 6, 0.85) 55%, rgba(217, 119, 6, 0.45) 80%, transparent 100%);
 }
 
-/* Reflet arc-en-ciel des objets secret rare (holographique) */
-.shimmer-holo {
-  background-image: linear-gradient(
-    100deg,
-    transparent 15%,
-    rgba(255, 120, 150, 0.55) 30%,
-    rgba(255, 210, 120, 0.55) 42%,
-    rgba(140, 255, 170, 0.55) 54%,
-    rgba(120, 190, 255, 0.55) 66%,
-    rgba(220, 140, 255, 0.55) 80%,
-    transparent 95%
+.rarity-glow-secret {
+  background: radial-gradient(
+    closest-side,
+    rgba(31, 35, 55, 0.55) 45%,
+    rgba(217, 70, 153, 0.55) 65%,
+    rgba(2, 132, 199, 0.4) 85%,
+    transparent 100%
   );
 }
