@@ -112,6 +112,23 @@ Environment variables to declare in Vercel (**Settings → Environment Variables
 | `/leaderboard` | `pages/Classement.tsx`  | Score / games / win rate table                                         |
 | `/profile`     | `pages/Profil.tsx`      | Sign in to a test account, profile card, switch account                |
 
+## Card art
+
+Every item picture in `public/objets/` is a 64×64 pixel-art sprite generated from
+`scripts/pixel-art/items.mjs`. Each item is a tiny drawing function that paints
+shapes (polygons, ellipses, lines, rings, stars) onto a pixel canvas; the
+rasterizer in `scripts/pixel-art/raster.mjs` snaps them to the grid, adds a
+1px outline and a bottom-right shade, and writes a crisp SVG. Edit or add an
+item there, then run:
+
+```bash
+npm run art            # all items
+npm run art obj-12     # just one
+```
+
+The script fails if an item in the mocks has no drawing. Keep shapes inside
+2..62 so the outline fits.
+
 ## Code structure
 
 ```
