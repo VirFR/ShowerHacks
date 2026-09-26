@@ -63,7 +63,7 @@ export function ObjetDetail() {
       >
         <ObjetImage
           objet={objet}
-          className="h-40 w-40 shrink-0 self-center bg-fond/40 ring-1 ring-black/30 sm:self-start"
+          className="h-40 w-40 shrink-0 self-center bg-fond/40 p-3 ring-1 ring-black/30 sm:self-start"
         />
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
