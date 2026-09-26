@@ -44,6 +44,17 @@ VITE_SUPABASE_ANON_KEY=votre-cle-anon-publique
 Elles se trouvent dans le dashboard Supabase : **Project Settings → API**.
 Si elles sont absentes, `supabase` vaut `null` et `getSupabase()` lève une erreur explicite.
 
+## Déploiement sur Vercel
+
+Le dépôt contient deux fichiers `vercel.json` :
+
+- `vercel.json` à la racine : indique à Vercel de builder le sous-dossier `pfc/` (`npm install --prefix pfc`, `npm run build --prefix pfc`, sortie `pfc/dist`). Fonctionne avec le **Root Directory** laissé à la racine.
+- `pfc/vercel.json` : utilisé si vous réglez **Root Directory** sur `pfc` dans les paramètres du projet Vercel.
+
+Les deux contiennent la réécriture `/(.*) → /index.html`, indispensable pour que les routes de react-router (`/combat`, `/objet/obj-01`…) répondent lors d'un accès direct ou d'un rafraîchissement, sinon Vercel renvoie une 404.
+
+Variables d'environnement à déclarer dans Vercel (**Settings → Environment Variables**) le jour où Supabase est branché : `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`. Sans elles, le site tourne sur les mocks.
+
 ## Pages et routes
 
 | Route          | Page                    | Contenu actuel                                                     |
