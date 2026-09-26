@@ -74,7 +74,7 @@ function useMockSession(): Session {
 
   /** Adds booster/craft items (each copy gets its own id) and unlocks any recipe they complete. */
   const ajouterObjets = useCallback(
-    (objets: Objet[]) => {
+    async (objets: Objet[]) => {
       if (!joueurId || objets.length === 0) return
       setInventairesExtra((prev) => {
         const copies = objets.map((o, i) => ({ ...o, inventaireId: `${joueurId}-${Date.now().toString(36)}-${i}-${o.id}` }))
@@ -259,11 +259,16 @@ function useSupabaseSession(): Session {
   }, [])
 
   const ajouterObjets = useCallback(
-    (objets: Objet[]) => {
+    async (objets: Objet[]) => {
       if (!userId || objets.length === 0) return
-      ajouterObjetsDistant(userId, objets)
-        .then(() => charger(userId))
-        .catch((e) => console.error('[PFC] inventory insert failed', e))
+      try {
+        await ajouterObjetsDistant(userId, objets)
+      } catch (e) {
+        // Typically a card missing from the `items` table (catalog seed 0002 not applied).
+        console.error('[PFC] inventory insert failed', e)
+        throw e
+      }
+      await charger(userId)
     },
     [userId, charger],
   )
