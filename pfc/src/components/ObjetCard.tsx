@@ -7,22 +7,20 @@ import { StatBadge } from './StatBadge'
 
 interface ObjetCardProps {
   objet: Objet
-  /** Si fourni, la carte devient un bouton sélectionnable. Sinon, un lien vers /objet/:id. */
+  /** If provided, the card becomes a selectable button. Otherwise it links to /item/:id. */
   onSelect?: (objet: Objet) => void
   selectionne?: boolean
-  /** Masque le libellé de rareté (grille dense). */
+  /** Hides the rarity label and description (dense grid). */
   compact?: boolean
 }
 
-/** Carte d'objet réutilisée par l'inventaire, le combat et l'assemblage. */
+/** Item card shared by the inventory, battle and crafting pages. */
 export function ObjetCard({ objet, onSelect, selectionne = false, compact = false }: ObjetCardProps) {
   const contenu = (
     <>
       <ObjetImage objet={objet} className="h-20 w-20" />
       <div className="min-w-0 flex-1 text-left">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="truncate font-semibold leading-tight">{objet.nom}</h3>
-        </div>
+        <h3 className="truncate font-semibold leading-tight">{objet.nom}</h3>
         {!compact && (
           <p className={`mt-0.5 text-xs ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
         )}
@@ -53,7 +51,7 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
   }
 
   return (
-    <Link to={`/objet/${objet.id}`} className={classes}>
+    <Link to={`/item/${objet.id}`} className={classes}>
       {contenu}
     </Link>
   )

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 interface PageHeaderProps {
   titre: string
   sousTitre?: string
-  /** Élément affiché à droite du titre (bouton, badge…). */
+  /** Element rendered to the right of the title (button, badge…). */
   action?: ReactNode
 }
 

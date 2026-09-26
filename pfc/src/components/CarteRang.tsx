@@ -1,5 +1,5 @@
 import type { Rang } from '@/types'
-import { CLASSE_RANG } from '@/lib/format'
+import { CLASSE_RANG, formaterNombre } from '@/lib/format'
 
 interface CarteRangProps {
   rang: Rang
@@ -7,7 +7,7 @@ interface CarteRangProps {
   taille?: 'sm' | 'lg'
 }
 
-/** Médaillon de rang avec dégradé, réutilisé sur l'accueil et le profil. */
+/** Rank medallion with a gradient, reused on the home and profile pages. */
 export function CarteRang({ rang, score, taille = 'sm' }: CarteRangProps) {
   const grand = taille === 'lg'
   return (
@@ -24,7 +24,7 @@ export function CarteRang({ rang, score, taille = 'sm' }: CarteRangProps) {
       </div>
       <div>
         <p className={`font-bold ${grand ? 'text-2xl' : 'text-base'}`}>{rang}</p>
-        <p className="text-sm text-texte-2 tabular-nums">{score.toLocaleString('fr-FR')} pts</p>
+        <p className="text-sm text-texte-2 tabular-nums">{formaterNombre(score)} pts</p>
       </div>
     </div>
   )

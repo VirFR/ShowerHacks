@@ -5,11 +5,11 @@ interface StatBadgeProps {
 }
 
 const CONFIG = {
-  attaque: { icone: '⚔️', label: 'ATQ', classe: 'text-attaque' },
+  attaque: { icone: '⚔️', label: 'ATK', classe: 'text-attaque' },
   defense: { icone: '🛡️', label: 'DEF', classe: 'text-defense' },
 }
 
-/** Affiche une stat d'attaque ou de défense avec son icône. */
+/** Displays an attack or defense stat with its icon. */
 export function StatBadge({ type, valeur, taille = 'sm' }: StatBadgeProps) {
   const { icone, label, classe } = CONFIG[type]
   return (
@@ -19,10 +19,10 @@ export function StatBadge({ type, valeur, taille = 'sm' }: StatBadgeProps) {
         taille === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2.5 py-1 text-sm',
         classe,
       ].join(' ')}
-      title={type === 'attaque' ? 'Attaque' : 'Défense'}
+      title={type === 'attaque' ? 'Attack' : 'Defense'}
     >
       <span aria-hidden>{icone}</span>
-      <span className="sr-only">{type === 'attaque' ? 'Attaque' : 'Défense'} </span>
+      <span className="sr-only">{type === 'attaque' ? 'Attack' : 'Defense'} </span>
       <span className="text-texte-2">{label}</span> {valeur}
     </span>
   )

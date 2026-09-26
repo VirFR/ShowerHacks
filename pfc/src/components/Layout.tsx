@@ -2,8 +2,8 @@ import { Outlet } from 'react-router-dom'
 import { Navigation } from './Navigation'
 
 /**
- * Gabarit commun : navigation + zone de contenu.
- * Le padding bas (mobile) / gauche (desktop) réserve la place de la nav.
+ * Shared shell: navigation + content area.
+ * Bottom (mobile) / left (desktop) padding leaves room for the nav.
  */
 export function Layout() {
   return (

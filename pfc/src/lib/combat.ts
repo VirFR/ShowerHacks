@@ -1,24 +1,28 @@
 import type { Objet, ResultatCombat } from '@/types'
 import { OBJETS_MOCK } from '@/mocks/objets'
+import { OBJETS_BOOSTER_MOCK } from '@/mocks/objetsBooster'
 
 /**
- * Position de chaque objet sur le "cercle" du tournoi (ordre de OBJETS_MOCK).
- * Voir `resoudreParTournoiCirculaire` pour l'usage.
+ * Position of each item on the combat "circle" (starter items first, then
+ * every booster item, in catalog order). See `resoudreParTournoiCirculaire`.
  */
-const POSITION = new Map(OBJETS_MOCK.map((o, index) => [o.id, index]))
+const POSITION = new Map(
+  [...OBJETS_MOCK, ...OBJETS_BOOSTER_MOCK].map((o, index) => [o.id, index]),
+)
 
 /**
- * Résout un combat binaire entre deux objets : victoire, défaite ou égalité
- * (point de vue de `a`).
+ * Resolves a binary duel between two items: victory, defeat or draw (from
+ * `a`'s point of view).
  *
- * 1. Victoires explicites : un objet peut battre certains objets précis en
- *    plus du tournoi (voir `Objet.victoiresExplicites`), pour des exceptions
- *    ponctuelles qui font sens (ex: la hache finit par fendre le bouclier).
- * 2. Tournoi circulaire : à défaut de relation explicite, chaque objet bat
- *    la moitié des autres objets et perd contre l'autre moitié (voir
- *    `resoudreParTournoiCirculaire`). Chaque carte a donc toujours un
- *    résultat binaire face à toutes les autres, avec un taux de victoire
- *    garanti entre 40 % et 60 %, quel que soit le nombre total de cartes.
+ * 1. Explicit wins: an item can always beat certain specific items on top
+ *    of the tournament (see `Objet.victoiresExplicites`), for one-off
+ *    exceptions that make sense (e.g. the hatchet eventually splits the
+ *    shield).
+ * 2. Circular tournament: absent an explicit relation, every item beats
+ *    half of all other items and loses to the other half (see
+ *    `resoudreParTournoiCirculaire`). Every card therefore always has a
+ *    binary result against every other one, with a win rate guaranteed to
+ *    stay between 40% and 60% no matter how many cards exist.
  */
 export function resoudreCombat(a: Objet, b: Objet): ResultatCombat {
   if (a.id === b.id) return 'egalite'
@@ -32,24 +36,23 @@ export function resoudreCombat(a: Objet, b: Objet): ResultatCombat {
 }
 
 /**
- * Tournoi circulaire : les objets sont placés sur un cercle (ordre de
- * `OBJETS_MOCK`). Un objet bat tous ceux situés jusqu'à la moitié du cercle
- * "devant" lui, et perd contre ceux situés dans l'autre moitié. Avec un
- * nombre pair d'objets, les deux positions parfaitement opposées (à égale
- * distance dans les deux sens) sont départagées par leur position pour
- * qu'une seule des deux gagne — sans quoi ni l'une ni l'autre ne l'emporte.
+ * Circular tournament: items sit on a circle (catalog order). An item beats
+ * every item up to halfway around the circle "ahead" of it, and loses to
+ * the other half. With an even number of items, the two positions exactly
+ * opposite each other (equal distance both ways) are broken by position so
+ * exactly one of them wins — otherwise neither would.
  *
- * Résultat : sur N-1 adversaires, chaque objet en bat toujours exactement
- * la moitié (± 1 sur un nombre pair d'objets), donc un taux de victoire
- * proche de 50 %, jamais sous 40 % ni au-dessus de 60 %.
+ * Result: out of N-1 opponents, every item always beats exactly half of
+ * them (± 1 on an even item count), so a win rate close to 50%, never under
+ * 40% nor above 60%.
  */
 function resoudreParTournoiCirculaire(a: Objet, b: Objet): ResultatCombat {
   const posA = POSITION.get(a.id)
   const posB = POSITION.get(b.id)
   const n = POSITION.size
 
-  // Repli si un objet n'est pas (encore) intégré au tournoi : comparaison
-  // de stats classique, pour ne jamais planter l'affichage.
+  // Fallback if an item isn't (yet) part of the tournament: plain stat
+  // comparison, so the UI never crashes.
   if (posA === undefined || posB === undefined) {
     const scoreA = a.attaque - b.defense
     const scoreB = b.attaque - a.defense
@@ -65,4 +68,15 @@ function resoudreParTournoiCirculaire(a: Objet, b: Objet): ResultatCombat {
   }
 
   return distance < moitie ? 'victoire' : 'defaite'
+}
+
+/** One-line explanation of the outcome, for the battle screen and item detail page. */
+export function expliquerCombat(mien: Objet, adverse: Objet): string {
+  if (mien.id === adverse.id) return `${mien.nom} vs ${adverse.nom}: it's a mirror match.`
+  const resultat = resoudreCombat(mien, adverse)
+  const [gagnant, perdant] = resultat === 'victoire' ? [mien, adverse] : [adverse, mien]
+  if (gagnant.victoiresExplicites?.includes(perdant.id)) {
+    return `${gagnant.nom} always gets the better of ${perdant.nom}.`
+  }
+  return `${gagnant.nom} edges out ${perdant.nom}.`
 }

@@ -11,22 +11,22 @@ import { ObjetDetail } from '@/pages/ObjetDetail'
 import { Profil } from '@/pages/Profil'
 
 /**
- * Table des routes. Chaque page est un composant indépendant dans `src/pages`,
- * ce qui permet de se répartir le travail page par page.
+ * Route table. Each page is an independent component in `src/pages`,
+ * so the team can split the work page by page.
  */
 const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { path: '/', element: <Navigate to="/accueil" replace /> },
-      { path: '/accueil', element: <Accueil /> },
-      { path: '/combat', element: <Combat /> },
-      { path: '/inventaire', element: <Inventaire /> },
-      { path: '/objet/:id', element: <ObjetDetail /> },
+      { path: '/', element: <Navigate to="/home" replace /> },
+      { path: '/home', element: <Accueil /> },
+      { path: '/battle', element: <Combat /> },
+      { path: '/inventory', element: <Inventaire /> },
+      { path: '/item/:id', element: <ObjetDetail /> },
       { path: '/boosters', element: <Boosters /> },
-      { path: '/assemblage', element: <Assemblage /> },
-      { path: '/classement', element: <Classement /> },
-      { path: '/profil', element: <Profil /> },
+      { path: '/crafting', element: <Assemblage /> },
+      { path: '/leaderboard', element: <Classement /> },
+      { path: '/profile', element: <Profil /> },
       { path: '*', element: <NotFound /> },
     ],
   },

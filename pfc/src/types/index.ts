@@ -1,18 +1,21 @@
 /**
- * Types de base du jeu PFC.
+ * Core types of the PFC game.
  *
- * Ces interfaces sont volontairement minimales : elles servent de contrat
- * commun entre les pages et seront enrichies au fur et à mesure
- * (crafting, combat réel, auth…).
+ * These interfaces are intentionally minimal: they act as a shared contract
+ * between pages and will grow over time (crafting, real battles, auth…).
  */
 
-/** Catégories d'objets (par thème, pas par rôle de combat). */
+/** Item categories, by theme (not by combat role). */
 export type Categorie = 'fight' | 'plantes' | 'ressources' | 'espace' | 'brainrot'
 
 export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'brainrot']
 
-export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
+export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
+/**
+ * An item. Combat is resolved from `attaque`/`defense` plus the circular
+ * tournament in `lib/combat.ts` — category is purely organizational.
+ */
 export interface Objet {
   id: string
   nom: string
@@ -20,31 +23,31 @@ export interface Objet {
   defense: number
   categorie: Categorie
   imageUrl: string
-  /** Emoji utilisé en secours si l'image ne charge pas. */
+  /** Emoji fallback used when the image fails to load. */
   icone: string
   rarete: Rarete
   /**
-   * Victoires explicites : ids des objets que cet objet bat toujours, en
-   * plus du tournoi circulaire (voir `lib/combat.ts`). Sert à donner à un
-   * objet une exception logique ponctuelle (ex: la hache finit par fendre
-   * le bouclier) sans casser l'équilibre global des taux de victoire.
+   * Explicit wins: ids of items this one always beats, on top of the
+   * circular tournament (see `lib/combat.ts`). Gives an item a one-off
+   * logical exception (e.g. the hatchet eventually splits the shield)
+   * without breaking the overall balance of win rates.
    */
   victoiresExplicites?: string[]
 }
 
 export type Rang =
   | 'Bronze'
-  | 'Argent'
-  | 'Or'
-  | 'Platine'
-  | 'Diamant'
-  | 'Maître'
+  | 'Silver'
+  | 'Gold'
+  | 'Platinum'
+  | 'Diamond'
+  | 'Master'
 
 export interface Joueur {
   id: string
   pseudo: string
   score: number
-  /** Objets possédés par le joueur. */
+  /** Items owned by the player. */
   inventaire: Objet[]
   rang: Rang
   avatarUrl?: string
@@ -52,7 +55,7 @@ export interface Joueur {
   nbVictoires: number
 }
 
-/** Une entrée du classement (données agrégées d'un joueur). */
+/** One leaderboard row (aggregated player data). */
 export interface EntreeClassement {
   position: number
   joueurId: string
@@ -60,13 +63,13 @@ export interface EntreeClassement {
   score: number
   nbParties: number
   nbVictoires: number
-  /** Ratio victoires / parties, entre 0 et 1. */
+  /** Wins / games played, between 0 and 1. */
   ratio: number
 }
 
 export type ResultatCombat = 'victoire' | 'defaite' | 'egalite'
 
-/** Historique d'un duel, tel qu'affiché sur la fiche d'un objet. */
+/** A past duel, as shown on an item's detail page. */
 export interface HistoriqueCombat {
   id: string
   date: string
@@ -76,23 +79,24 @@ export interface HistoriqueCombat {
   resultat: ResultatCombat
 }
 
-/** Stack de boosters d'un joueur. */
+/** A player's booster stack. */
 export interface StackBoosters {
-  /** Nombre de boosters actuellement disponibles. */
+  /** Boosters currently available. */
   actuel: number
-  /** Taille maximale du stack. */
+  /** Maximum stack size. */
   max: number
-  /** Date ISO à laquelle le prochain booster sera ajouté. */
+  /** ISO date at which the next booster is added. */
   prochainA: string
 }
 
-/** Résultat mock d'une tentative d'assemblage de deux objets. */
+/** Mock result of an attempt to combine two items. */
 export interface ResultatAssemblage {
   succes: boolean
   message: string
   objetResultat?: Objet
 }
 
-/** Constantes de gameplay partagées. */
-export const BOOSTERS_MAX = 10
+/** Shared gameplay constants. */
+export const BOOSTERS_MAX = 8
 export const BOOSTER_INTERVALLE_MS = 10 * 60 * 1000 // 10 minutes
+export const OBJETS_PAR_BOOSTER = 5

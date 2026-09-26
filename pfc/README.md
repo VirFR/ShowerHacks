@@ -1,102 +1,128 @@
-# PFC — Pierre Feuille Ciseaux évolué
+# PFC — Rock Paper Scissors, evolved
 
-Squelette de l'application web du jeu **PFC** : React 19 + Vite + TypeScript + Tailwind CSS v4 côté front, Supabase côté backend/DB.
+Web app skeleton for the **PFC** game: React 19 + Vite + TypeScript + Tailwind CSS v4 on the front end, Supabase for backend/DB.
 
-> État actuel : navigation fonctionnelle entre toutes les pages, données **mock** uniquement.
-> Pas encore de logique de combat réel, de crafting ni d'authentification.
+> Current state: working navigation between every page, **mock** data only.
+> Four test accounts (guilhem, airbus, virgile, mathieu) selectable from `/profile`,
+> three base items (Rock, Paper, Scissors) and the classic rule for duels.
+> No crafting, score persistence or real authentication yet.
 
-## Prérequis
+## Game rules
 
-- Node.js ≥ 20 (testé avec Node 22)
+Each item belongs to a category. An item simply **wins or loses** against another based on its category, exactly like rock-paper-scissors. There are no attack or defense stats.
+
+| Category | Beats    | Loses to |
+| -------- | -------- | -------- |
+| Rock     | Scissors | Paper    |
+| Paper    | Rock     | Scissors |
+| Scissors | Paper    | Rock     |
+
+Two items of the same category are a draw. The rules live in `src/lib/combat.ts` (`BEATS`, `resoudreCombat`, `expliquerCombat`).
+
+## Test accounts and session
+
+- Accounts are defined in `src/mocks/joueurs.ts`. Each one starts at 0 points, Bronze rank, with the three base items.
+- "Signing in" happens from `/profile` by clicking an account: no password. The chosen account is remembered in `localStorage` (key `pfc.joueurId`), so each browser or private tab can play as a different player.
+- The `useSession()` hook (`src/lib/session.ts`) exposes `joueur`, `comptes`, `connecter(id)` and `deconnecter()`. The provider is mounted in `main.tsx`.
+- Pages that need a player (home, battle, inventory, crafting) show `ConnexionRequise` until someone is signed in.
+- The opponent plays a random item from their inventory; scores are not recorded yet.
+
+## Prerequisites
+
+- Node.js ≥ 20 (tested with Node 22)
 - npm ≥ 10
 
-## Lancer le projet en local
+## Run locally
 
 ```bash
 cd pfc
 npm install
-cp .env.example .env      # puis renseignez vos clés Supabase (facultatif pour l'instant)
+cp .env.example .env      # then fill in your Supabase keys (optional for now)
 npm run dev
 ```
 
-L'app est servie sur <http://localhost:5173> et redirige `/` vers `/accueil`.
+The app is served on <http://localhost:5173> and redirects `/` to `/home`.
 
-Sans `.env`, un avertissement s'affiche en console et l'app tourne entièrement sur les mocks.
+Without a `.env`, a warning is printed in the console and the app runs entirely on mocks.
 
-### Autres scripts
+### Other scripts
 
-| Commande          | Rôle                                             |
-| ----------------- | ------------------------------------------------ |
-| `npm run dev`     | Serveur de dev avec rechargement à chaud         |
-| `npm run build`   | Vérification TypeScript (`tsc -b`) + build prod  |
-| `npm run preview` | Sert le build de production localement           |
-| `npm run lint`    | Lint avec oxlint                                 |
+| Command           | Role                                          |
+| ----------------- | --------------------------------------------- |
+| `npm run dev`     | Dev server with hot reload                    |
+| `npm run build`   | TypeScript check (`tsc -b`) + production build |
+| `npm run preview` | Serves the production build locally           |
+| `npm run lint`    | Lint with oxlint                              |
 
-## Configuration Supabase
+## Supabase configuration
 
-Le client est créé dans `src/lib/supabase.ts` à partir de deux variables d'environnement (jamais de clé en dur) :
+The client is created in `src/lib/supabase.ts` from two environment variables (never a hard-coded key):
 
 ```
-VITE_SUPABASE_URL=https://votre-projet.supabase.co
-VITE_SUPABASE_ANON_KEY=votre-cle-anon-publique
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-key
 ```
 
-Elles se trouvent dans le dashboard Supabase : **Project Settings → API**.
-Si elles sont absentes, `supabase` vaut `null` et `getSupabase()` lève une erreur explicite.
+Both are in the Supabase dashboard: **Project Settings → API**.
+If they are missing, `supabase` is `null` and `getSupabase()` throws an explicit error.
 
-## Déploiement sur Vercel
+## Deploying to Vercel
 
-Le dépôt contient deux fichiers `vercel.json` :
+The repository contains two `vercel.json` files:
 
-- `vercel.json` à la racine : indique à Vercel de builder le sous-dossier `pfc/` (`npm install --prefix pfc`, `npm run build --prefix pfc`, sortie `pfc/dist`). Fonctionne avec le **Root Directory** laissé à la racine.
-- `pfc/vercel.json` : utilisé si vous réglez **Root Directory** sur `pfc` dans les paramètres du projet Vercel.
+- `vercel.json` at the root: tells Vercel to build the `pfc/` subfolder (`npm install --prefix pfc`, `npm run build --prefix pfc`, output `pfc/dist`). Works with the **Root Directory** left at the repository root.
+- `pfc/vercel.json`: used if you set **Root Directory** to `pfc` in the Vercel project settings.
 
-Les deux contiennent la réécriture `/(.*) → /index.html`, indispensable pour que les routes de react-router (`/combat`, `/objet/obj-01`…) répondent lors d'un accès direct ou d'un rafraîchissement, sinon Vercel renvoie une 404.
+Both contain the `/(.*) → /index.html` rewrite, required so that react-router routes (`/battle`, `/item/pierre`…) respond on direct access or refresh; otherwise Vercel returns a 404.
 
-Variables d'environnement à déclarer dans Vercel (**Settings → Environment Variables**) le jour où Supabase est branché : `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`. Sans elles, le site tourne sur les mocks.
+Environment variables to declare in Vercel (**Settings → Environment Variables**) once Supabase is wired up: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Without them, the site runs on mocks.
 
-## Pages et routes
+## Pages and routes
 
-| Route          | Page                    | Contenu actuel                                                     |
-| -------------- | ----------------------- | ------------------------------------------------------------------ |
-| `/accueil`     | `pages/Accueil.tsx`     | Bouton Jouer, stack de boosters (x/10), aperçu du rang             |
-| `/combat`      | `pages/Combat.tsx`      | Sélection d'un objet, objet adverse mock, bouton Attaquer, résultat |
-| `/inventaire`  | `pages/Inventaire.tsx`  | Grille des objets possédés, filtre par catégorie                   |
-| `/objet/:id`   | `pages/ObjetDetail.tsx` | Fiche détail : stats, description, historique V/D mock             |
-| `/boosters`    | `pages/Boosters.tsx`    | Stack (max 10), bouton Ouvrir animé, timer 10 min                  |
-| `/assemblage`  | `pages/Assemblage.tsx`  | Drag & drop ou deux clics, résultat mock réussi/impossible         |
-| `/classement`  | `pages/Classement.tsx`  | Tableau score / parties / ratio                                    |
-| `/profil`      | `pages/Profil.tsx`      | Carte de profil, meilleurs objets, bouton Défier un ami            |
+| Route          | Page                    | Current content                                                        |
+| -------------- | ----------------------- | ---------------------------------------------------------------------- |
+| `/home`        | `pages/Accueil.tsx`     | Play button, booster stack (x/8), rank preview                         |
+| `/battle`      | `pages/Combat.tsx`      | Pick an opponent among the accounts, pick an item, Attack, result      |
+| `/inventory`   | `pages/Inventaire.tsx`  | Grid of owned items, category filter                                   |
+| `/item/:id`    | `pages/ObjetDetail.tsx` | Detail page: matchups, description, W/L history (empty for now)        |
+| `/boosters`    | `pages/Boosters.tsx`    | Stack (max 8), animated Open button (5 items), 10 min timer            |
+| `/crafting`    | `pages/Assemblage.tsx`  | Drag & drop or two clicks, mock result (every recipe fails for now)    |
+| `/leaderboard` | `pages/Classement.tsx`  | Score / games / win rate table                                         |
+| `/profile`     | `pages/Profil.tsx`      | Sign in to a test account, profile card, switch account                |
 
-## Structure du code
+## Code structure
 
 ```
 pfc/
-├── public/objets/        # Icônes SVG des objets mock
+├── public/objets/        # SVG icons of the base items
 ├── src/
-│   ├── components/       # UI partagée : Layout, Navigation, ObjetCard, Bouton, StatBadge…
+│   ├── components/       # Shared UI: Layout, Navigation, ObjetCard, Bouton, BadgeCategorie…
 │   ├── lib/
-│   │   ├── supabase.ts   # Client Supabase (variables d'env)
-│   │   └── format.ts     # Libellés, couleurs, helpers d'affichage
-│   ├── mocks/            # Données factices : 12 objets, 8 joueurs, classement, historique
-│   ├── pages/            # Une page par route
-│   ├── types/            # Interfaces : Objet, Joueur, EntreeClassement, StackBoosters…
-│   ├── App.tsx           # Table des routes (react-router)
-│   ├── main.tsx          # Point d'entrée
-│   └── index.css         # Tailwind + thème (tokens @theme) + animations
+│   │   ├── supabase.ts   # Supabase client (env variables)
+│   │   ├── session.ts    # Mock session (signed-in account, localStorage)
+│   │   ├── combat.ts     # Rock-paper-scissors rules
+│   │   └── format.ts     # Labels, colors, display helpers
+│   ├── mocks/            # Fake data: 3 base items, 4 accounts, leaderboard
+│   ├── pages/            # One page per route
+│   ├── types/            # Interfaces: Objet, Joueur, EntreeClassement, StackBoosters…
+│   ├── App.tsx           # Route table (react-router)
+│   ├── main.tsx          # Entry point
+│   └── index.css         # Tailwind + theme (@theme tokens) + animations
 ├── .env.example
-└── vite.config.ts        # Plugins React + Tailwind, alias `@/` → `src/`
+└── vite.config.ts        # React + Tailwind plugins, `@/` → `src/` alias
 ```
 
-Les imports utilisent l'alias `@/` (ex. `import { Objet } from '@/types'`).
+Imports use the `@/` alias (e.g. `import { Objet } from '@/types'`).
 
-## Se répartir le travail
+Identifiers in the code (components, types, variables) are still in French from the original scaffold; all user-facing text and routes are in English.
 
-Chaque page est indépendante et ne partage que les composants de `src/components`, les types et les mocks. Pistes de découpage à 4 :
+## Splitting the work
 
-1. **Combat** : règles pierre/feuille/ciseaux + stats, matchmaking, résultat réel (`pages/Combat.tsx`, futur `lib/combat.ts`).
-2. **Crafting / Boosters** : recettes d'assemblage, tirage des boosters, persistance du stack et du timer (`pages/Assemblage.tsx`, `pages/Boosters.tsx`).
-3. **Données / Supabase** : schéma des tables (objets, joueurs, inventaires, combats), remplacement progressif des mocks par des requêtes (`lib/supabase.ts`, `mocks/`).
-4. **Auth / Profil / Social** : connexion Supabase Auth, profil éditable, défi d'un ami, classement temps réel (`pages/Profil.tsx`, `pages/Classement.tsx`).
+Each page is independent and only shares the components in `src/components`, the types and the mocks. Suggested split for four people:
 
-Les fonctions `resultatMock` (Combat) et `assemblerMock` (Assemblage) sont les points d'entrée à remplacer par la vraie logique.
+1. **Battle**: matchmaking, real results on top of `lib/combat.ts`, score updates (`pages/Combat.tsx`).
+2. **Crafting / Boosters**: crafting recipes, booster draws, persistence of the stack and timer (`pages/Assemblage.tsx`, `pages/Boosters.tsx`).
+3. **Data / Supabase**: table schema (items, players, inventories, battles), gradual replacement of mocks with queries (`lib/supabase.ts`, `mocks/`).
+4. **Auth / Profile / Social**: Supabase Auth sign-in, editable profile, friend challenge, realtime leaderboard (`pages/Profil.tsx`, `pages/Classement.tsx`).
+
+`resoudreCombat` (`lib/combat.ts`) and `assemblerMock` (`pages/Assemblage.tsx`) are the entry points to build on; `SessionProvider` is to be replaced by Supabase Auth.
