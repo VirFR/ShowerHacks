@@ -168,7 +168,7 @@ export function Boosters() {
           >
             {/* Ambient glow, which grows further while tearing */}
             <div
-              className="pointer-events-none absolute inset-0 rounded-[28px] bg-or blur-2xl transition-opacity"
+              className="pointer-events-none absolute inset-0 rounded-xl bg-or blur-2xl transition-opacity"
               style={{ opacity: etat === 'dechirure' ? 0.25 + dragProgress * 0.65 : etat === 'ouverture' ? 0.9 : 0.25 }}
               aria-hidden
             />
@@ -176,7 +176,7 @@ export function Boosters() {
             {/* Top half */}
             <div
               className={[
-                'foil-pack pack-arche absolute inset-x-0 top-0 h-1/2 overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                'foil-pack pack-encoche absolute inset-x-0 top-0 h-1/2 overflow-hidden rounded-t-xl shadow-2xl shadow-black/50 ring-1 ring-white/40',
                 etat === 'ouverture' ? 'animate-tear-burst-haut' : '',
               ].join(' ')}
               style={
@@ -189,15 +189,15 @@ export function Boosters() {
               }
             >
               <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
-              <div className="foil-crimp absolute inset-x-3 top-1.5 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 left-1 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 right-1 rounded-full" aria-hidden />
+              <div className="foil-crimp absolute inset-x-3 top-3" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
             </div>
 
             {/* Bottom half */}
             <div
               className={[
-                'foil-pack absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-[22px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                'foil-pack absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-xl shadow-2xl shadow-black/50 ring-1 ring-white/40',
                 etat === 'ouverture' ? 'animate-tear-burst-bas' : '',
               ].join(' ')}
               style={
@@ -210,9 +210,9 @@ export function Boosters() {
               }
             >
               <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
-              <div className="foil-crimp absolute inset-x-3 bottom-1.5 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 left-1 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 right-1 rounded-full" aria-hidden />
+              <div className="foil-crimp absolute inset-x-3 bottom-1.5" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
             </div>
 
             {etat !== 'ouverture' && (
@@ -232,7 +232,7 @@ export function Boosters() {
             )}
 
             {etat === 'ouverture' && (
-              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-white animate-flash" aria-hidden />
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-white animate-flash" aria-hidden />
             )}
 
             {etat === 'dechirure' && dragProgress < 0.15 && (

@@ -231,9 +231,9 @@ body {
   );
 }
 
-/* Sommet en arche de la pochette, façon paquet cartonné debout */
-.pack-arche {
-  border-radius: 50% 50% 18px 18px / 38% 38% 18px 18px;
+/* Petite encoche triangulaire en haut du pack, comme sur un vrai booster à déchirer */
+.pack-encoche {
+  clip-path: polygon(0% 0%, 43% 0%, 47% 12px, 53% 12px, 57% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
 
 /* Reflet arc-en-ciel des objets secret rare (holographique) */
