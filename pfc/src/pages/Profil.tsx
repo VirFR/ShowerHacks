@@ -5,6 +5,7 @@ import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { Icon } from '@/components/Icon'
 import { ListeComptes } from '@/components/ListeComptes'
 import { Carte } from '@/components/Carte'
+import { EditionProfil } from '@/components/EditionProfil'
 import { CarteRang } from '@/components/CarteRang'
 import { ObjetCard } from '@/components/ObjetCard'
 import { PageHeader } from '@/components/PageHeader'
@@ -50,6 +51,7 @@ export function Profil() {
 
 function CarteProfil({ joueur }: { joueur: Joueur }) {
   const [defiEnvoye, setDefiEnvoye] = useState(false)
+  const [edition, setEdition] = useState(false)
 
   const position = CLASSEMENT_MOCK.find((e) => e.joueurId === joueur.id)?.position
   const ratio = joueur.nbParties ? joueur.nbVictoires / joueur.nbParties : 0
@@ -83,11 +85,14 @@ function CarteProfil({ joueur }: { joueur: Joueur }) {
             <Icon name={defiEnvoye ? 'check' : 'swords'} size={16} />
             {defiEnvoye ? 'Challenge sent (mock)' : 'Challenge a friend'}
           </Bouton>
-          <Bouton variante="secondaire" taille="sm" disabled title="Coming soon">
+          <Bouton variante="secondaire" taille="sm" onClick={() => setEdition((e) => !e)} aria-expanded={edition}>
+            <Icon name="user" size={14} />
             Edit profile
           </Bouton>
         </div>
       </Carte>
+
+      {edition && <EditionProfil joueur={joueur} onFermer={() => setEdition(false)} />}
 
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Carte className="text-center">

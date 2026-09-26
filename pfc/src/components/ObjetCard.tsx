@@ -10,7 +10,7 @@ interface ObjetCardProps {
   /** If provided, the card becomes a selectable button. Otherwise it links to /item/:id. */
   onSelect?: (objet: Objet) => void
   selectionne?: boolean
-  /** Hides the rarity label and description (dense grid). */
+  /** Small card for dense grids: name, picture and ATK / DEF only. */
   compact?: boolean
 }
 
@@ -25,7 +25,7 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
   const contenu = (
     <>
       <div className="text-center">
-        <h3 className="text-sm font-bold leading-tight">{objet.nom}</h3>
+        <h3 className={`font-bold leading-tight ${compact ? 'line-clamp-2 text-[11px]' : 'text-sm'}`}>{objet.nom}</h3>
         {!compact && (
           <p className={`text-[10px] font-semibold uppercase tracking-wide ${CLASSE_RARETE[objet.rarete]}`}>
             {LIBELLE_RARETE[objet.rarete]}
@@ -33,24 +33,37 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
         )}
       </div>
 
-      <div className="sticker-bg relative my-2 flex flex-1 items-center justify-center overflow-hidden rounded-lg border-2 border-ink/70">
-        <ObjetImage objet={objet} className="h-full w-full p-2" />
-        <div className="absolute right-1.5 top-1.5">
-          <BadgeCategorie categorie={objet.categorie} />
-        </div>
+      <div
+        className={`sticker-bg relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg border-2 border-ink/70 ${compact ? 'my-1' : 'my-2'}`}
+      >
+        <ObjetImage objet={objet} className={`h-full w-full ${compact ? 'p-1' : 'p-2'}`} />
+        {!compact && (
+          <div className="absolute right-1.5 top-1.5">
+            <BadgeCategorie categorie={objet.categorie} />
+          </div>
+        )}
       </div>
 
       {!compact && <p className="mb-1.5 line-clamp-2 text-center text-[11px] italic text-texte-2">{objet.description}</p>}
 
-      <div className="flex flex-wrap items-center justify-center gap-1.5">
-        <StatBadge type="attaque" valeur={objet.attaque} />
-        <StatBadge type="defense" valeur={objet.defense} />
-      </div>
+      {compact ? (
+        <p className="text-center text-[10px] font-extrabold tabular-nums">
+          <span className="text-attaque">{objet.attaque}</span>
+          <span className="text-texte-2"> / </span>
+          <span className="text-defense">{objet.defense}</span>
+        </p>
+      ) : (
+        <div className="flex flex-wrap items-center justify-center gap-1.5">
+          <StatBadge type="attaque" valeur={objet.attaque} />
+          <StatBadge type="defense" valeur={objet.defense} />
+        </div>
+      )}
     </>
   )
 
   const classes = [
-    'flex aspect-[3/4] w-full flex-col rounded-xl border-[3px] p-2.5 shadow-hard transition-all',
+    'flex aspect-[3/4] w-full flex-col rounded-xl border-[3px] shadow-hard transition-all',
+    compact ? 'p-1.5' : 'p-2.5',
     selectionne ? 'border-ink bg-carte ring-4 ring-or' : CLASSE_CARTE_RARETE[objet.rarete],
   ].join(' ')
 

@@ -24,7 +24,16 @@ export const CLE_STOCKAGE_RETRAITS = 'pfc.retraitsCopies'
 /** Mock mode: catalog ids of every item each account has ever owned (reveals recipes). */
 export const CLE_STOCKAGE_DECOUVERTES = 'pfc.decouvertes'
 
+/** Mock mode: username / avatar edits, per account. */
+export const CLE_STOCKAGE_PROFILS = 'pfc.profils'
+
 export type ModeSession = 'mock' | 'supabase'
+
+/** What the "Edit profile" form can change. `avatarUrl: null` falls back to the monogram. */
+export interface ModifProfil {
+  pseudo: string
+  avatarUrl: string | null
+}
 
 export interface Session {
   mode: ModeSession
@@ -62,6 +71,8 @@ export interface Session {
   terminerOnboarding: () => Promise<void>
   /** Reloads profile and inventory (after a battle, a booster…). */
   rafraichir: () => Promise<void>
+  /** Saves the username and avatar. Rejects with a player-facing message (username taken…). */
+  modifierProfil: (modif: ModifProfil) => Promise<void>
 }
 
 export const SessionContext = createContext<Session | null>(null)
@@ -156,4 +167,24 @@ export function useSession(): Session {
 /** True once the player has finished the first-login tutorial. */
 export function estOnboarde(joueur: Joueur | null): boolean {
   return Boolean(joueur?.onboardedAt)
+}
+
+/** Profile edits of the mock accounts, keyed by player id. */
+export function lireProfils(): Record<string, ModifProfil> {
+  try {
+    const brut = window.localStorage.getItem(CLE_STOCKAGE_PROFILS)
+    if (!brut) return {}
+    const valeur = JSON.parse(brut)
+    return valeur && typeof valeur === 'object' ? valeur : {}
+  } catch {
+    return {}
+  }
+}
+
+export function ecrireProfils(profils: Record<string, ModifProfil>) {
+  try {
+    window.localStorage.setItem(CLE_STOCKAGE_PROFILS, JSON.stringify(profils))
+  } catch {
+    // Storage unavailable (private browsing…): the edits stay in memory.
+  }
 }

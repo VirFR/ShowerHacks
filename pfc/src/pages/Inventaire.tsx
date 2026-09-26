@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { ObjetCard } from '@/components/ObjetCard'
+import { ChoixVue, InventaireVue } from '@/components/InventaireVue'
+import { empiler, useModeVue } from '@/lib/inventaire'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { useSession } from '@/lib/session'
@@ -8,10 +9,11 @@ import { libelleCategorie, ORDRE_RARETE } from '@/lib/format'
 
 type Filtre = Categorie | 'toutes'
 
-/** /inventory — Grid of owned items, filterable by category, common first and rarest last. */
+/** /inventory — Owned items as a grid or a list, filterable by category, common first and rarest last. */
 export function Inventaire() {
   const { joueur } = useSession()
   const [filtre, setFiltre] = useState<Filtre>('toutes')
+  const [mode, setMode] = useModeVue()
   const inventaire = joueur?.inventaire ?? []
 
   const objets = (filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre))
@@ -33,18 +35,21 @@ export function Inventaire() {
         sousTitre={`${total} card${total === 1 ? '' : 's'} owned`}
       />
 
-      <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
-        {filtres.map((f) => (
-          <button
-            key={f.valeur}
-            type="button"
-            onClick={() => setFiltre(f.valeur)}
-            aria-pressed={filtre === f.valeur}
-            className={filtre === f.valeur ? 'chip-active' : 'chip'}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-2">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
+          {filtres.map((f) => (
+            <button
+              key={f.valeur}
+              type="button"
+              onClick={() => setFiltre(f.valeur)}
+              aria-pressed={filtre === f.valeur}
+              className={filtre === f.valeur ? 'chip-active' : 'chip'}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <ChoixVue mode={mode} onChange={setMode} />
       </div>
 
       {objets.length === 0 ? (
@@ -52,11 +57,7 @@ export function Inventaire() {
           No cards in this category.
         </p>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {objets.map((objet, i) => (
-            <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
-          ))}
-        </div>
+        <InventaireVue piles={empiler(objets)} mode={mode} />
       )}
     </>
   )

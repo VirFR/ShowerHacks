@@ -1,5 +1,6 @@
 import { DEFAULT_CHART, type Chart } from '@/lib/engine'
 import { rangPourScore } from '@/lib/format'
+import type { ModifProfil } from '@/lib/session'
 import { getSupabase } from '@/lib/supabase'
 import type { Adversaire, Joueur, Objet, Rarete } from '@/types'
 
@@ -160,4 +161,34 @@ export async function ajouterObjetsDistant(userId: string, objets: Objet[]): Pro
     .from('inventory')
     .insert(objets.map((o) => ({ owner: userId, item_id: o.id })))
   if (error) throw error
+}
+
+export const PSEUDO_MIN = 3
+export const PSEUDO_MAX = 20
+
+/** Checks the edit form. Returns a player-facing error, or null when it can be saved. */
+export function verifierModifProfil({ pseudo, avatarUrl }: ModifProfil): string | null {
+  if (pseudo.length < PSEUDO_MIN || pseudo.length > PSEUDO_MAX) {
+    return `Your username must be ${PSEUDO_MIN} to ${PSEUDO_MAX} characters long.`
+  }
+  if (!/^[\p{L}\p{N}_.-]+$/u.test(pseudo)) {
+    return 'Use only letters, numbers, dots, dashes and underscores in your username.'
+  }
+  if (avatarUrl && !avatarUrl.startsWith('/') && !/^https:\/\/\S+$/.test(avatarUrl)) {
+    return 'The picture link must start with https://'
+  }
+  return null
+}
+
+/** Saves the signed-in player's username and avatar (the only profile columns they may update). */
+export async function modifierProfilDistant(userId: string, modif: ModifProfil): Promise<void> {
+  const { error } = await getSupabase()
+    .from('profiles')
+    .update({ username: modif.pseudo, avatar_url: modif.avatarUrl })
+    .eq('id', userId)
+  if (!error) return
+  // 23505: unique violation on `username`.
+  if (error.code === '23505') throw new Error('This username is already taken.')
+  console.error('[RPS] profile update failed', error)
+  throw new Error('Could not save your profile, try again.')
 }
