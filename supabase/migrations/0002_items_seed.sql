@@ -58,15 +58,7 @@ insert into public.items (id, name, category, attack, defense, image_url, rarity
   ('obj-54', 'Sun', 'espace', 20, 6, '/objets/obj-54.svg', 'secret_rare', 'The center of everything. Everyone orbits it eventually.', null),
   ('obj-55', 'Shooting Star', 'espace', 10, 4, '/objets/obj-55.svg', 'rare', 'Gone in a second, but everyone makes a wish.', null),
   ('obj-56', 'Miniature Black Hole', 'espace', 22, 2, '/objets/obj-56.svg', 'secret_rare', 'Small enough to hold. Terrifying to get close to.', null),
-  ('obj-57', 'Nebula', 'espace', 11, 11, '/objets/obj-57.svg', 'epic', 'A cloud of dust and light, slowly becoming something else.', null),
-  ('obj-58', 'Tralalero Tralala', 'brainrot', 17, 9, '/objets/obj-58.svg', 'secret_rare', 'A shark in sneakers. Don''t ask, just accept it.', null),
-  ('obj-59', 'Bombardiro Crocodilo', 'brainrot', 19, 7, '/objets/obj-59.svg', 'secret_rare', 'Half crocodile, half bomber plane. All chaos.', null),
-  ('obj-60', 'Tung Tung Tung Sahur', 'brainrot', 13, 8, '/objets/obj-60.svg', 'epic', 'Knocks with a rhythm nobody can predict.', null),
-  ('obj-61', 'Chimpanzini Bananini', 'brainrot', 9, 8, '/objets/obj-61.svg', 'rare', 'Part monkey, part banana, entirely unbothered.', null),
-  ('obj-62', 'Ballerina Cappuccina', 'brainrot', 8, 9, '/objets/obj-62.svg', 'rare', 'Pirouettes with a full cup balanced on her head. Never spills.', null),
-  ('obj-63', 'Lirili Larila', 'brainrot', 10, 12, '/objets/obj-63.svg', 'epic', 'An elephant with a cactus for a body. It just works.', null),
-  ('obj-64', 'Cappuccino Assassino', 'brainrot', 14, 6, '/objets/obj-64.svg', 'epic', 'Silent, caffeinated, and always one step ahead.', null),
-  ('obj-65', 'Boneca Ambalabu', 'brainrot', 6, 6, '/objets/obj-65.svg', 'common', 'Nobody''s quite sure what it is. It''s just vibing.', null)
+  ('obj-57', 'Nebula', 'espace', 11, 11, '/objets/obj-57.svg', 'epic', 'A cloud of dust and light, slowly becoming something else.', null)
 on conflict (id) do update set
   name = excluded.name,
   category = excluded.category,

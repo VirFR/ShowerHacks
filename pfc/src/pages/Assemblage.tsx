@@ -9,12 +9,15 @@ import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { ORDRE_RARETE } from '@/lib/format'
 import { useSession } from '@/lib/session'
-import type { Objet, ResultatAssemblage } from '@/types'
+import { estCarteDeBase, type Objet, type ResultatAssemblage } from '@/types'
 
 type Emplacement = 'a' | 'b'
 
 /** Same inventory copy (two copies of one item are different cards). */
 const memeCopie = (a: Objet | null, b: Objet | null) => Boolean(a && b && a.inventaireId === b.inventaireId)
+
+/** A copy can't sit in both slots, except a base card (infinite: Mossy Rock + Mossy Rock). */
+const exclusif = (a: Objet | null, b: Objet) => memeCopie(a, b) && !estCarteDeBase(b)
 
 interface SlotProps {
   emplacement: Emplacement
@@ -82,10 +85,10 @@ export function Assemblage() {
     const cible: Emplacement = emplacement ?? (slotA && !slotB ? 'b' : 'a')
     if (cible === 'a') {
       setSlotA(objet)
-      if (memeCopie(slotB, objet)) setSlotB(null)
+      if (exclusif(slotB, objet)) setSlotB(null)
     } else {
       setSlotB(objet)
-      if (memeCopie(slotA, objet)) setSlotA(null)
+      if (exclusif(slotA, objet)) setSlotA(null)
     }
   }
 
@@ -141,7 +144,7 @@ export function Assemblage() {
     <>
       <PageHeader
         titre="Crafting"
-        sousTitre="Combine two cards to create a new one."
+        sousTitre="Combine two cards to create a new one. Rock, leaf and scissors are infinite: they are never used up."
         action={
           (slotA || slotB) && (
             <Bouton variante="fantome" taille="sm" onClick={reinitialiser}>

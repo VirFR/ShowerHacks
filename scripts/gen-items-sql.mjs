@@ -70,6 +70,9 @@ const lignesRecettes = RECETTES.map((r) => {
 const sqlRecettes = `-- PFC · crafting recipes seed, GENERATED from pfc/src/mocks/recettes.ts by scripts/gen-items-sql.mjs.
 -- Re-run the script after changing the recipes. Recipes no longer in the file are removed.
 
+-- An item can have several recipes (older databases had a unique result).
+alter table public.recipes drop constraint if exists recipes_result_key;
+
 delete from public.recipes where (item_a, item_b) not in (values
 ${lignesRecettes.map((l) => l.replace(/, '[^']*'\)$/, ')')).join(',\n')}
 );

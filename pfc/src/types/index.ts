@@ -15,7 +15,8 @@ import type { BattleState, EngineCard, RewardTier, Side } from '@/lib/engine/typ
  */
 export type Categorie = string
 
-export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'brainrot']
+// 'brainrot' is set aside for now (see `mocks/objetsBrainrot.ts`).
+export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace']
 
 export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
@@ -117,6 +118,16 @@ export interface ResultatAssemblage {
 export interface Recette {
   resultatId: string
   ingredients: [string, string]
+}
+
+/**
+ * The three base cards (rock, leaf, scissors): every player owns them, and
+ * like Little Alchemy's elements they are infinite, never consumed by a craft.
+ */
+export const CARTES_DE_BASE = ['obj-01', 'obj-04', 'obj-07']
+
+export function estCarteDeBase(objet: Pick<Objet, 'id'>): boolean {
+  return CARTES_DE_BASE.includes(objet.id)
 }
 
 /** Shared gameplay constants. */

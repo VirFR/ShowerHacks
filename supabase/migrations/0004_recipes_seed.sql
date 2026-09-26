@@ -1,6 +1,9 @@
 -- PFC · crafting recipes seed, GENERATED from pfc/src/mocks/recettes.ts by scripts/gen-items-sql.mjs.
 -- Re-run the script after changing the recipes. Recipes no longer in the file are removed.
 
+-- An item can have several recipes (older databases had a unique result).
+alter table public.recipes drop constraint if exists recipes_result_key;
+
 delete from public.recipes where (item_a, item_b) not in (values
   ('obj-01', 'obj-01'),
   ('obj-04', 'obj-04'),
@@ -55,7 +58,36 @@ delete from public.recipes where (item_a, item_b) not in (values
   ('obj-14', 'obj-52'),
   ('obj-52', 'obj-55'),
   ('obj-35', 'obj-57'),
-  ('obj-19', 'obj-54')
+  ('obj-19', 'obj-54'),
+  ('obj-01', 'obj-50'),
+  ('obj-01', 'obj-21'),
+  ('obj-01', 'obj-49'),
+  ('obj-04', 'obj-25'),
+  ('obj-04', 'obj-21'),
+  ('obj-04', 'obj-18'),
+  ('obj-04', 'obj-49'),
+  ('obj-07', 'obj-25'),
+  ('obj-07', 'obj-21'),
+  ('obj-07', 'obj-41'),
+  ('obj-07', 'obj-18'),
+  ('obj-07', 'obj-49'),
+  ('obj-25', 'obj-25'),
+  ('obj-25', 'obj-50'),
+  ('obj-21', 'obj-25'),
+  ('obj-25', 'obj-41'),
+  ('obj-18', 'obj-25'),
+  ('obj-25', 'obj-49'),
+  ('obj-50', 'obj-50'),
+  ('obj-21', 'obj-50'),
+  ('obj-41', 'obj-50'),
+  ('obj-18', 'obj-50'),
+  ('obj-49', 'obj-50'),
+  ('obj-21', 'obj-21'),
+  ('obj-21', 'obj-41'),
+  ('obj-18', 'obj-21'),
+  ('obj-21', 'obj-49'),
+  ('obj-18', 'obj-49'),
+  ('obj-49', 'obj-49')
 );
 
 insert into public.recipes (item_a, item_b, result) values
@@ -112,5 +144,34 @@ insert into public.recipes (item_a, item_b, result) values
   ('obj-14', 'obj-52', 'obj-11'),
   ('obj-52', 'obj-55', 'obj-57'),
   ('obj-35', 'obj-57', 'obj-54'),
-  ('obj-19', 'obj-54', 'obj-56')
+  ('obj-19', 'obj-54', 'obj-56'),
+  ('obj-01', 'obj-50', 'obj-47'),
+  ('obj-01', 'obj-21', 'obj-13'),
+  ('obj-01', 'obj-49', 'obj-25'),
+  ('obj-04', 'obj-25', 'obj-50'),
+  ('obj-04', 'obj-21', 'obj-06'),
+  ('obj-04', 'obj-18', 'obj-15'),
+  ('obj-04', 'obj-49', 'obj-50'),
+  ('obj-07', 'obj-25', 'obj-22'),
+  ('obj-07', 'obj-21', 'obj-09'),
+  ('obj-07', 'obj-41', 'obj-21'),
+  ('obj-07', 'obj-18', 'obj-30'),
+  ('obj-07', 'obj-49', 'obj-47'),
+  ('obj-25', 'obj-25', 'obj-02'),
+  ('obj-25', 'obj-50', 'obj-02'),
+  ('obj-21', 'obj-25', 'obj-17'),
+  ('obj-25', 'obj-41', 'obj-14'),
+  ('obj-18', 'obj-25', 'obj-20'),
+  ('obj-25', 'obj-49', 'obj-43'),
+  ('obj-50', 'obj-50', 'obj-46'),
+  ('obj-21', 'obj-50', 'obj-18'),
+  ('obj-41', 'obj-50', 'obj-30'),
+  ('obj-18', 'obj-50', 'obj-15'),
+  ('obj-49', 'obj-50', 'obj-48'),
+  ('obj-21', 'obj-21', 'obj-08'),
+  ('obj-21', 'obj-41', 'obj-13'),
+  ('obj-18', 'obj-21', 'obj-29'),
+  ('obj-21', 'obj-49', 'obj-20'),
+  ('obj-18', 'obj-49', 'obj-31'),
+  ('obj-49', 'obj-49', 'obj-20')
 on conflict (item_a, item_b) do update set result = excluded.result;

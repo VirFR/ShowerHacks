@@ -1,0 +1,98 @@
+import type { Objet } from '@/types'
+
+/**
+ * Brainrot cards, set aside for now: they are out of boosters, crafting and
+ * the category filters. Kept here so that `trouverObjet` still resolves a
+ * copy a player already owns. To bring them back, move them into
+ * `OBJETS_BOOSTER_MOCK` and give them recipes in `recettes.ts`.
+ */
+export const OBJETS_BRAINROT_MIS_DE_COTE: Objet[] = [
+  {
+    id: 'obj-58',
+    nom: 'Tralalero Tralala',
+    attaque: 17,
+    defense: 9,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-58.svg',
+    icone: '🦈',
+    rarete: 'secret_rare',
+    description: "A shark in sneakers. Don't ask, just accept it.",
+  },
+  {
+    id: 'obj-59',
+    nom: 'Bombardiro Crocodilo',
+    attaque: 19,
+    defense: 7,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-59.svg',
+    icone: '🐊',
+    rarete: 'secret_rare',
+    description: "Half crocodile, half bomber plane. All chaos.",
+  },
+  {
+    id: 'obj-60',
+    nom: 'Tung Tung Tung Sahur',
+    attaque: 13,
+    defense: 8,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-60.svg',
+    icone: '🥁',
+    rarete: 'epique',
+    description: "Knocks with a rhythm nobody can predict.",
+  },
+  {
+    id: 'obj-61',
+    nom: 'Chimpanzini Bananini',
+    attaque: 9,
+    defense: 8,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-61.svg',
+    icone: '🐒',
+    rarete: 'rare',
+    description: "Part monkey, part banana, entirely unbothered.",
+  },
+  {
+    id: 'obj-62',
+    nom: 'Ballerina Cappuccina',
+    attaque: 8,
+    defense: 9,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-62.svg',
+    icone: '☕',
+    rarete: 'rare',
+    description: "Pirouettes with a full cup balanced on her head. Never spills.",
+  },
+  {
+    id: 'obj-63',
+    nom: 'Lirili Larila',
+    attaque: 10,
+    defense: 12,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-63.svg',
+    icone: '🐘',
+    rarete: 'epique',
+    description: "An elephant with a cactus for a body. It just works.",
+  },
+  {
+    id: 'obj-64',
+    nom: 'Cappuccino Assassino',
+    attaque: 14,
+    defense: 6,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-64.svg',
+    icone: '🥷',
+    rarete: 'epique',
+    description: "Silent, caffeinated, and always one step ahead.",
+  },
+  {
+    id: 'obj-65',
+    nom: 'Boneca Ambalabu',
+    attaque: 6,
+    defense: 6,
+    categorie: 'brainrot',
+    imageUrl: '/objets/obj-65.svg',
+    icone: '🪆',
+    rarete: 'commun',
+    description: "Nobody's quite sure what it is. It's just vibing.",
+  },
+]
