@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
-import { BadgeCategorie } from '@/components/BadgeCategorie'
 import { Bouton } from '@/components/Bouton'
 import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
-import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { tirerObjetPondere } from '@/lib/boosters'
-import { CLASSE_RARETE, formaterDuree, LIBELLE_RARETE } from '@/lib/format'
+import { formaterDuree } from '@/lib/format'
 import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
-import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
+import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet } from '@/types'
 
 /** /boosters — Booster stack, interactive tear-open, cards revealed one by one. */
 type EtatOuverture = 'idle' | 'dechirure' | 'ouverture' | 'cartes' | 'revele'
@@ -22,15 +20,6 @@ interface EtatStack {
 const MAX = BOOSTERS_MOCK.max
 /** Distance (px) to drag to tear the booster open. */
 const SEUIL_DECHIRURE_PX = 90
-
-const RARETE_GLOW: Record<Rarete, string> = {
-  commun: 'border-bordure',
-  peu_commun: 'border-succes/60 shadow-lg shadow-succes/25',
-  rare: 'border-defense/70 shadow-lg shadow-defense/30',
-  epique: 'border-accent-2 shadow-lg shadow-accent/40',
-  legendaire: 'border-or shadow-lg shadow-or/50',
-  secret_rare: 'border-white/70 shadow-2xl shadow-white/30',
-}
 
 export function Boosters() {
   const [stack, setStack] = useState<EtatStack>(() => ({
@@ -210,44 +199,38 @@ export function Boosters() {
         )}
 
         {etat === 'cartes' && objetActuel && (
-          <div
-            className="cursor-pointer select-none"
-            onClick={onTapCarte}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                onTapCarte()
-              }
-            }}
-            aria-label={`${objetActuel.nom}, tap to continue`}
-          >
+          <div className="perspective-dist relative w-52 sm:w-60">
+            {/* Ambient pulsing glow behind legendary cards */}
+            {objetActuel.rarete === 'legendaire' && (
+              <div className="pointer-events-none absolute -inset-4 animate-legendary-glow rounded-3xl" aria-hidden />
+            )}
+
+            {/* The card spins into view; legendary items turn noticeably slower */}
             <div
-              className={[
-                'relative flex h-72 w-52 flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border bg-carte p-4 shadow-xl',
-                RARETE_GLOW[objetActuel.rarete],
-              ].join(' ')}
+              key={indexCarte}
+              className={objetActuel.rarete === 'legendaire' ? 'animate-card-spin-in-slow' : 'animate-card-spin-in'}
             >
-              {objetActuel.rarete === 'secret_rare' && (
-                <div
-                  className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 blur-md animate-shimmer"
-                  aria-hidden
-                />
-              )}
-              {(objetActuel.rarete === 'epique' || objetActuel.rarete === 'legendaire') && (
-                <div
-                  className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 bg-white/30 blur-md animate-shimmer"
-                  aria-hidden
-                />
-              )}
-              <ObjetImage objet={objetActuel} className="h-28 w-28" />
-              <div>
-                <h3 className="font-bold">{objetActuel.nom}</h3>
-                <p className={`text-xs ${CLASSE_RARETE[objetActuel.rarete]}`}>{LIBELLE_RARETE[objetActuel.rarete]}</p>
-              </div>
-              <BadgeCategorie categorie={objetActuel.categorie} />
+              <ObjetCard objet={objetActuel} onSelect={onTapCarte} />
             </div>
+
+            {objetActuel.rarete === 'secret_rare' && (
+              <div
+                className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl blur-md animate-shimmer"
+                aria-hidden
+              />
+            )}
+            {objetActuel.rarete === 'epique' && (
+              <div
+                className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl bg-white/30 blur-md animate-shimmer"
+                aria-hidden
+              />
+            )}
+            {objetActuel.rarete === 'legendaire' && (
+              <div
+                className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl bg-amber-300/50 blur-md animate-shimmer"
+                aria-hidden
+              />
+            )}
           </div>
         )}
 

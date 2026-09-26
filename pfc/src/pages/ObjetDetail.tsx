@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/PageHeader'
 import { HISTORIQUE_MOCK, trouverObjet } from '@/mocks'
 import { StatBadge } from '@/components/StatBadge'
 import {
+  CLASSE_CARTE_RARETE,
   CLASSE_RARETE,
   CLASSE_RESULTAT,
   formaterDate,
@@ -47,14 +48,20 @@ export function ObjetDetail() {
         ← Inventory
       </Link>
 
-      <Carte className="flex flex-col gap-5 sm:flex-row">
-        <ObjetImage objet={objet} className="h-40 w-40 shrink-0 self-center sm:self-start" />
+      <section
+        className={`flex flex-col gap-5 rounded-2xl border-4 p-4 sm:flex-row md:p-5 ${CLASSE_CARTE_RARETE[objet.rarete]}`}
+      >
+        <ObjetImage
+          objet={objet}
+          className="h-40 w-40 shrink-0 self-center bg-fond/40 ring-1 ring-black/30 sm:self-start"
+        />
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold md:text-3xl">{objet.nom}</h1>
             <BadgeCategorie categorie={objet.categorie} />
           </div>
           <p className={`mt-1 text-sm font-medium ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
+          <p className="mt-2 text-sm italic text-texte-2">{objet.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2">
             <StatBadge type="attaque" valeur={objet.attaque} taille="md" />
@@ -77,7 +84,7 @@ export function ObjetDetail() {
             </Link>
           </div>
         </div>
-      </Carte>
+      </section>
 
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Carte className="text-center">

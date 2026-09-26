@@ -17,6 +17,7 @@ export const OBJETS_MOCK: Objet[] = [
     imageUrl: '/objets/obj-01.svg',
     icone: '🪨',
     rarete: 'commun',
+    description: 'A good old stone. Solid, if not exactly fast.',
   },
   {
     id: 'obj-04',
@@ -27,6 +28,7 @@ export const OBJETS_MOCK: Objet[] = [
     imageUrl: '/objets/obj-04.svg',
     icone: '🍃',
     rarete: 'commun',
+    description: 'Light and unassuming. Wraps around things without trying.',
   },
   {
     id: 'obj-07',
@@ -37,6 +39,7 @@ export const OBJETS_MOCK: Objet[] = [
     imageUrl: '/objets/obj-07.svg',
     icone: '✂️',
     rarete: 'commun',
+    description: 'Still cuts. Mostly.',
   },
 ]
 

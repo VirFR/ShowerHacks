@@ -17,6 +17,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-02.svg',
     icone: '🗿',
     rarete: 'rare',
+    description: "Standing for millennia. It doesn't move, but it blocks everything.",
   },
   {
     id: 'obj-03',
@@ -27,6 +28,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-03.svg',
     icone: '☄️',
     rarete: 'epique',
+    description: "Fell from the sky. Hits hard, cracks fast.",
   },
   {
     id: 'obj-05',
@@ -37,6 +39,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-05.svg',
     icone: '📜',
     rarete: 'rare',
+    description: "Its runes burn anyone who reads them aloud.",
   },
   {
     id: 'obj-06',
@@ -47,6 +50,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-06.svg',
     icone: '📰',
     rarete: 'rare',
+    description: "Folded a hundred times. No scissors have gotten through yet.",
   },
   {
     id: 'obj-08',
@@ -57,6 +61,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-08.svg',
     icone: '⚔️',
     rarete: 'epique',
+    description: "Cuts paper before it even hits the floor.",
   },
   {
     id: 'obj-09',
@@ -67,6 +72,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-09.svg',
     icone: '🦀',
     rarete: 'rare',
+    description: "A natural pincer, balanced and surprisingly tough.",
   },
   {
     id: 'obj-10',
@@ -77,6 +83,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-10.svg',
     icone: '⚡',
     rarete: 'legendaire',
+    description: "Ignores the usual rules. Nobody really knows what it beats.",
   },
   {
     id: 'obj-11',
@@ -87,6 +94,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-11.svg',
     icone: '🧊',
     rarete: 'epique',
+    description: "Freezes whatever it touches. Melts in the first bit of sun.",
   },
   {
     id: 'obj-12',
@@ -97,6 +105,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-12.svg',
     icone: '🎲',
     rarete: 'legendaire',
+    description: "Its stats change with every roll. In theory, anyway.",
   },
   {
     id: 'obj-13',
@@ -107,6 +116,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-13.svg',
     icone: '🪓',
     rarete: 'rare',
+    description: "Always ends up splitting whatever's supposed to stop it.",
     victoiresExplicites: ['obj-14', 'obj-11'],
   },
   {
@@ -118,6 +128,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-14.svg',
     icone: '🛡️',
     rarete: 'commun',
+    description: "Deflects hits — except from the hatchet, which gets through eventually.",
     victoiresExplicites: ['obj-16'],
   },
   {
@@ -129,6 +140,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-15.svg',
     icone: '🕸️',
     rarete: 'peu_commun',
+    description: "Wraps and traps, but doesn't do well near open flame.",
   },
   {
     id: 'obj-16',
@@ -139,6 +151,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-16.svg',
     icone: '🔥',
     rarete: 'rare',
+    description: "Burns anything woven or braided.",
     victoiresExplicites: ['obj-15', 'obj-18'],
   },
   {
@@ -150,6 +163,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-17.svg',
     icone: '🔨',
     rarete: 'commun',
+    description: "Flattens anything that can be knocked over.",
     victoiresExplicites: ['obj-20'],
   },
   {
@@ -161,6 +175,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-18.svg',
     icone: '🪢',
     rarete: 'peu_commun',
+    description: "Ties down anything drawn to metal.",
     victoiresExplicites: ['obj-19'],
   },
   {
@@ -172,6 +187,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-19.svg',
     icone: '🧲',
     rarete: 'epique',
+    description: "Attracts and locks down anything containing metal.",
     victoiresExplicites: ['obj-13', 'obj-14', 'obj-17'],
   },
   {
@@ -183,6 +199,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-20.svg',
     icone: '🪣',
     rarete: 'peu_commun',
+    description: "Puts out anything on fire.",
     victoiresExplicites: ['obj-16'],
   },
   {
@@ -194,6 +211,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-21.svg',
     icone: '🔪',
     rarete: 'commun',
+    description: "Cuts clean, but rusts fast if you don't wipe it down.",
   },
   {
     id: 'obj-22',
@@ -204,6 +222,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-22.svg',
     icone: '🪏',
     rarete: 'commun',
+    description: "Digs, bashes, turns over soil. Simple and unbreakable.",
   },
   {
     id: 'obj-23',
@@ -214,6 +233,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-23.svg',
     icone: '☂️',
     rarete: 'peu_commun',
+    description: "Folds shut on the enemy like a closing leaf.",
   },
   {
     id: 'obj-24',
@@ -224,6 +244,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-24.svg',
     icone: '🧯',
     rarete: 'commun',
+    description: "Smothers flames in a cold blast of CO2.",
   },
   {
     id: 'obj-25',
@@ -234,6 +255,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-25.svg',
     icone: '🧱',
     rarete: 'commun',
+    description: "Just a paving stone. Unbreakable and unimaginative.",
   },
   {
     id: 'obj-26',
@@ -244,6 +266,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-26.svg',
     icone: '🩹',
     rarete: 'peu_commun',
+    description: "Fixes, sticks, immobilizes. The universal answer.",
   },
   {
     id: 'obj-27',
@@ -254,6 +277,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-27.svg',
     icone: '🔦',
     rarete: 'peu_commun',
+    description: "A beam that blinds more than it hurts.",
   },
   {
     id: 'obj-28',
@@ -264,6 +288,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-28.svg',
     icone: '🛠️',
     rarete: 'rare',
+    description: "Pierces almost anything that doesn't move fast enough.",
   },
   {
     id: 'obj-29',
@@ -274,6 +299,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-29.svg',
     icone: '🏹',
     rarete: 'rare',
+    description: "One well-placed bolt goes through light armor.",
   },
   {
     id: 'obj-30',
@@ -284,6 +310,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-30.svg',
     icone: '🪝',
     rarete: 'rare',
+    description: "Latches onto anything, drags the fight where it wants.",
   },
   {
     id: 'obj-31',
@@ -294,6 +321,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-31.svg',
     icone: '🪃',
     rarete: 'rare',
+    description: "Launches stones with frightening accuracy.",
   },
   {
     id: 'obj-32',
@@ -304,6 +332,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-32.svg',
     icone: '🥊',
     rarete: 'rare',
+    description: "One hook is enough to knock anyone off balance.",
   },
   {
     id: 'obj-33',
@@ -314,6 +343,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-33.svg',
     icone: '🪚',
     rarete: 'rare',
+    description: "A blade spinning faster than any reflex.",
   },
   {
     id: 'obj-34',
@@ -324,6 +354,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-34.svg',
     icone: '⛓️',
     rarete: 'epique',
+    description: "Doesn't cut, it devours. Loud, vicious, feared.",
   },
   {
     id: 'obj-35',
@@ -334,6 +365,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-35.svg',
     icone: '🌋',
     rarete: 'epique',
+    description: "Turns anything woven, roped, or leafy into ash in a second.",
   },
   {
     id: 'obj-36',
@@ -344,6 +376,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-36.svg',
     icone: '🥋',
     rarete: 'epique',
+    description: "Takes almost everything. Heavy, slow, nearly indestructible.",
   },
   {
     id: 'obj-37',
@@ -354,6 +387,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-37.svg',
     icone: '⚒️',
     rarete: 'epique',
+    description: "Bores through rock like butter. Nothing holds it back for long.",
   },
   {
     id: 'obj-38',
@@ -364,6 +398,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-38.svg',
     icone: '💥',
     rarete: 'legendaire',
+    description: "One blast, and there's not much left standing.",
   },
   {
     id: 'obj-39',
@@ -374,6 +409,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-39.svg',
     icone: '🔌',
     rarete: 'legendaire',
+    description: "A continuous arc that fries any circuit nearby.",
   },
   {
     id: 'obj-40',
@@ -384,6 +420,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-40.svg',
     icone: '🌪️',
     rarete: 'legendaire',
+    description: "Captured wind that breaks loose the moment you open the cap.",
   },
   {
     id: 'obj-41',
@@ -394,6 +431,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-41.svg',
     icone: '⛏️',
     rarete: 'commun',
+    description: "Straight from the mine. Rough, heavy, useful.",
   },
   {
     id: 'obj-42',
@@ -404,6 +442,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-42.svg',
     icone: '🪵',
     rarete: 'commun',
+    description: "Freshly cut. Burns well, builds better.",
   },
   {
     id: 'obj-43',
@@ -414,6 +453,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-43.svg',
     icone: '⚫',
     rarete: 'commun',
+    description: "Black, dusty, and surprisingly dense.",
   },
   {
     id: 'obj-44',
@@ -424,6 +464,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-44.svg',
     icone: '🪙',
     rarete: 'rare',
+    description: "Heavy in the hand, heavier in value.",
   },
   {
     id: 'obj-45',
@@ -434,6 +475,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-45.svg',
     icone: '💎',
     rarete: 'epique',
+    description: "Uncut and unpolished, but already nearly impossible to scratch.",
   },
   {
     id: 'obj-46',
@@ -444,6 +486,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-46.svg',
     icone: '🌳',
     rarete: 'epique',
+    description: "Deep roots, decades of growth. It doesn't budge.",
   },
   {
     id: 'obj-47',
@@ -454,6 +497,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-47.svg',
     icone: '🥀',
     rarete: 'peu_commun',
+    description: "Thorns that cut anyone careless enough to grab it.",
   },
   {
     id: 'obj-48',
@@ -464,6 +508,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-48.svg',
     icone: '🍄',
     rarete: 'rare',
+    description: "Beautiful, tempting, and absolutely not for eating.",
   },
   {
     id: 'obj-49',
@@ -474,6 +519,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-49.svg',
     icone: '🌵',
     rarete: 'peu_commun',
+    description: "Stores water for months. Handle with care.",
   },
   {
     id: 'obj-50',
@@ -484,6 +530,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-50.svg',
     icone: '🌿',
     rarete: 'peu_commun',
+    description: "Grows through anything given enough time.",
   },
   {
     id: 'obj-51',
@@ -494,6 +541,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-51.svg',
     icone: '🌑',
     rarete: 'rare',
+    description: "A wandering rock with nowhere in particular to be.",
   },
   {
     id: 'obj-52',
@@ -504,6 +552,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-52.svg',
     icone: '❄️',
     rarete: 'rare',
+    description: "Streaks by once, leaves a trail of frost.",
   },
   {
     id: 'obj-53',
@@ -514,6 +563,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-53.svg',
     icone: '🌕',
     rarete: 'epique',
+    description: "Pulls the tides without lifting a finger.",
   },
   {
     id: 'obj-54',
@@ -524,6 +574,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-54.svg',
     icone: '☀️',
     rarete: 'secret_rare',
+    description: "The center of everything. Everyone orbits it eventually.",
   },
   {
     id: 'obj-55',
@@ -534,6 +585,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-55.svg',
     icone: '🌠',
     rarete: 'rare',
+    description: "Gone in a second, but everyone makes a wish.",
   },
   {
     id: 'obj-56',
@@ -544,6 +596,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-56.svg',
     icone: '🕳️',
     rarete: 'secret_rare',
+    description: "Small enough to hold. Terrifying to get close to.",
   },
   {
     id: 'obj-57',
@@ -554,6 +607,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-57.svg',
     icone: '🌌',
     rarete: 'epique',
+    description: "A cloud of dust and light, slowly becoming something else.",
   },
   {
     id: 'obj-58',
@@ -564,6 +618,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-58.svg',
     icone: '🦈',
     rarete: 'secret_rare',
+    description: "A shark in sneakers. Don't ask, just accept it.",
   },
   {
     id: 'obj-59',
@@ -574,6 +629,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-59.svg',
     icone: '🐊',
     rarete: 'secret_rare',
+    description: "Half crocodile, half bomber plane. All chaos.",
   },
   {
     id: 'obj-60',
@@ -584,6 +640,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-60.svg',
     icone: '🥁',
     rarete: 'epique',
+    description: "Knocks with a rhythm nobody can predict.",
   },
   {
     id: 'obj-61',
@@ -594,6 +651,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-61.svg',
     icone: '🐒',
     rarete: 'rare',
+    description: "Part monkey, part banana, entirely unbothered.",
   },
   {
     id: 'obj-62',
@@ -604,6 +662,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-62.svg',
     icone: '☕',
     rarete: 'rare',
+    description: "Pirouettes with a full cup balanced on her head. Never spills.",
   },
   {
     id: 'obj-63',
@@ -614,6 +673,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-63.svg',
     icone: '🐘',
     rarete: 'epique',
+    description: "An elephant with a cactus for a body. It just works.",
   },
   {
     id: 'obj-64',
@@ -624,6 +684,7 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-64.svg',
     icone: '🥷',
     rarete: 'epique',
+    description: "Silent, caffeinated, and always one step ahead.",
   },
   {
     id: 'obj-65',
@@ -634,5 +695,6 @@ export const OBJETS_BOOSTER_MOCK: Objet[] = [
     imageUrl: '/objets/obj-65.svg',
     icone: '🪆',
     rarete: 'commun',
+    description: "Nobody's quite sure what it is. It's just vibing.",
   },
 ]
