@@ -69,7 +69,7 @@ function ListeComptes({ comptes, actuelId, onChoisir }: ListeComptesProps) {
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold">{c.pseudo}</p>
               <p className="text-xs text-texte-2">
-                {c.rang} · {c.score} pts · {c.inventaire.length} item{c.inventaire.length === 1 ? '' : 's'}
+                {c.rang} · {c.score} pts · {c.inventaire.length} card{c.inventaire.length === 1 ? '' : 's'}
               </p>
             </div>
             <span className="text-xs font-medium text-accent-2">{actuel ? 'Signed in' : 'Sign in →'}</span>
@@ -123,7 +123,7 @@ function CarteProfil({ joueur }: { joueur: Joueur }) {
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Carte className="text-center">
           <p className="text-2xl font-black tabular-nums">{joueur.inventaire.length}</p>
-          <p className="text-xs text-texte-2">Items</p>
+          <p className="text-xs text-texte-2">Cards</p>
         </Carte>
         <Carte className="text-center">
           <p className="text-2xl font-black tabular-nums text-succes">{joueur.nbVictoires}</p>
@@ -135,10 +135,10 @@ function CarteProfil({ joueur }: { joueur: Joueur }) {
         </Carte>
       </div>
 
-      <h2 className="mb-3 mt-6 font-semibold">Best items</h2>
+      <h2 className="mb-3 mt-6 font-semibold">Best cards</h2>
       <div className="grid gap-3 sm:grid-cols-3">
-        {meilleursObjets.map((objet) => (
-          <ObjetCard key={objet.id} objet={objet} />
+        {meilleursObjets.map((objet, i) => (
+          <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
         ))}
       </div>
     </>
