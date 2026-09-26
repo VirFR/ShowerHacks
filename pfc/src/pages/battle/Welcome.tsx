@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { Bouton } from '@/components/Bouton'
 import { Icon } from '@/components/Icon'
 import { estOnboarde, useSession } from '@/lib/session'
-import { RULES, THROWS, coachIntro, coachReaction, createTutorial, explainRound, playRound, type Throw, type TutorialState } from '@/lib/tutorial'
+import { THROWS, coachIntro, coachReaction, createTutorial, playRound, type Throw, type TutorialState } from '@/lib/tutorial'
 
 const LABELS: Record<Throw, string> = { rock: 'Rock', paper: 'Paper', scissors: 'Scissors' }
 const COULEURS: Record<Throw, string> = { rock: '#a8a29e', paper: '#34d399', scissors: '#fb7185' }
@@ -11,7 +11,7 @@ const COULEURS: Record<Throw, string> = { rock: '#a8a29e', paper: '#34d399', sci
 /**
  * /welcome — First-login warm-up (full screen). A rigged best-of-three
  * the player wins 2-1, then the first booster. Each result stays on screen
- * until the player presses Next, so they have time to read why it went that way.
+ * until the player presses Next, so they have time to see what happened.
  */
 export function Welcome() {
   const { joueur, chargement, terminerOnboarding } = useSession()
@@ -120,9 +120,8 @@ export function Welcome() {
                 <strong style={{ color: COULEURS[dernier.coach] }}>{LABELS[dernier.coach]}</strong>.
               </p>
               <p className={`mt-2 font-display text-2xl font-black md:text-3xl ${dernier.result === 'player' ? 'text-succes' : dernier.result === 'coach' ? 'text-echec' : 'text-or'}`}>
-                {explainRound(dernier)}
+                {dernier.result === 'player' ? 'You win this round.' : dernier.result === 'coach' ? 'The Coach wins this round.' : 'Draw.'}
               </p>
-              <p className="mt-1 font-bold">{dernier.result === 'player' ? 'You win this round.' : dernier.result === 'coach' ? 'The Coach wins this round.' : 'Draw.'}</p>
               <p className="mt-3 text-sm italic text-texte-2">“{coachReaction(etat)}”</p>
               <Bouton taille="lg" className="mt-5" onClick={suivant} autoFocus>
                 {etat.finished ? 'See my reward' : 'Next'}
@@ -156,11 +155,7 @@ export function Welcome() {
             </button>
           ))}
         </div>
-        <p className="text-center text-xs text-texte-2">
-          {THROWS.map((t) => RULES[t]).join(' · ')}
-          <br />
-          Best of three. No cards, no stats, just the classic. The whole site unlocks right after.
-        </p>
+        <p className="text-xs text-texte-2">Best of three. No cards, no stats, just the classic. The whole site unlocks right after.</p>
       </section>
     </div>
   )

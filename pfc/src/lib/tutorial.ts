@@ -71,14 +71,6 @@ export const COACH_LINES = {
   afterDraw: ['Same throw. Go again.', 'Copying me will not work.', 'Draw. One more.'],
 }
 
-/** Why the winning throw beats the other one, e.g. "Rock crushes Scissors". */
-export const RULES: Record<Throw, string> = { rock: 'Rock crushes Scissors', paper: 'Paper covers Rock', scissors: 'Scissors cut Paper' }
-
-export function explainRound(round: TutorialRound): string {
-  if (round.result === 'draw') return 'Same throw: nobody wins.'
-  return round.result === 'player' ? RULES[round.player] : RULES[round.coach]
-}
-
 /** What the Coach says right after the last round, while the result is on screen. */
 export function coachReaction(state: TutorialState): string {
   const last = state.rounds[state.rounds.length - 1]
