@@ -19,7 +19,7 @@ export function Avatar({ pseudo, avatarUrl, taille = 'md', className = '' }: Ava
         src={avatarUrl}
         alt=""
         referrerPolicy="no-referrer"
-        className={`shrink-0 rounded-full border-2 border-ink object-cover ${TAILLES[taille]} ${className}`}
+        className={`shrink-0 rounded-full border-2 border-ink bg-carte object-cover ${TAILLES[taille]} ${className}`}
       />
     )
   }

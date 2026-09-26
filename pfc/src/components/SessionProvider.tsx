@@ -7,18 +7,28 @@ import {
   ecrireOnboarding,
   ecrireDecouvertes,
   ecrireRetraits,
+  ecrireProfils,
   lireInventairesExtra,
   lireJoueurId,
   lireOnboarding,
   lireDecouvertes,
   lireRetraits,
+  lireProfils,
   SessionContext,
+  type ModifProfil,
   type Session,
 } from '@/lib/session'
 import { supabase } from '@/lib/supabase'
 import { JOUEURS_MOCK, trouverJoueur, trouverObjet } from '@/mocks'
 import { chargerDecouvertes, chargerRecettesMock, crafterDistant, messageErreurCraft } from '@/services/crafting'
-import { ajouterObjetsDistant, chargerChart, chargerJoueur, terminerOnboardingDistant } from '@/services/profile'
+import {
+  ajouterObjetsDistant,
+  chargerChart,
+  chargerJoueur,
+  modifierProfilDistant,
+  terminerOnboardingDistant,
+  verifierModifProfil,
+} from '@/services/profile'
 import { estCarteDeBase, type Joueur, type Objet, type ResultatAssemblage } from '@/types'
 
 /** Picks the mock or the Supabase session once, from the env variables. */
@@ -58,11 +68,14 @@ function avecInventaireExtra(
   joueur: Joueur,
   inventairesExtra: Record<string, Objet[]>,
   retraits: Record<string, string[]>,
+  profils: Record<string, ModifProfil>,
 ): Joueur {
   const extra = inventairesExtra[joueur.id] ?? []
   const retires = new Set(retraits[joueur.id] ?? [])
   const depart = retires.size > 0 ? joueur.inventaire.filter((o) => !retires.has(o.inventaireId ?? '')) : joueur.inventaire
-  return { ...joueur, inventaire: [...depart, ...extra] }
+  const profil = profils[joueur.id]
+  const identite = profil ? { pseudo: profil.pseudo, avatarUrl: profil.avatarUrl ?? undefined } : {}
+  return { ...joueur, ...identite, inventaire: [...depart, ...extra] }
 }
 
 function useMockSession(): Session {
@@ -70,6 +83,7 @@ function useMockSession(): Session {
   const [inventairesExtra, setInventairesExtra] = useState<Record<string, Objet[]>>(() => lireInventairesExtra())
   const [retraits, setRetraits] = useState<Record<string, string[]>>(() => lireRetraits())
   const [decouvertesParJoueur, setDecouvertesParJoueur] = useState<Record<string, string[]>>(() => lireDecouvertes())
+  const [profils, setProfils] = useState<Record<string, ModifProfil>>(() => lireProfils())
   const [version, setVersion] = useState(0)
 
   /** Adds booster/craft items (each copy gets its own id) and unlocks any recipe they complete. */
@@ -135,10 +149,9 @@ function useMockSession(): Session {
   const rafraichir = useCallback(async () => setVersion((v) => v + 1), [])
 
   return useMemo<Session>(() => {
-    const base = trouverJoueur(joueurId)
-    const joueur: Joueur | null = base
-      ? { ...avecInventaireExtra(base, inventairesExtra, retraits), onboardedAt: lireOnboarding(base.id) }
-      : null
+    const comptes = JOUEURS_MOCK.map((j) => avecInventaireExtra(j, inventairesExtra, retraits, profils))
+    const base = comptes.find((j) => j.id === joueurId)
+    const joueur: Joueur | null = base ? { ...base, onboardedAt: lireOnboarding(base.id) } : null
     // Everything ever owned: stored discoveries plus the current inventory (starters included).
     const decouvertes = joueur
       ? [...new Set([...(decouvertesParJoueur[joueur.id] ?? []), ...joueur.inventaire.map((o) => o.id)])]
@@ -162,11 +175,22 @@ function useMockSession(): Session {
       }
     }
 
+    const modifierProfil = async (modif: ModifProfil) => {
+      if (!joueur) return
+      const invalide = verifierModifProfil(modif)
+      if (invalide) throw new Error(invalide)
+      const pris = comptes.some((c) => c.id !== joueur.id && c.pseudo.toLowerCase() === modif.pseudo.toLowerCase())
+      if (pris) throw new Error('This username is already taken.')
+      const suivant = { ...profils, [joueur.id]: modif }
+      ecrireProfils(suivant)
+      setProfils(suivant)
+    }
+
     return {
       mode: 'mock',
       chargement: false,
       joueur,
-      comptes: JOUEURS_MOCK.map((j) => avecInventaireExtra(j, inventairesExtra, retraits)),
+      comptes,
       connecter,
       connecterGoogle,
       deconnecter,
@@ -176,6 +200,7 @@ function useMockSession(): Session {
       chart: DEFAULT_CHART,
       terminerOnboarding,
       rafraichir,
+      modifierProfil,
     }
     // `version` forces a re-read of localStorage after onboarding.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -185,6 +210,7 @@ function useMockSession(): Session {
     inventairesExtra,
     retraits,
     decouvertesParJoueur,
+    profils,
     connecter,
     connecterGoogle,
     deconnecter,
@@ -295,6 +321,17 @@ function useSupabaseSession(): Session {
     [charger, userId],
   )
 
+  const modifierProfil = useCallback(
+    async (modif: ModifProfil) => {
+      if (!userId) return
+      const invalide = verifierModifProfil(modif)
+      if (invalide) throw new Error(invalide)
+      await modifierProfilDistant(userId, modif)
+      await charger(userId)
+    },
+    [userId, charger],
+  )
+
   return useMemo<Session>(
     () => ({
       mode: 'supabase',
@@ -310,7 +347,8 @@ function useSupabaseSession(): Session {
       chart,
       terminerOnboarding,
       rafraichir,
+      modifierProfil,
     }),
-    [chargement, joueur, decouvertes, chart, deconnecter, ajouterObjets, crafter, terminerOnboarding, rafraichir],
+    [chargement, joueur, decouvertes, chart, deconnecter, ajouterObjets, crafter, terminerOnboarding, rafraichir, modifierProfil],
   )
 }
