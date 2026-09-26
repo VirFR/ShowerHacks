@@ -223,7 +223,6 @@ export function Boosters() {
                   <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
                   <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
                   <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond" aria-hidden>
-                    <span className="text-4xl drop-shadow-sm">✊✋✌️</span>
                     <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
                   </div>
                   {etat === 'ouverture' && (
