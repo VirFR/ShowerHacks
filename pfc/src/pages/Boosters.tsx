@@ -41,7 +41,6 @@ export function Boosters() {
   const [etat, setEtat] = useState<EtatOuverture>('idle')
   const [objetsObtenus, setObjetsObtenus] = useState<Objet[]>([])
   const [indexCarte, setIndexCarte] = useState(0)
-  const [carteRetournee, setCarteRetournee] = useState(false)
 
   const [dragProgress, setDragProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -84,7 +83,6 @@ export function Boosters() {
       const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
-      setCarteRetournee(false)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
         // If the stack was full, the timer restarts from now.
@@ -121,15 +119,10 @@ export function Boosters() {
     setDragProgress(0)
   }
 
-  /** Taps/clicks the card: reveals it, then advances to the next one (or the recap). */
+  /** Taps/clicks the card: advances to the next one (or the recap). */
   const onTapCarte = () => {
-    if (!carteRetournee) {
-      setCarteRetournee(true)
-      return
-    }
     if (indexCarte + 1 < objetsObtenus.length) {
       setIndexCarte((i) => i + 1)
-      setCarteRetournee(false)
     } else {
       setEtat('revele')
     }
@@ -234,24 +227,12 @@ export function Boosters() {
             {etat === 'ouverture' && (
               <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-white animate-flash" aria-hidden />
             )}
-
-            {etat === 'dechirure' && dragProgress < 0.15 && (
-              <div
-                className="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-10 text-2xl text-fond/80"
-                aria-hidden
-              >
-                <span className="animate-bounce">▲</span>
-                <span className="animate-bounce" style={{ animationDelay: '150ms' }}>
-                  ▼
-                </span>
-              </div>
-            )}
           </div>
         )}
 
         {etat === 'cartes' && objetActuel && (
           <div
-            className="perspective-dist cursor-pointer select-none"
+            className="cursor-pointer select-none"
             onClick={onTapCarte}
             role="button"
             tabIndex={0}
@@ -261,39 +242,32 @@ export function Boosters() {
                 onTapCarte()
               }
             }}
-            aria-label={carteRetournee ? `${objetActuel.nom}, tap to continue` : 'Face-down card, tap to reveal'}
+            aria-label={`${objetActuel.nom}, tap to continue`}
           >
-            <div className={`flip-inner relative h-72 w-52 ${carteRetournee ? 'retournee' : ''}`}>
-              <div className="flip-face absolute inset-0 flex items-center justify-center rounded-2xl border border-bordure bg-gradient-to-br from-carte-2 to-fond-2 text-5xl shadow-xl">
-                ✊✋✌️
-              </div>
-              <div className="flip-face flip-face-arriere absolute inset-0">
+            <div
+              className={[
+                'relative flex h-72 w-52 flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border bg-carte p-4 shadow-xl',
+                RARETE_GLOW[objetActuel.rarete],
+              ].join(' ')}
+            >
+              {objetActuel.rarete === 'secret_rare' && (
                 <div
-                  className={[
-                    'relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border bg-carte p-4',
-                    RARETE_GLOW[objetActuel.rarete],
-                  ].join(' ')}
-                >
-                  {objetActuel.rarete === 'secret_rare' && (
-                    <div
-                      className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 blur-md animate-shimmer"
-                      aria-hidden
-                    />
-                  )}
-                  {(objetActuel.rarete === 'epique' || objetActuel.rarete === 'legendaire') && (
-                    <div
-                      className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 bg-white/30 blur-md animate-shimmer"
-                      aria-hidden
-                    />
-                  )}
-                  <ObjetImage objet={objetActuel} className="h-28 w-28" />
-                  <div>
-                    <h3 className="font-bold">{objetActuel.nom}</h3>
-                    <p className={`text-xs ${CLASSE_RARETE[objetActuel.rarete]}`}>{LIBELLE_RARETE[objetActuel.rarete]}</p>
-                  </div>
-                  <BadgeCategorie categorie={objetActuel.categorie} />
-                </div>
+                  className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 blur-md animate-shimmer"
+                  aria-hidden
+                />
+              )}
+              {(objetActuel.rarete === 'epique' || objetActuel.rarete === 'legendaire') && (
+                <div
+                  className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 bg-white/30 blur-md animate-shimmer"
+                  aria-hidden
+                />
+              )}
+              <ObjetImage objet={objetActuel} className="h-28 w-28" />
+              <div>
+                <h3 className="font-bold">{objetActuel.nom}</h3>
+                <p className={`text-xs ${CLASSE_RARETE[objetActuel.rarete]}`}>{LIBELLE_RARETE[objetActuel.rarete]}</p>
               </div>
+              <BadgeCategorie categorie={objetActuel.categorie} />
             </div>
           </div>
         )}
@@ -316,10 +290,7 @@ export function Boosters() {
               : 'No boosters left, hang on a bit.')}
           {etat === 'dechirure' && 'Drag the booster to tear it open ✋'}
           {etat === 'ouverture' && 'Ripping…'}
-          {etat === 'cartes' &&
-            (carteRetournee
-              ? `Item ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`
-              : `Card ${indexCarte + 1} / ${objetsObtenus.length} — tap to reveal`)}
+          {etat === 'cartes' && `Item ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`}
         </p>
 
         {(etat === 'idle' || etat === 'revele') && (
