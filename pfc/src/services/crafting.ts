@@ -13,7 +13,10 @@ import type { Recette } from '@/types'
 
 export const chargerRecettesMock = () => import('@/mocks/recettes')
 
-/** What the player may see of the recipes: the revealed ones and how many exist. */
+/**
+ * What the player may see of the recipes: every recipe of the cards they
+ * discovered, and how many craftable cards exist (a card can have several recipes).
+ */
 export interface LivreRecettes {
   total: number
   recettes: Recette[]
@@ -60,7 +63,8 @@ export async function chargerLivre(mode: ModeSession, decouvertes: string[]): Pr
   if (mode === 'mock') {
     const { RECETTES } = await chargerRecettesMock()
     const connues = new Set(decouvertes)
-    return { total: RECETTES.length, recettes: RECETTES.filter((r) => connues.has(r.resultatId)) }
+    const total = new Set(RECETTES.map((r) => r.resultatId)).size
+    return { total, recettes: RECETTES.filter((r) => connues.has(r.resultatId)) }
   }
   const { data, error } = await getSupabase().rpc('recipe_book')
   if (error) throw error

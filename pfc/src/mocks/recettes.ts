@@ -1,12 +1,19 @@
 import type { Recette } from '@/types'
 
+export { CARTES_DE_BASE } from '@/types'
+
 /**
  * Little-Alchemy-style crafting recipes: combining the two ingredients (in
- * either order) consumes both and yields the result. Every item except the
- * three starters (Mossy Rock obj-01, Oak Leaf obj-04, Rusty Scissors obj-07)
- * has exactly one recipe, and each recipe only uses items crafted at an
- * earlier tier, so the whole catalog traces back to rock, leaf and scissors
- * (checked by `recettes.test.ts`). Every pair of ingredients is unique.
+ * either order) yields the result. The three base cards (Mossy Rock obj-01,
+ * Oak Leaf obj-04, Rusty Scissors obj-07) are infinite, like Little Alchemy's
+ * elements: a craft never consumes them and one copy can fill both slots.
+ * Every other ingredient is consumed.
+ *
+ * The first list gives every item one recipe, tier by tier, so the whole
+ * catalog traces back to rock, leaf and scissors. `ALTERNATIVES` adds more
+ * ways to reach items, so that every combination of the early cards (the
+ * three bases and their six tier-1 results) produces something. Every pair of
+ * ingredients is unique (checked by `recettes.test.ts`).
  *
  * This file is the source of truth for the `recipes` table
  * (`node scripts/gen-items-sql.mjs` writes supabase/migrations/0004_recipes_seed.sql).
@@ -14,9 +21,9 @@ import type { Recette } from '@/types'
  * the database and players only get the ones they discovered; mock mode loads
  * it on demand through `services/crafting.ts`.
  *
- * Brainrot items (obj-58 to obj-65) are on hold: no recipe, booster only.
+ * Brainrot items are set aside (see `objetsBrainrot.ts`): no recipe.
  */
-export const RECETTES: Recette[] = [
+const PREMIERES: Recette[] = [
   // Tier 1: from the three starters
   { resultatId: 'obj-25', ingredients: ['obj-01', 'obj-01'] }, // Mossy Rock + Mossy Rock -> Brick
   { resultatId: 'obj-50', ingredients: ['obj-04', 'obj-04'] }, // Oak Leaf + Oak Leaf -> Climbing Vine
@@ -81,6 +88,44 @@ export const RECETTES: Recette[] = [
   { resultatId: 'obj-54', ingredients: ['obj-57', 'obj-35'] }, // Nebula + Flamethrower -> Sun
   { resultatId: 'obj-56', ingredients: ['obj-54', 'obj-19'] }, // Sun + Magnet -> Miniature Black Hole
 ]
+
+/**
+ * Extra recipes: every pair of early cards (rock, leaf, scissors, brick,
+ * vine, knife, iron ore, rope, cactus) works, so experimenting pays off.
+ */
+const ALTERNATIVES: Recette[] = [
+  { resultatId: 'obj-47', ingredients: ['obj-01', 'obj-50'] }, // Mossy Rock + Climbing Vine -> Thorny Bramble
+  { resultatId: 'obj-13', ingredients: ['obj-01', 'obj-21'] }, // Mossy Rock + Kitchen Knife -> Hatchet
+  { resultatId: 'obj-25', ingredients: ['obj-01', 'obj-49'] }, // Mossy Rock + Desert Cactus -> Brick
+  { resultatId: 'obj-50', ingredients: ['obj-04', 'obj-25'] }, // Oak Leaf + Brick -> Climbing Vine
+  { resultatId: 'obj-06', ingredients: ['obj-04', 'obj-21'] }, // Oak Leaf + Kitchen Knife -> Armored Paper
+  { resultatId: 'obj-15', ingredients: ['obj-04', 'obj-18'] }, // Oak Leaf + Rope -> Net
+  { resultatId: 'obj-50', ingredients: ['obj-04', 'obj-49'] }, // Oak Leaf + Desert Cactus -> Climbing Vine
+  { resultatId: 'obj-22', ingredients: ['obj-07', 'obj-25'] }, // Rusty Scissors + Brick -> Shovel
+  { resultatId: 'obj-09', ingredients: ['obj-07', 'obj-21'] }, // Rusty Scissors + Kitchen Knife -> Crab Claw
+  { resultatId: 'obj-21', ingredients: ['obj-07', 'obj-41'] }, // Rusty Scissors + Iron Ore -> Kitchen Knife
+  { resultatId: 'obj-30', ingredients: ['obj-07', 'obj-18'] }, // Rusty Scissors + Rope -> Grappling Hook
+  { resultatId: 'obj-47', ingredients: ['obj-07', 'obj-49'] }, // Rusty Scissors + Desert Cactus -> Thorny Bramble
+  { resultatId: 'obj-02', ingredients: ['obj-25', 'obj-25'] }, // Brick + Brick -> Ancient Menhir
+  { resultatId: 'obj-02', ingredients: ['obj-25', 'obj-50'] }, // Brick + Climbing Vine -> Ancient Menhir
+  { resultatId: 'obj-17', ingredients: ['obj-25', 'obj-21'] }, // Brick + Kitchen Knife -> Hammer
+  { resultatId: 'obj-14', ingredients: ['obj-25', 'obj-41'] }, // Brick + Iron Ore -> Shield
+  { resultatId: 'obj-20', ingredients: ['obj-25', 'obj-18'] }, // Brick + Rope -> Water Bucket (a well)
+  { resultatId: 'obj-43', ingredients: ['obj-25', 'obj-49'] }, // Brick + Desert Cactus -> Coal (a kiln)
+  { resultatId: 'obj-46', ingredients: ['obj-50', 'obj-50'] }, // Climbing Vine + Climbing Vine -> Ancient Oak
+  { resultatId: 'obj-18', ingredients: ['obj-50', 'obj-21'] }, // Climbing Vine + Kitchen Knife -> Rope
+  { resultatId: 'obj-30', ingredients: ['obj-50', 'obj-41'] }, // Climbing Vine + Iron Ore -> Grappling Hook
+  { resultatId: 'obj-15', ingredients: ['obj-50', 'obj-18'] }, // Climbing Vine + Rope -> Net
+  { resultatId: 'obj-48', ingredients: ['obj-50', 'obj-49'] }, // Climbing Vine + Desert Cactus -> Poison Mushroom
+  { resultatId: 'obj-08', ingredients: ['obj-21', 'obj-21'] }, // Kitchen Knife + Kitchen Knife -> Sharpened Katana
+  { resultatId: 'obj-13', ingredients: ['obj-21', 'obj-41'] }, // Kitchen Knife + Iron Ore -> Hatchet
+  { resultatId: 'obj-29', ingredients: ['obj-21', 'obj-18'] }, // Kitchen Knife + Rope -> Crossbow
+  { resultatId: 'obj-20', ingredients: ['obj-21', 'obj-49'] }, // Kitchen Knife + Desert Cactus -> Water Bucket
+  { resultatId: 'obj-31', ingredients: ['obj-18', 'obj-49'] }, // Rope + Desert Cactus -> Slingshot (a forked cactus)
+  { resultatId: 'obj-20', ingredients: ['obj-49', 'obj-49'] }, // Desert Cactus + Desert Cactus -> Water Bucket
+]
+
+export const RECETTES: Recette[] = [...PREMIERES, ...ALTERNATIVES]
 
 /** Recipes are unordered: A+B and B+A are the same combination. */
 export function trouverRecette(recettes: Recette[], idA: string, idB: string): Recette | undefined {

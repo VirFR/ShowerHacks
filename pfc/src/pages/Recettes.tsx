@@ -7,7 +7,7 @@ import { useSession } from '@/lib/session'
 import { CLASSE_CARTE_RARETE, CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
 import { trouverObjet } from '@/mocks'
 import { useLivreRecettes } from '@/services/crafting'
-import type { Objet } from '@/types'
+import type { Objet, Recette } from '@/types'
 
 /** Small ingredient thumbnail used inside a recipe row. */
 function Ingredient({ objet }: { objet: Objet }) {
@@ -29,7 +29,10 @@ export function Recettes() {
 
   if (!joueur) return <ConnexionRequise />
 
-  const connues = livre?.recettes ?? []
+  // A card can have several recipes: one tile per card, listing all of them.
+  const parResultat = new Map<string, Recette[]>()
+  for (const r of livre?.recettes ?? []) parResultat.set(r.resultatId, [...(parResultat.get(r.resultatId) ?? []), r])
+  const connues = [...parResultat.entries()]
   const total = livre?.total ?? 0
   const verrouillees = Math.max(0, total - connues.length)
 
@@ -37,18 +40,17 @@ export function Recettes() {
     <>
       <PageHeader
         titre="Recipe Book"
-        sousTitre={livre ? `${connues.length} / ${total} recipes discovered` : 'Loading…'}
+        sousTitre={livre ? `${connues.length} / ${total} craftable cards discovered` : 'Loading…'}
       />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {connues.map((recette) => {
-          const resultat = trouverObjet(recette.resultatId)
-          const [ingredientA, ingredientB] = recette.ingredients.map((id) => trouverObjet(id))
-          if (!resultat || !ingredientA || !ingredientB) return null
+        {connues.map(([resultatId, recettes]) => {
+          const resultat = trouverObjet(resultatId)
+          if (!resultat) return null
 
           return (
             <Link
-              key={recette.resultatId}
+              key={resultatId}
               to={`/item/${resultat.id}`}
               className={`rounded-2xl border bg-carte p-4 transition-transform hover:-translate-y-0.5 ${CLASSE_CARTE_RARETE[resultat.rarete]}`}
             >
@@ -60,13 +62,22 @@ export function Recettes() {
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center justify-center gap-3 border-t border-bordure pt-3">
-                <Ingredient objet={ingredientA} />
-                <span className="text-lg font-black text-accent-2" aria-hidden>
-                  +
-                </span>
-                <Ingredient objet={ingredientB} />
-              </div>
+              {recettes.map((recette) => {
+                const [ingredientA, ingredientB] = recette.ingredients.map((id) => trouverObjet(id))
+                if (!ingredientA || !ingredientB) return null
+                return (
+                  <div
+                    key={recette.ingredients.join('+')}
+                    className="mt-3 flex items-center justify-center gap-3 border-t border-bordure pt-3"
+                  >
+                    <Ingredient objet={ingredientA} />
+                    <span className="text-lg font-black text-accent-2" aria-hidden>
+                      +
+                    </span>
+                    <Ingredient objet={ingredientB} />
+                  </div>
+                )
+              })}
             </Link>
           )
         })}

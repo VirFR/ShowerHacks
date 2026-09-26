@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { CATALOGUE_MOCK } from './objets'
-import { RECETTES, trouverRecette } from './recettes'
+import { CARTES_DE_BASE, RECETTES, trouverRecette } from './recettes'
 
-const STARTERS = ['obj-01', 'obj-04', 'obj-07']
-const craftables = CATALOGUE_MOCK.filter((o) => !STARTERS.includes(o.id) && o.categorie !== 'brainrot')
+const craftables = CATALOGUE_MOCK.filter((o) => !CARTES_DE_BASE.includes(o.id))
 const ids = new Set(CATALOGUE_MOCK.map((o) => o.id))
 
 describe('recipes', () => {
@@ -14,10 +13,9 @@ describe('recipes', () => {
     }
   })
 
-  it('give every non-starter, non-brainrot item exactly one recipe', () => {
-    const resultats = RECETTES.map((r) => r.resultatId)
-    expect(new Set(resultats).size).toBe(resultats.length)
-    expect(new Set(resultats)).toEqual(new Set(craftables.map((o) => o.id)))
+  it('give every non-base item at least one recipe, and never produce a base card', () => {
+    const resultats = new Set(RECETTES.map((r) => r.resultatId))
+    expect(resultats).toEqual(new Set(craftables.map((o) => o.id)))
   })
 
   it('never reuse a pair of ingredients', () => {
@@ -26,7 +24,7 @@ describe('recipes', () => {
   })
 
   it('all trace back to rock, leaf and scissors', () => {
-    const atteints = new Set(STARTERS)
+    const atteints = new Set(CARTES_DE_BASE)
     let progres = true
     while (progres) {
       progres = false
@@ -37,7 +35,14 @@ describe('recipes', () => {
         }
       }
     }
-    expect(atteints.size).toBe(STARTERS.length + craftables.length)
+    expect(atteints.size).toBe(CATALOGUE_MOCK.length)
+  })
+
+  it('make every combination of the early cards work', () => {
+    const debut = [...CARTES_DE_BASE, 'obj-25', 'obj-50', 'obj-21', 'obj-41', 'obj-18', 'obj-49']
+    for (const [i, a] of debut.entries()) {
+      for (const b of debut.slice(i)) expect(trouverRecette(RECETTES, a, b), `${a} + ${b}`).toBeDefined()
+    }
   })
 
   it('match in either order', () => {

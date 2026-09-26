@@ -19,7 +19,7 @@ import { supabase } from '@/lib/supabase'
 import { JOUEURS_MOCK, trouverJoueur, trouverObjet } from '@/mocks'
 import { chargerDecouvertes, chargerRecettesMock, crafterDistant, messageErreurCraft } from '@/services/crafting'
 import { ajouterObjetsDistant, chargerChart, chargerJoueur, terminerOnboardingDistant } from '@/services/profile'
-import type { Joueur, Objet, ResultatAssemblage } from '@/types'
+import { estCarteDeBase, type Joueur, type Objet, type ResultatAssemblage } from '@/types'
 
 /** Picks the mock or the Supabase session once, from the env variables. */
 export function SessionProvider({ children }: { children: ReactNode }) {
@@ -36,9 +36,13 @@ function SupabaseSessionProvider({ children }: { children: ReactNode }) {
   return <SessionContext.Provider value={valeur}>{children}</SessionContext.Provider>
 }
 
-/** Shared pre-check of a combination, before any recipe lookup. */
+/**
+ * Shared pre-check of a combination, before any recipe lookup. The base cards
+ * are infinite, so one copy may fill both slots (Mossy Rock + Mossy Rock).
+ */
 function verifierPaire(a: Objet, b: Objet): ResultatAssemblage | null {
-  if (!a.inventaireId || !b.inventaireId || a.inventaireId === b.inventaireId) {
+  if (!a.inventaireId || !b.inventaireId) return { succes: false, message: 'Pick two cards.' }
+  if (a.inventaireId === b.inventaireId && !estCarteDeBase(a)) {
     return { succes: false, message: 'Pick two different cards.' }
   }
   return null
@@ -147,7 +151,8 @@ function useMockSession(): Session {
       const recette = trouverRecette(RECETTES, a.id, b.id)
       const resultat = recette ? trouverObjet(recette.resultatId) : undefined
       if (!resultat) return { succes: false, message: messageErreurCraft({ message: 'no_recipe' }) }
-      retirerCopies([a.inventaireId!, b.inventaireId!])
+      // Base cards are infinite: only the other ingredients are consumed.
+      retirerCopies([a, b].filter((o) => !estCarteDeBase(o)).map((o) => o.inventaireId!))
       ajouterObjets([resultat])
       return {
         succes: true,
