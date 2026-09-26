@@ -89,6 +89,26 @@ export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
   secret_rare: 'border-white bg-gradient-to-b from-slate-700/60 via-carte to-carte shadow-[0_0_30px_-2px] shadow-white/70',
 }
 
+/**
+ * Booster-reveal effects, escalating from `rare` upward (nothing for
+ * `commun`/`peu_commun`): an ambient glow pulse behind the card and a
+ * colored light sweeping across it. See `pages/Boosters.tsx` and the
+ * `.animate-glow-*` / `.animate-shimmer` rules in `index.css`.
+ */
+export const CLASSE_LUEUR_RARETE: Partial<Record<Rarete, string>> = {
+  rare: 'animate-glow-rare',
+  epique: 'animate-glow-epic',
+  legendaire: 'animate-glow-legendary',
+  secret_rare: 'animate-glow-secret',
+}
+
+export const CLASSE_SHIMMER_RARETE: Partial<Record<Rarete, string>> = {
+  rare: 'bg-sky-300/25',
+  epique: 'bg-white/30',
+  legendaire: 'bg-amber-300/50',
+  secret_rare: 'shimmer-holo',
+}
+
 /** Rank thresholds (score needed to reach each rank). */
 export const SEUILS_RANG: [Rang, number][] = [
   ['Master', 4000],

@@ -5,10 +5,13 @@ import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { ObjetCard } from '@/components/ObjetCard'
 import { PageHeader } from '@/components/PageHeader'
 import { RARETE_PONDERATION, tirerObjetPondere } from '@/lib/boosters'
-import { formaterDuree, LIBELLE_RARETE, ORDRE_RARETE } from '@/lib/format'
+import { CLASSE_LUEUR_RARETE, CLASSE_SHIMMER_RARETE, formaterDuree, LIBELLE_RARETE, ORDRE_RARETE } from '@/lib/format'
 import { useSession } from '@/lib/session'
 import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
 import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
+
+/** The two rarest tiers get the slower, more dramatic spin-in. */
+const SPIN_LENT: Partial<Record<Rarete, true>> = { legendaire: true, secret_rare: true }
 
 /** /boosters — Booster stack, interactive tear-open, cards revealed one by one. */
 type EtatOuverture = 'idle' | 'dechirure' | 'ouverture' | 'cartes' | 'revele'
@@ -298,37 +301,28 @@ export function Boosters() {
 
         {etat === 'cartes' && objetActuel && (
           <div className="perspective-dist relative w-52 sm:w-60">
-            {/* Ambient pulsing glow behind legendary cards */}
-            {objetActuel.rarete === 'legendaire' && (
-              <div className="pointer-events-none absolute -inset-4 animate-legendary-glow rounded-3xl" aria-hidden />
+            {/* Ambient pulsing halo, bleeding past the card's edges — escalates with rarity */}
+            {CLASSE_LUEUR_RARETE[objetActuel.rarete] && (
+              <div
+                className={`pointer-events-none absolute -inset-4 rounded-3xl ${CLASSE_LUEUR_RARETE[objetActuel.rarete]}`}
+                aria-hidden
+              />
             )}
 
-            {/* The card spins into view; legendary items turn noticeably slower */}
-            <div
-              key={indexCarte}
-              className={objetActuel.rarete === 'legendaire' ? 'animate-card-spin-in-slow' : 'animate-card-spin-in'}
-            >
-              <ObjetCard objet={objetActuel} onSelect={onTapCarte} />
+            {/* The card spins into view; the two rarest tiers turn noticeably slower */}
+            <div key={indexCarte} className={SPIN_LENT[objetActuel.rarete] ? 'animate-card-spin-in-slow' : 'animate-card-spin-in'}>
+              {/* overflow-hidden clips the shimmer to the card's own box, so the light
+                  sweeps across it instead of visibly starting way off to the side */}
+              <div className="relative overflow-hidden rounded-2xl">
+                <ObjetCard objet={objetActuel} onSelect={onTapCarte} />
+                {CLASSE_SHIMMER_RARETE[objetActuel.rarete] && (
+                  <div
+                    className={`pointer-events-none absolute -inset-y-8 left-0 w-1/2 blur-md animate-shimmer ${CLASSE_SHIMMER_RARETE[objetActuel.rarete]}`}
+                    aria-hidden
+                  />
+                )}
+              </div>
             </div>
-
-            {objetActuel.rarete === 'secret_rare' && (
-              <div
-                className="shimmer-holo pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl blur-md animate-shimmer"
-                aria-hidden
-              />
-            )}
-            {objetActuel.rarete === 'epique' && (
-              <div
-                className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl bg-white/30 blur-md animate-shimmer"
-                aria-hidden
-              />
-            )}
-            {objetActuel.rarete === 'legendaire' && (
-              <div
-                className="pointer-events-none absolute -inset-y-8 -left-1/2 w-1/3 rotate-12 rounded-3xl bg-amber-300/50 blur-md animate-shimmer"
-                aria-hidden
-              />
-            )}
           </div>
         )}
 
