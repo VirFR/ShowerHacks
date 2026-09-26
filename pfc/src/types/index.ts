@@ -24,6 +24,14 @@ export interface Objet {
   icone: string
   rarete: Rarete
   description: string
+  /**
+   * Victoires explicites : ids des objets que cet objet bat toujours,
+   * indépendamment de la règle pierre/feuille/ciseaux. Sert à donner à
+   * chaque nouvel objet son propre "lot" de victoires/défaites en plus
+   * des trois familles de base. Ces relations sont prioritaires sur la
+   * règle de catégorie dans `lib/combat.ts`.
+   */
+  victoiresExplicites?: string[]
 }
 
 export type Rang =

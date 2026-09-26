@@ -8,21 +8,11 @@ import { StatBadge } from '@/components/StatBadge'
 import { JOUEUR_COURANT, OBJETS_MOCK } from '@/mocks'
 import type { Objet, ResultatCombat } from '@/types'
 import { CLASSE_RESULTAT, LIBELLE_RESULTAT } from '@/lib/format'
+import { resoudreCombat } from '@/lib/combat'
 
 /** Objet adverse mock : un objet que le joueur ne possède pas. */
 const OBJET_ADVERSE: Objet =
   OBJETS_MOCK.find((o) => !JOUEUR_COURANT.inventaire.some((i) => i.id === o.id)) ?? OBJETS_MOCK[0]
-
-/**
- * Résultat factice : simple comparaison des stats, à remplacer par la vraie
- * logique de combat (règles pierre/feuille/ciseaux + stats).
- */
-function resultatMock(mien: Objet, adverse: Objet): ResultatCombat {
-  const scoreMien = mien.attaque - adverse.defense
-  const scoreAdverse = adverse.attaque - mien.defense
-  if (scoreMien === scoreAdverse) return 'egalite'
-  return scoreMien > scoreAdverse ? 'victoire' : 'defaite'
-}
 
 /** /combat — Écran de duel. */
 export function Combat() {
@@ -31,7 +21,7 @@ export function Combat() {
 
   const attaquer = () => {
     if (!selection) return
-    setResultat(resultatMock(selection, OBJET_ADVERSE))
+    setResultat(resoudreCombat(selection, OBJET_ADVERSE))
   }
 
   const rejouer = () => {
@@ -82,7 +72,7 @@ export function Combat() {
           <>
             <p className={`text-3xl font-black ${CLASSE_RESULTAT[resultat]}`}>{LIBELLE_RESULTAT[resultat]}</p>
             <p className="mt-1 text-sm text-texte-2">
-              {selection?.nom} contre {OBJET_ADVERSE.nom} (résultat mock)
+              {selection?.nom} contre {OBJET_ADVERSE.nom}
             </p>
             <Bouton variante="secondaire" className="mt-4" onClick={rejouer}>
               Rejouer
