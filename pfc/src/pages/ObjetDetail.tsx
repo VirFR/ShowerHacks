@@ -7,6 +7,8 @@ import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { HISTORIQUE_MOCK, trouverObjet } from '@/mocks'
 import { StatBadge } from '@/components/StatBadge'
+import { useSession } from '@/lib/session'
+import { useLivreRecettes } from '@/services/crafting'
 import {
   CLASSE_CARTE_RARETE,
   CLASSE_RARETE,
@@ -17,10 +19,15 @@ import {
   LIBELLE_RESULTAT,
 } from '@/lib/format'
 
+/** The three cards every player starts with; every other card is crafted from them. */
+const STARTERS = ['obj-01', 'obj-04', 'obj-07']
+
 /** /item/:id — Item detail page. */
 export function ObjetDetail() {
   const { id } = useParams<{ id: string }>()
   const objet = trouverObjet(id)
+  const { joueur, decouvertes } = useSession()
+  const livre = useLivreRecettes()
 
   if (!objet) {
     return (
@@ -39,6 +46,9 @@ export function ObjetDetail() {
   const defaites = historique.filter((h) => h.resultat === 'defaite').length
   const egalites = historique.length - victoires - defaites
   const ratio = historique.length ? victoires / historique.length : 0
+  const recette = livre?.recettes.find((r) => r.resultatId === objet.id)
+  const ingredients = recette?.ingredients.map((i) => trouverObjet(i)).filter((o): o is NonNullable<typeof o> => o !== undefined)
+  const starter = STARTERS.includes(objet.id)
   const victoiresExplicites = (objet.victoiresExplicites ?? [])
     .map((id) => trouverObjet(id))
     .filter((o): o is NonNullable<typeof o> => o !== undefined)
@@ -73,6 +83,23 @@ export function ObjetDetail() {
             <div className="mt-4 text-sm">
               <p className="text-xs uppercase tracking-wider text-succes">Always beats</p>
               <p className="mt-1 text-texte-2">{victoiresExplicites.map((o) => o.nom).join(', ')}</p>
+            </div>
+          )}
+
+          {joueur && (
+            <div className="mt-4 text-sm">
+              <p className="text-xs uppercase tracking-wider text-accent-2">Recipe</p>
+              <p className="mt-1 text-texte-2">
+                {starter
+                  ? 'Base card: everything is crafted from rock, leaf and scissors.'
+                  : ingredients && ingredients.length === 2
+                    ? `${ingredients[0].nom} + ${ingredients[1].nom}`
+                    : !livre
+                      ? '…'
+                      : decouvertes.includes(objet.id)
+                      ? 'Booster only: this card can’t be crafted.'
+                      : 'Unknown recipe. Craft or win this card to reveal it.'}
+              </p>
             </div>
           )}
 

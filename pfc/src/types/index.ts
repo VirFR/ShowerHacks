@@ -101,16 +101,18 @@ export interface StackBoosters {
   prochainA: string
 }
 
-/** Mock result of an attempt to combine two items. */
+/** Result of an attempt to combine two items. */
 export interface ResultatAssemblage {
   succes: boolean
   message: string
   objetResultat?: Objet
+  /** True the first time the player ever gets this item (its recipe is now revealed). */
+  nouvelleDecouverte?: boolean
 }
 
 /**
  * A crafting recipe: combining the two ingredients (in either order) yields
- * the item `resultatId`. See `lib/assemblage.ts` and `mocks/recettes.ts`.
+ * the item `resultatId`. See `mocks/recettes.ts` and `services/crafting.ts`.
  */
 export interface Recette {
   resultatId: string
