@@ -79,6 +79,24 @@ Same Supabase project as before. Install the battle system's backend. Do it in t
   Replace its body with the real booster credit. `tier` is `bronze`, `silver`
   or `gold` and should drive the rarity odds. Inventory copies are rows in
   `inventory` (one per card).
+- **Crafting / recipes**: the `recipes` table (`item_a`, `item_b` → `result`,
+  canonical `item_a <= item_b`) has no direct SELECT policy on purpose — it's
+  only readable through two RPCs, both `security definer` and granted to
+  `authenticated` only:
+  - `recipe_book()` returns `{ total, recipes: [...] }`, where `recipes` is
+    the caller's own discovered pairs only (from the `discoveries` table,
+    filled by the `on_inventory_insert_discover` trigger on every inventory
+    insert — booster pull or craft result alike). Undiscovered pairs never
+    reach the client.
+  - `craft(p_a, p_b)` takes two of the caller's own **inventory row ids**
+    (not catalog item ids), deletes them and inserts the result in one
+    transaction if a recipe matches, raising `not_authenticated`,
+    `two_cards_needed`, `card_not_owned` or `no_recipe` otherwise.
+  Front end: `pfc/src/services/crafting.ts` wraps both RPCs;
+  `SessionProvider`'s `crafter()`/`decouvertes` call them in supabase mode
+  and fall back to `mocks/recettes.ts` + localStorage in mock mode. The base
+  cards (`obj-01`/`04`/`07`) are infinite: `craft()` never consumes them, so
+  a single owned copy can fill both slots.
 
 ## Online checklist (once the keys are in place)
 
