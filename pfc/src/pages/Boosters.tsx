@@ -391,20 +391,23 @@ export function Boosters() {
             </p>
           </div>
           <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} of ${MAX} boosters`}>
-            {Array.from({ length: MAX }, (_, i) => (
-              <div
-                key={i}
-                className={[
-                  'flex aspect-square items-center justify-center rounded-xl text-xl transition-all',
-                  i < actuel
-                    ? 'bg-gradient-to-br from-accent to-accent-2 shadow-md shadow-accent/30'
-                    : 'border border-dashed border-bordure bg-fond/40 opacity-50 grayscale',
-                ].join(' ')}
-                aria-hidden
-              >
-                🎁
-              </div>
-            ))}
+            {Array.from({ length: MAX }, (_, i) =>
+              i < actuel ? (
+                <div
+                  key={i}
+                  className="foil-pack relative aspect-square overflow-hidden rounded-md shadow-md shadow-accent/30 ring-1 ring-white/40 transition-all"
+                  aria-hidden
+                >
+                  <div className="absolute inset-x-0 top-[30%] border-t border-dashed border-fond/40" aria-hidden />
+                </div>
+              ) : (
+                <div
+                  key={i}
+                  className="aspect-square rounded-md border border-dashed border-bordure bg-fond/40 opacity-50 transition-all"
+                  aria-hidden
+                />
+              ),
+            )}
           </div>
         </Carte>
 
