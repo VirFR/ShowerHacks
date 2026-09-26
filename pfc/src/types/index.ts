@@ -6,10 +6,10 @@
  * (crafting, combat réel, auth…).
  */
 
-/** Catégories d'objets : les trois familles classiques + une famille spéciale. */
-export type Categorie = 'pierre' | 'feuille' | 'ciseaux' | 'special'
+/** Catégories d'objets : les trois familles classiques. */
+export type Categorie = 'pierre' | 'feuille' | 'ciseaux'
 
-export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux', 'special']
+export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux']
 
 export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
 

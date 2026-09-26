@@ -6,21 +6,18 @@ export const LIBELLE_CATEGORIE: Record<Categorie, string> = {
   pierre: 'Pierre',
   feuille: 'Feuille',
   ciseaux: 'Ciseaux',
-  special: 'Spécial',
 }
 
 export const ICONE_CATEGORIE: Record<Categorie, string> = {
   pierre: '✊',
   feuille: '✋',
   ciseaux: '✌️',
-  special: '✨',
 }
 
 export const CLASSE_CATEGORIE: Record<Categorie, string> = {
   pierre: 'bg-stone-500/20 text-stone-200 ring-stone-400/40',
   feuille: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
   ciseaux: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
-  special: 'bg-violet-500/20 text-violet-200 ring-violet-400/40',
 }
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {
