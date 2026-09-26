@@ -222,14 +222,14 @@ function useSupabaseSession(): Session {
       }
       setJoueur(null)
     } catch (e) {
-      console.error('[PFC] profile load failed', e)
+      console.error('[RPS] profile load failed', e)
       setJoueur(null)
     }
   }, [])
 
   useEffect(() => {
     const sb = supabase!
-    chargerChart().then(setChart).catch((e) => console.error('[PFC] chart load failed', e))
+    chargerChart().then(setChart).catch((e) => console.error('[RPS] chart load failed', e))
     sb.auth.getSession().then(({ data }) => {
       const id = data.session?.user.id ?? null
       setUserId(id)
@@ -265,7 +265,7 @@ function useSupabaseSession(): Session {
         await ajouterObjetsDistant(userId, objets)
       } catch (e) {
         // Typically a card missing from the `items` table (catalog seed 0002 not applied).
-        console.error('[PFC] inventory insert failed', e)
+        console.error('[RPS] inventory insert failed', e)
         throw e
       }
       await charger(userId)

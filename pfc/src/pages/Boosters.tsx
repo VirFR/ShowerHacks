@@ -233,7 +233,7 @@ export function Boosters() {
                   <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
                   <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
                   <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-ink" aria-hidden>
-                    <span className="text-xs font-black uppercase tracking-[0.3em] text-ink/70">PFC Booster</span>
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-ink/70">RPS Booster</span>
                   </div>
                   {etat === 'ouverture' && (
                     <div className="pointer-events-none absolute inset-0 bg-white animate-flash" aria-hidden />
