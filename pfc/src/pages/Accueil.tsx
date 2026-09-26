@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { Bouton } from '@/components/Bouton'
+import { BoutonConnexion } from '@/components/BoutonConnexion'
 import { Carte } from '@/components/Carte'
 import { CarteRang } from '@/components/CarteRang'
 import { PageHeader } from '@/components/PageHeader'
-import { GoogleMark, Icon } from '@/components/Icon'
+import { Icon } from '@/components/Icon'
 import { BOOSTERS_MOCK } from '@/mocks'
 import { useSession } from '@/lib/session'
 
@@ -81,7 +82,6 @@ export function Accueil() {
 
 /** Public landing for visitors: browse freely, sign in to play. */
 function Landing() {
-  const { connecterGoogle } = useSession()
   return (
     <>
       <PageHeader titre="PFC" sousTitre="Objects at war. Rock-paper-scissors, evolved." />
@@ -93,10 +93,7 @@ function Landing() {
           Open boosters, craft, build a deck, and duel live. Nobody ever loses a card.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Bouton taille="lg" onClick={() => connecterGoogle()} variante="clair">
-            <GoogleMark />
-            Continue with Google
-          </Bouton>
+          <BoutonConnexion />
           <Link to="/battle">
             <Bouton taille="lg" variante="secondaire">
               How battles work
