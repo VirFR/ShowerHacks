@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Bouton } from '@/components/Bouton'
 import { Icon } from '@/components/Icon'
 import { estOnboarde, useSession } from '@/lib/session'
@@ -15,6 +15,7 @@ const COULEURS: Record<Throw, string> = { rock: '#a8a29e', paper: '#34d399', sci
  */
 export function Welcome() {
   const { joueur, chargement, terminerOnboarding } = useSession()
+  const navigate = useNavigate()
   const [etat, setEtat] = useState<TutorialState>(createTutorial)
   // True while the last round's result is shown, waiting for "Next".
   const [resultat, setResultat] = useState(false)
@@ -42,6 +43,17 @@ export function Welcome() {
     try {
       await terminerOnboarding()
       setPhase('termine')
+    } finally {
+      setSauvegarde(false)
+    }
+  }
+
+  /** Skips the warm-up entirely: marks onboarding done and drops the player straight into the app. */
+  const passer = async () => {
+    setSauvegarde(true)
+    try {
+      await terminerOnboarding()
+      navigate('/battle', { replace: true })
     } finally {
       setSauvegarde(false)
     }
@@ -92,16 +104,26 @@ export function Welcome() {
 
   return (
     <div className="fixed inset-0 flex flex-col justify-between overflow-y-auto bg-[#0a0914] px-6 py-8 text-texte [background-image:radial-gradient(ellipse_at_50%_30%,#2a1f5a_0%,#0a0914_60%)] md:px-16">
-      <header className="flex items-center justify-between">
+      <header className="flex items-center justify-between gap-3">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent-2">Welcome, {joueur.pseudo} · warm-up</p>
-        <div className="flex items-center gap-2" aria-label="Score">
-          {[0, 1, 2].map((i) => {
-            const r = decisifs[i]
-            return <span key={i} className={`h-3 w-3 rounded-full ${r ? (r.result === 'player' ? 'bg-succes' : 'bg-echec') : 'border-2 border-bordure'}`} />
-          })}
-          <span className="ml-2 text-xs text-texte-2">
-            Round {Math.min(decisifs.length + (dernier ? 0 : 1), 3)} of 3 · {etat.score.player}–{etat.score.coach}
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2" aria-label="Score">
+            {[0, 1, 2].map((i) => {
+              const r = decisifs[i]
+              return <span key={i} className={`h-3 w-3 rounded-full ${r ? (r.result === 'player' ? 'bg-succes' : 'bg-echec') : 'border-2 border-bordure'}`} />
+            })}
+            <span className="ml-2 text-xs text-texte-2">
+              Round {Math.min(decisifs.length + (dernier ? 0 : 1), 3)} of 3 · {etat.score.player}–{etat.score.coach}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={passer}
+            disabled={sauvegarde}
+            className="text-xs font-semibold text-texte-2 underline-offset-2 hover:text-texte hover:underline disabled:opacity-50"
+          >
+            Skip
+          </button>
         </div>
       </header>
 
