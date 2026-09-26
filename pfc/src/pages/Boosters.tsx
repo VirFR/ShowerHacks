@@ -10,6 +10,9 @@ import { useSession } from '@/lib/session'
 import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
 import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
 
+/** The two rarest tiers get the slower, more dramatic spin-in. */
+const SPIN_LENT: Partial<Record<Rarete, true>> = { legendaire: true, secret_rare: true }
+
 /** /boosters — Booster stack, interactive tear-open, cards revealed one by one. */
 type EtatOuverture = 'idle' | 'dechirure' | 'ouverture' | 'cartes' | 'revele'
 
@@ -320,15 +323,8 @@ export function Boosters() {
               />
             )}
 
-            {/* The card turns over into view; legendary and secret rare cards turn noticeably slower */}
-            <div
-              key={indexCarte}
-              className={
-                objetActuel.rarete === 'legendaire' || objetActuel.rarete === 'secret_rare'
-                  ? 'animate-card-spin-in-slow'
-                  : 'animate-card-spin-in'
-              }
-            >
+            {/* The card spins into view; the two rarest tiers turn noticeably slower */}
+            <div key={indexCarte} className={SPIN_LENT[objetActuel.rarete] ? 'animate-card-spin-in-slow' : 'animate-card-spin-in'}>
               <ObjetCard objet={objetActuel} onSelect={onTapCarte} />
             </div>
           </div>

@@ -313,19 +313,20 @@ body {
   animation: flash 0.45s ease-out forwards;
 }
 
-/* Emballage du booster : effet feuille d'aluminium métallisée */
+/* Emballage du booster : feuille d'or métallisée (mêmes bandes clair/sombre
+   que l'ancien argent, juste recolorées, pour garder le rendu "aluminium brossé") */
 .foil-pack {
   background-image: linear-gradient(
     115deg,
-    #eef0f4 0%,
-    #aeb3c2 10%,
-    #fafbfd 22%,
-    #888ea3 36%,
-    #e6e8ee 50%,
-    #9a9fb2 64%,
-    #f6f7fa 78%,
-    #7d8296 90%,
-    #dfe1e8 100%
+    #fff7dc 0%,
+    #c98a1f 10%,
+    #fff3c4 22%,
+    #8a5a10 36%,
+    #ffe9a8 50%,
+    #a56a14 64%,
+    #fff3c4 78%,
+    #6b4508 90%,
+    #f5d78a 100%
   );
   background-size: 180% 180%;
 }
