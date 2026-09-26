@@ -19,6 +19,10 @@ export const CLE_STOCKAGE_SESSION = 'pfc.joueurId'
 export const CLE_STOCKAGE_ONBOARDING = 'pfc.onboarded'
 /** Mock mode: items won from boosters, on top of each account's starting inventory. */
 export const CLE_STOCKAGE_INVENTAIRE_EXTRA = 'pfc.inventaireExtra'
+/** Mock mode: starting-item ids crafted away (consumed as recipe ingredients), per account. */
+export const CLE_STOCKAGE_RETRAITS = 'pfc.retraits'
+/** Recipe ids (result item id) each account has discovered, for the recipe book. Both modes. */
+export const CLE_STOCKAGE_RECETTES = 'pfc.recettesConnues'
 
 export type ModeSession = 'mock' | 'supabase'
 
@@ -35,8 +39,16 @@ export interface Session {
   /** Starts the Google OAuth flow (mock mode: signs in as the first account). */
   connecterGoogle: () => Promise<void>
   deconnecter: () => Promise<void>
-  /** Adds items (e.g. from an opened booster) to the signed-in player's inventory. */
+  /** Adds items (e.g. from an opened booster or a successful craft) to the signed-in player's inventory. */
   ajouterObjets: (objets: Objet[]) => void
+  /**
+   * Removes one owned copy per given catalog id (e.g. the two ingredients a
+   * craft consumes). Mock mode: persisted (including starting items).
+   * Supabase mode: local-only until a matching backend mutation exists.
+   */
+  retirerObjets: (ids: string[]) => void
+  /** Result item ids of the recipes the signed-in player has discovered. */
+  recettesConnues: string[]
   /** Category chart (who beats whom), loaded from the DB or the default one. */
   chart: Chart
   /** Marks the first-login tutorial as done. */
@@ -97,6 +109,46 @@ export function ecrireInventairesExtra(inventaires: Record<string, Objet[]>) {
     window.localStorage.setItem(CLE_STOCKAGE_INVENTAIRE_EXTRA, JSON.stringify(inventaires))
   } catch {
     // Storage unavailable (private browsing…): the extra items stay in memory.
+  }
+}
+
+/** Starting-item ids crafted away, keyed by player id (mock mode). */
+export function lireRetraits(): Record<string, string[]> {
+  try {
+    const brut = window.localStorage.getItem(CLE_STOCKAGE_RETRAITS)
+    if (!brut) return {}
+    const valeur = JSON.parse(brut)
+    return valeur && typeof valeur === 'object' ? valeur : {}
+  } catch {
+    return {}
+  }
+}
+
+export function ecrireRetraits(retraits: Record<string, string[]>) {
+  try {
+    window.localStorage.setItem(CLE_STOCKAGE_RETRAITS, JSON.stringify(retraits))
+  } catch {
+    // Storage unavailable (private browsing…): the removal stays in memory.
+  }
+}
+
+/** Known recipes (by result item id), keyed by player id. */
+export function lireRecettesConnues(): Record<string, string[]> {
+  try {
+    const brut = window.localStorage.getItem(CLE_STOCKAGE_RECETTES)
+    if (!brut) return {}
+    const valeur = JSON.parse(brut)
+    return valeur && typeof valeur === 'object' ? valeur : {}
+  } catch {
+    return {}
+  }
+}
+
+export function ecrireRecettesConnues(recettes: Record<string, string[]>) {
+  try {
+    window.localStorage.setItem(CLE_STOCKAGE_RECETTES, JSON.stringify(recettes))
+  } catch {
+    // Storage unavailable (private browsing…): the recipe book stays in memory.
   }
 }
 

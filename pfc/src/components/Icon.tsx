@@ -12,6 +12,7 @@ export type IconName =
   | 'bag'
   | 'gift'
   | 'flask'
+  | 'book'
   | 'lock'
   | 'medal'
   | 'undo'
@@ -95,6 +96,12 @@ const PATHS: Record<IconName, ReactNode> = {
     <>
       <path d="M9 3h6" />
       <path d="M10 3v6L4 20h16l-6-11V3" />
+    </>
+  ),
+  book: (
+    <>
+      <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z" />
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
     </>
   ),
   lock: (

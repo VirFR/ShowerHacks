@@ -4,17 +4,18 @@ import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { useSession } from '@/lib/session'
 import { CATEGORIES, type Categorie } from '@/types'
-import { libelleCategorie } from '@/lib/format'
+import { libelleCategorie, ORDRE_RARETE } from '@/lib/format'
 
 type Filtre = Categorie | 'toutes'
 
-/** /inventory — Grid of owned items, filterable by category. */
+/** /inventory — Grid of owned items, filterable by category, common first and rarest last. */
 export function Inventaire() {
   const { joueur } = useSession()
   const [filtre, setFiltre] = useState<Filtre>('toutes')
   const inventaire = joueur?.inventaire ?? []
 
-  const objets = filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre)
+  const objets = (filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre))
+    .toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
 
   const filtres: { valeur: Filtre; label: string }[] = [
     { valeur: 'toutes', label: 'All' },

@@ -1,13 +1,18 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { DEFAULT_CHART, type Chart } from '@/lib/engine'
 import { signInWithGoogle, signOut } from '@/lib/auth'
+import { trouverRecetteParResultat } from '@/lib/assemblage'
 import {
   ecrireInventairesExtra,
   ecrireJoueurId,
   ecrireOnboarding,
+  ecrireRecettesConnues,
+  ecrireRetraits,
   lireInventairesExtra,
   lireJoueurId,
   lireOnboarding,
+  lireRecettesConnues,
+  lireRetraits,
   SessionContext,
   type Session,
 } from '@/lib/session'
@@ -31,26 +36,83 @@ function SupabaseSessionProvider({ children }: { children: ReactNode }) {
   return <SessionContext.Provider value={valeur}>{children}</SessionContext.Provider>
 }
 
+/** Result item ids of any recipes these newly-owned objects unlock. */
+function decouvrirRecettes(objets: Objet[]): string[] {
+  return objets.map((o) => trouverRecetteParResultat(o.id)?.resultatId).filter((id): id is string => id !== undefined)
+}
+
 /* ---------- mock mode (no env variables) ---------- */
 
-/** Merges the items won from boosters into a player's starting inventory. */
-function avecInventaireExtra(joueur: Joueur, inventairesExtra: Record<string, Objet[]>): Joueur {
-  const extra = inventairesExtra[joueur.id]
-  return extra && extra.length > 0 ? { ...joueur, inventaire: [...joueur.inventaire, ...extra] } : joueur
+/**
+ * Merges the items won from boosters (or crafted) into a player's starting
+ * inventory, minus any starting item that's since been crafted away.
+ */
+function avecInventaireExtra(
+  joueur: Joueur,
+  inventairesExtra: Record<string, Objet[]>,
+  retraits: Record<string, string[]>,
+): Joueur {
+  const extra = inventairesExtra[joueur.id] ?? []
+  const retires = new Set(retraits[joueur.id] ?? [])
+  const depart = retires.size > 0 ? joueur.inventaire.filter((o) => !retires.has(o.id)) : joueur.inventaire
+  return { ...joueur, inventaire: [...depart, ...extra] }
 }
 
 function useMockSession(): Session {
   const [joueurId, setJoueurId] = useState<string | null>(() => lireJoueurId())
   const [inventairesExtra, setInventairesExtra] = useState<Record<string, Objet[]>>(() => lireInventairesExtra())
+  const [retraits, setRetraits] = useState<Record<string, string[]>>(() => lireRetraits())
+  const [recettesParJoueur, setRecettesParJoueur] = useState<Record<string, string[]>>(() => lireRecettesConnues())
   const [version, setVersion] = useState(0)
 
-  /** Adds booster items to the signed-in player's inventory, each copy with its own id. */
+  /** Adds booster/craft items (each copy gets its own id) and unlocks any recipe they complete. */
   const ajouterObjets = useCallback(
     (objets: Objet[]) => {
       if (!joueurId || objets.length === 0) return
       setInventairesExtra((prev) => {
         const copies = objets.map((o, i) => ({ ...o, inventaireId: `${joueurId}-${Date.now().toString(36)}-${i}-${o.id}` }))
         const suivant = { ...prev, [joueurId]: [...(prev[joueurId] ?? []), ...copies] }
+        ecrireInventairesExtra(suivant)
+        return suivant
+      })
+      const decouvertes = decouvrirRecettes(objets)
+      if (decouvertes.length > 0) {
+        setRecettesParJoueur((prev) => {
+          const connues = new Set(prev[joueurId] ?? [])
+          decouvertes.forEach((id) => connues.add(id))
+          const suivant = { ...prev, [joueurId]: [...connues] }
+          ecrireRecettesConnues(suivant)
+          return suivant
+        })
+      }
+    },
+    [joueurId],
+  )
+
+  /**
+   * Removes one owned copy per given catalog id: from the booster/craft
+   * copies first, falling back to retiring a starting item (there's only
+   * ever one copy of those, so retiring by id is unambiguous).
+   */
+  const retirerObjets = useCallback(
+    (ids: string[]) => {
+      if (!joueurId || ids.length === 0) return
+      setInventairesExtra((prev) => {
+        const liste = [...(prev[joueurId] ?? [])]
+        const aRetirer: string[] = []
+        for (const id of ids) {
+          const index = liste.findIndex((o) => o.id === id)
+          if (index !== -1) liste.splice(index, 1)
+          else aRetirer.push(id)
+        }
+        if (aRetirer.length > 0) {
+          setRetraits((prevRetraits) => {
+            const suivantRetraits = { ...prevRetraits, [joueurId]: [...(prevRetraits[joueurId] ?? []), ...aRetirer] }
+            ecrireRetraits(suivantRetraits)
+            return suivantRetraits
+          })
+        }
+        const suivant = { ...prev, [joueurId]: liste }
         ecrireInventairesExtra(suivant)
         return suivant
       })
@@ -81,23 +143,40 @@ function useMockSession(): Session {
 
   return useMemo<Session>(() => {
     const base = trouverJoueur(joueurId)
-    const joueur: Joueur | null = base ? { ...avecInventaireExtra(base, inventairesExtra), onboardedAt: lireOnboarding(base.id) } : null
+    const joueur: Joueur | null = base
+      ? { ...avecInventaireExtra(base, inventairesExtra, retraits), onboardedAt: lireOnboarding(base.id) }
+      : null
     return {
       mode: 'mock',
       chargement: false,
       joueur,
-      comptes: JOUEURS_MOCK.map((j) => avecInventaireExtra(j, inventairesExtra)),
+      comptes: JOUEURS_MOCK.map((j) => avecInventaireExtra(j, inventairesExtra, retraits)),
       connecter,
       connecterGoogle,
       deconnecter,
       ajouterObjets,
+      retirerObjets,
+      recettesConnues: joueurId ? (recettesParJoueur[joueurId] ?? []) : [],
       chart: DEFAULT_CHART,
       terminerOnboarding,
       rafraichir,
     }
     // `version` forces a re-read of localStorage after onboarding.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [joueurId, version, inventairesExtra, connecter, connecterGoogle, deconnecter, ajouterObjets, terminerOnboarding, rafraichir])
+  }, [
+    joueurId,
+    version,
+    inventairesExtra,
+    retraits,
+    recettesParJoueur,
+    connecter,
+    connecterGoogle,
+    deconnecter,
+    ajouterObjets,
+    retirerObjets,
+    terminerOnboarding,
+    rafraichir,
+  ])
 }
 
 /* ---------- supabase mode ---------- */
@@ -107,6 +186,7 @@ function useSupabaseSession(): Session {
   const [joueur, setJoueur] = useState<Joueur | null>(null)
   const [chart, setChart] = useState<Chart>(DEFAULT_CHART)
   const [chargement, setChargement] = useState(true)
+  const [recettesParJoueur, setRecettesParJoueur] = useState<Record<string, string[]>>(() => lireRecettesConnues())
 
   const charger = useCallback(async (id: string | null) => {
     if (!id) {
@@ -161,15 +241,49 @@ function useSupabaseSession(): Session {
     setUserId(null)
   }, [])
 
+  const marquerRecettesDecouvertes = useCallback(
+    (objets: Objet[]) => {
+      if (!userId) return
+      const decouvertes = decouvrirRecettes(objets)
+      if (decouvertes.length === 0) return
+      setRecettesParJoueur((prev) => {
+        const connues = new Set(prev[userId] ?? [])
+        decouvertes.forEach((id) => connues.add(id))
+        const suivant = { ...prev, [userId]: [...connues] }
+        ecrireRecettesConnues(suivant)
+        return suivant
+      })
+    },
+    [userId],
+  )
+
   const ajouterObjets = useCallback(
     (objets: Objet[]) => {
       if (!userId || objets.length === 0) return
       ajouterObjetsDistant(userId, objets)
         .then(() => charger(userId))
         .catch((e) => console.error('[PFC] inventory insert failed', e))
+      marquerRecettesDecouvertes(objets)
     },
-    [userId, charger],
+    [userId, charger, marquerRecettesDecouvertes],
   )
+
+  /**
+   * No backend mutation exists yet to delete inventory rows, so this only
+   * updates the signed-in view; it won't survive the next `rafraichir()`.
+   * Enough to demo crafting until a real removal call is wired up.
+   */
+  const retirerObjets = useCallback((ids: string[]) => {
+    setJoueur((prev) => {
+      if (!prev) return prev
+      const inventaire = [...prev.inventaire]
+      for (const id of ids) {
+        const index = inventaire.findIndex((o) => o.id === id)
+        if (index !== -1) inventaire.splice(index, 1)
+      }
+      return { ...prev, inventaire }
+    })
+  }, [])
 
   return useMemo<Session>(
     () => ({
@@ -181,10 +295,12 @@ function useSupabaseSession(): Session {
       connecterGoogle: signInWithGoogle,
       deconnecter,
       ajouterObjets,
+      retirerObjets,
+      recettesConnues: userId ? (recettesParJoueur[userId] ?? []) : [],
       chart,
       terminerOnboarding,
       rafraichir,
     }),
-    [chargement, joueur, chart, deconnecter, ajouterObjets, terminerOnboarding, rafraichir],
+    [chargement, joueur, userId, recettesParJoueur, chart, deconnecter, ajouterObjets, retirerObjets, terminerOnboarding, rafraichir],
   )
 }

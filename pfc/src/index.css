@@ -189,7 +189,7 @@ body {
 
 /* Booster pack styles (boosters page) */
 /* Léger flottement du booster fermé, pour inviter à l'ouvrir */
-@keyframes @keyframes pack-float {
+@keyframes pack-float {
   0%,
   100% {
     transform: translateY(0);
