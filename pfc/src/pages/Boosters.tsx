@@ -313,7 +313,7 @@ export function Boosters() {
                 the whole card, no sweep or pulse */}
             {objetActuel.rarete !== 'commun' && objetActuel.rarete !== 'peu_commun' && (
               <div
-                className={`pointer-events-none absolute -inset-6 rounded-3xl rarity-glow rarity-glow-${
+                className={`pointer-events-none absolute -inset-10 rounded-3xl rarity-glow rarity-glow-${
                   objetActuel.rarete === 'secret_rare' ? 'secret' : objetActuel.rarete
                 }`}
                 aria-hidden

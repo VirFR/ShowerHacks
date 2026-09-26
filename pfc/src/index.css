@@ -414,21 +414,30 @@ body {
 /* Static halo behind a revealed rare-or-better card: fixed in place, no
    sweep or pulse, just highlights the whole card at a rarity-tinted color. */
 .rarity-glow {
-  filter: blur(24px);
+  filter: blur(18px);
 }
 
+/* Stops hold most of their color out to ~60% of the box, since the opaque
+   card itself covers roughly the inner two-thirds: what's left needs to
+   still read as a halo in the visible ring around the card. */
 .rarity-glow-rare {
-  background: radial-gradient(closest-side, rgba(56, 189, 248, 0.55), rgba(56, 189, 248, 0.15) 70%, transparent 100%);
+  background: radial-gradient(closest-side, rgba(2, 132, 199, 0.8) 55%, rgba(2, 132, 199, 0.4) 80%, transparent 100%);
 }
 
 .rarity-glow-epique {
-  background: radial-gradient(closest-side, rgba(232, 121, 249, 0.6), rgba(232, 121, 249, 0.18) 70%, transparent 100%);
+  background: radial-gradient(closest-side, rgba(192, 38, 211, 0.8) 55%, rgba(192, 38, 211, 0.4) 80%, transparent 100%);
 }
 
 .rarity-glow-legendaire {
-  background: radial-gradient(closest-side, rgba(251, 191, 36, 0.75), rgba(251, 191, 36, 0.2) 70%, transparent 100%);
+  background: radial-gradient(closest-side, rgba(217, 119, 6, 0.85) 55%, rgba(217, 119, 6, 0.45) 80%, transparent 100%);
 }
 
 .rarity-glow-secret {
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(196, 181, 253, 0.25) 70%, transparent 100%);
+  background: radial-gradient(
+    closest-side,
+    rgba(31, 35, 55, 0.55) 45%,
+    rgba(217, 70, 153, 0.55) 65%,
+    rgba(2, 132, 199, 0.4) 85%,
+    transparent 100%
+  );
 }
