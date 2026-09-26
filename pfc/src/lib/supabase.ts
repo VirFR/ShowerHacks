@@ -20,7 +20,7 @@ export const supabase: SupabaseClient | null = supabaseConfigure
 
 if (!supabaseConfigure && import.meta.env.DEV) {
   console.warn(
-    '[PFC] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are not set: ' +
+    '[RPS] VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are not set: ' +
       'the app is running on mock data. Copy .env.example to .env to configure Supabase.',
   )
 }

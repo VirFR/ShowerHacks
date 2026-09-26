@@ -5,6 +5,7 @@ import { Carte } from '@/components/Carte'
 import { CarteRang } from '@/components/CarteRang'
 import { PageHeader } from '@/components/PageHeader'
 import { Icon } from '@/components/Icon'
+import { LogoLockup } from '@/components/Logo'
 import { BOOSTERS_MOCK } from '@/mocks'
 import { useSession } from '@/lib/session'
 
@@ -84,7 +85,9 @@ export function Accueil() {
 function Landing() {
   return (
     <>
-      <PageHeader titre="PFC" sousTitre="Objects at war. Rock-paper-scissors, evolved." />
+      <div className="mb-8 flex justify-center">
+        <LogoLockup size={200} />
+      </div>
       <Carte className="relative overflow-hidden p-8 md:p-10">
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent/20 blur-3xl" />
         <h2 className="max-w-xl font-display text-3xl font-bold tracking-tight md:text-4xl">Collect odd objects. Fight with five of them.</h2>
