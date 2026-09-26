@@ -15,8 +15,7 @@ import type { BattleState, EngineCard, RewardTier, Side } from '@/lib/engine/typ
  */
 export type Categorie = string
 
-// 'brainrot' is set aside for now (see `mocks/objetsBrainrot.ts`).
-export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace']
+export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'animaux', 'vehicules']
 
 export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 

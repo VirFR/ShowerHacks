@@ -20,7 +20,8 @@ const COULEUR_PAR_CATEGORIE: Record<string, string> = {
   plantes: '#34d399',
   ressources: '#f59e0b',
   espace: '#818cf8',
-  brainrot: '#a3e635',
+  animaux: '#fb923c',
+  vehicules: '#22d3ee',
 }
 
 export function couleurCategorie(c: Categorie): string {
@@ -32,7 +33,8 @@ const CLASSE_PAR_CATEGORIE: Record<string, string> = {
   plantes: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
   ressources: 'bg-amber-600/20 text-amber-200 ring-amber-500/40',
   espace: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
-  brainrot: 'bg-lime-500/20 text-lime-200 ring-lime-400/40',
+  animaux: 'bg-orange-500/20 text-orange-200 ring-orange-400/40',
+  vehicules: 'bg-cyan-500/20 text-cyan-200 ring-cyan-400/40',
 }
 
 export function classeCategorie(c: Categorie): string {

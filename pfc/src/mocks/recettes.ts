@@ -9,11 +9,15 @@ export { CARTES_DE_BASE } from '@/types'
  * elements: a craft never consumes them and one copy can fill both slots.
  * Every other ingredient is consumed.
  *
- * The first list gives every item one recipe, tier by tier, so the whole
- * catalog traces back to rock, leaf and scissors. `ALTERNATIVES` adds more
- * ways to reach items, so that every combination of the early cards (the
+ * The first list gives the original 57 items one recipe, tier by tier, so
+ * they all trace back to rock, leaf and scissors. `ALTERNATIVES` adds more
+ * ways to reach them, so that every combination of the early cards (the
  * three bases and their six tier-1 results) produces something. Every pair of
  * ingredients is unique (checked by `recettes.test.ts`).
+ *
+ * The items team's booster expansion (200+ cards across Fight, Animals,
+ * Plants, Resources, Vehicles and Space) is intentionally left out: those
+ * are booster-exclusive chase cards, not part of the crafting tree.
  *
  * This file is the source of truth for the `recipes` table
  * (`node scripts/gen-items-sql.mjs` writes supabase/migrations/0004_recipes_seed.sql).
