@@ -91,17 +91,10 @@ body {
   animation: pack-float 2.4s ease-in-out infinite;
 }
 
-/* Déchirure du booster : les deux moitiés s'envolent quand le seuil est franchi */
-@keyframes tear-burst-haut {
+/* Déchirure du booster : la bandelette s'envole vers la gauche une fois le seuil franchi */
+@keyframes tear-burst-gauche {
   to {
-    transform: translateY(-170px) translateX(-50px) rotate(-28deg);
-    opacity: 0;
-  }
-}
-
-@keyframes tear-burst-bas {
-  to {
-    transform: translateY(170px) translateX(50px) rotate(28deg);
+    transform: translateX(-220px) translateY(-20px) rotate(-18deg);
     opacity: 0;
   }
 }
@@ -118,12 +111,8 @@ body {
   }
 }
 
-.animate-tear-burst-haut {
-  animation: tear-burst-haut 0.45s ease-in forwards;
-}
-
-.animate-tear-burst-bas {
-  animation: tear-burst-bas 0.45s ease-in forwards;
+.animate-tear-burst-gauche {
+  animation: tear-burst-gauche 0.45s ease-in forwards;
 }
 
 .animate-flash {
@@ -209,9 +198,9 @@ body {
   );
 }
 
-/* Sommet en arche de la pochette, façon paquet cartonné debout */
-.pack-arche {
-  border-radius: 50% 50% 18px 18px / 38% 38% 18px 18px;
+/* Petite encoche triangulaire sur le bord droit de la bandelette : prise pour tirer */
+.pack-encoche-droite {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 38%, calc(100% - 10px) 50%, 100% 62%, 100% 100%, 0% 100%);
 }
 
 /* Reflet arc-en-ciel des objets secret rare (holographique) */

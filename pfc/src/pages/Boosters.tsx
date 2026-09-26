@@ -44,7 +44,7 @@ export function Boosters() {
 
   const [dragProgress, setDragProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
-  const dragStartY = useRef<number | null>(null)
+  const dragStartX = useRef<number | null>(null)
   const dechirureEnCours = useRef(false)
 
   const { actuel, prochainA } = stack
@@ -93,28 +93,29 @@ export function Boosters() {
     }, 480)
   }
 
-  const onPointerDownPack = (e: PointerEvent<HTMLDivElement>) => {
+  const onPointerDownBandelette = (e: PointerEvent<HTMLDivElement>) => {
     if (etat !== 'dechirure') return
     e.currentTarget.setPointerCapture(e.pointerId)
-    dragStartY.current = e.clientY
+    dragStartX.current = e.clientX
     setIsDragging(true)
   }
 
-  const onPointerMovePack = (e: PointerEvent<HTMLDivElement>) => {
-    if (etat !== 'dechirure' || dragStartY.current === null) return
-    const dy = e.clientY - dragStartY.current
-    const nouvelleProgression = Math.min(1, Math.max(0, dy / SEUIL_DECHIRURE_PX))
+  /** Only a right-to-left drag counts: pulling the strip the other way makes no progress. */
+  const onPointerMoveBandelette = (e: PointerEvent<HTMLDivElement>) => {
+    if (etat !== 'dechirure' || dragStartX.current === null) return
+    const dx = dragStartX.current - e.clientX
+    const nouvelleProgression = Math.min(1, Math.max(0, dx / SEUIL_DECHIRURE_PX))
     setDragProgress(nouvelleProgression)
     if (nouvelleProgression >= 1) {
-      dragStartY.current = null
+      dragStartX.current = null
       setIsDragging(false)
       terminerDechirure()
     }
   }
 
-  const onPointerUpPack = () => {
-    if (dragStartY.current === null) return
-    dragStartY.current = null
+  const onPointerUpBandelette = () => {
+    if (dragStartX.current === null) return
+    dragStartX.current = null
     setIsDragging(false)
     setDragProgress(0)
   }
@@ -141,91 +142,69 @@ export function Boosters() {
       {/* Opening: the booster floats front and center, no card chrome around it */}
       <div className="flex flex-col items-center justify-center gap-4 py-6 text-center">
         {(etat === 'idle' || etat === 'dechirure' || etat === 'ouverture') && (
-          <div
-            className={`relative h-72 w-52 sm:h-80 sm:w-60 ${etat === 'idle' ? 'animate-pack-float' : ''}`}
-            style={{ touchAction: 'none' }}
-            onPointerDown={onPointerDownPack}
-            onPointerMove={onPointerMovePack}
-            onPointerUp={onPointerUpPack}
-            onPointerCancel={onPointerUpPack}
-            onClick={() => etat === 'dechirure' && terminerDechirure()}
-            role={etat === 'dechirure' ? 'button' : undefined}
-            tabIndex={etat === 'dechirure' ? 0 : undefined}
-            aria-label={etat === 'dechirure' ? 'Tear the booster open: drag or tap' : undefined}
-            onKeyDown={(e) => {
-              if (etat === 'dechirure' && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault()
-                terminerDechirure()
-              }
-            }}
-          >
+          <div className={`relative h-72 w-52 sm:h-80 sm:w-60 ${etat === 'idle' ? 'animate-pack-float' : ''}`}>
             {/* Ambient glow, which grows further while tearing */}
             <div
-              className="pointer-events-none absolute inset-0 rounded-[28px] bg-or blur-2xl transition-opacity"
+              className="pointer-events-none absolute inset-0 rounded-xl bg-or blur-2xl transition-opacity"
               style={{ opacity: etat === 'dechirure' ? 0.25 + dragProgress * 0.65 : etat === 'ouverture' ? 0.9 : 0.25 }}
               aria-hidden
             />
 
-            {/* Top half */}
-            <div
-              className={[
-                'foil-pack pack-arche absolute inset-x-0 top-0 h-1/2 overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/40',
-                etat === 'ouverture' ? 'animate-tear-burst-haut' : '',
-              ].join(' ')}
-              style={
-                etat === 'dechirure'
-                  ? {
-                      transform: `translateY(${-dragProgress * 60}px) rotate(${-dragProgress * 10}deg)`,
-                      transition: transitionRessort,
-                    }
-                  : undefined
-              }
-            >
-              <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
-              <div className="foil-crimp absolute inset-x-3 top-1.5 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 left-1 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 right-1 rounded-full" aria-hidden />
+            {/* Body: the big lower 3/4 of the pack, stays put */}
+            <div className="foil-pack absolute inset-x-0 bottom-0 h-3/4 overflow-hidden rounded-b-xl shadow-2xl shadow-black/50 ring-1 ring-white/40">
+              <div className="foil-crimp absolute inset-x-3 bottom-1.5" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond" aria-hidden>
+                <span className="text-4xl drop-shadow-sm">✊✋✌️</span>
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
+              </div>
+              {etat === 'ouverture' && (
+                <div className="pointer-events-none absolute inset-0 bg-white animate-flash" aria-hidden />
+              )}
             </div>
 
-            {/* Bottom half */}
+            {/* Tear strip: the top 1/4, dragged right-to-left to open */}
             <div
               className={[
-                'foil-pack absolute inset-x-0 bottom-0 h-1/2 overflow-hidden rounded-b-[22px] shadow-2xl shadow-black/50 ring-1 ring-white/40',
-                etat === 'ouverture' ? 'animate-tear-burst-bas' : '',
+                'foil-pack pack-encoche-droite absolute inset-x-0 top-0 h-1/4 overflow-hidden rounded-t-xl shadow-2xl shadow-black/50 ring-1 ring-white/40',
+                etat === 'ouverture' ? 'animate-tear-burst-gauche' : '',
               ].join(' ')}
-              style={
-                etat === 'dechirure'
+              style={{
+                touchAction: 'none',
+                ...(etat === 'dechirure'
                   ? {
-                      transform: `translateY(${dragProgress * 60}px) rotate(${dragProgress * 10}deg)`,
+                      transform: `translateX(${-dragProgress * 70}px) rotate(${-dragProgress * 6}deg)`,
                       transition: transitionRessort,
                     }
-                  : undefined
-              }
+                  : undefined),
+              }}
+              onPointerDown={onPointerDownBandelette}
+              onPointerMove={onPointerMoveBandelette}
+              onPointerUp={onPointerUpBandelette}
+              onPointerCancel={onPointerUpBandelette}
+              onClick={() => etat === 'dechirure' && terminerDechirure()}
+              role={etat === 'dechirure' ? 'button' : undefined}
+              tabIndex={etat === 'dechirure' ? 0 : undefined}
+              aria-label={etat === 'dechirure' ? 'Tear strip: drag right to left, or tap' : undefined}
+              onKeyDown={(e) => {
+                if (etat === 'dechirure' && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault()
+                  terminerDechirure()
+                }
+              }}
             >
               <div className="foil-pack-shine animate-foil-shine pointer-events-none absolute -inset-x-10 -inset-y-24" aria-hidden />
-              <div className="foil-crimp absolute inset-x-3 bottom-1.5 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 left-1 rounded-full" aria-hidden />
-              <div className="foil-crimp-vert absolute inset-y-2 right-1 rounded-full" aria-hidden />
+              <div className="foil-crimp absolute inset-x-3 top-1.5" aria-hidden />
+              <div className="foil-crimp-vert absolute inset-y-1 left-1" aria-hidden />
             </div>
 
+            {/* Perforated seam between the strip and the body */}
             {etat !== 'ouverture' && (
-              <>
-                <div
-                  className="pointer-events-none absolute inset-x-4 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-fond/50"
-                  aria-hidden
-                />
-                <div
-                  className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond"
-                  aria-hidden
-                >
-                  <span className="text-4xl drop-shadow-sm">✊✋✌️</span>
-                  <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
-                </div>
-              </>
-            )}
-
-            {etat === 'ouverture' && (
-              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-white animate-flash" aria-hidden />
+              <div
+                className="pointer-events-none absolute inset-x-4 top-1/4 -translate-y-1/2 border-t-2 border-dashed border-fond/50"
+                aria-hidden
+              />
             )}
           </div>
         )}
@@ -288,7 +267,7 @@ export function Boosters() {
             (actuel > 0
               ? `Open a booster to discover ${OBJETS_PAR_BOOSTER} new items.`
               : 'No boosters left, hang on a bit.')}
-          {etat === 'dechirure' && 'Drag the booster to tear it open ✋'}
+          {etat === 'dechirure' && 'Drag the strip right to left to tear it open ✋'}
           {etat === 'ouverture' && 'Ripping…'}
           {etat === 'cartes' && `Item ${indexCarte + 1} / ${objetsObtenus.length} — tap to continue`}
         </p>
