@@ -7,15 +7,14 @@ interface BoutonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   taille?: 'sm' | 'md' | 'lg'
 }
 
+/** Chunky handheld-style buttons: solid fill, dark outline, a 3px edge that presses in. */
 const CLASSES_VARIANTE: Record<Variante, string> = {
-  primaire:
-    'bg-accent text-white shadow-lg shadow-accent/30 hover:bg-accent-2 disabled:bg-accent/40 disabled:shadow-none',
-  secondaire:
-    'bg-carte text-texte ring-1 ring-bordure hover:bg-carte-2 disabled:text-texte-2',
-  danger: 'bg-attaque text-white hover:brightness-110 disabled:bg-attaque/40',
-  fantome: 'text-texte-2 hover:bg-carte hover:text-texte',
-  clair: 'bg-white text-fond shadow-lg shadow-white/10 hover:bg-slate-200 disabled:bg-white/50',
-  or: 'bg-or text-fond shadow-lg shadow-or/30 hover:bg-amber-300 disabled:bg-or/40',
+  primaire: 'border-ink bg-accent text-white hover:bg-accent-2 disabled:bg-accent/50',
+  secondaire: 'border-ink bg-carte text-texte hover:bg-carte-2 disabled:text-texte-2',
+  danger: 'border-ink bg-echec text-white hover:brightness-110 disabled:bg-echec/50',
+  fantome: 'border-transparent bg-transparent text-texte-2 shadow-none hover:bg-carte-2 hover:text-texte active:translate-y-0',
+  clair: 'border-ink bg-white text-ink hover:bg-carte-2 disabled:bg-white/60',
+  or: 'border-ink bg-or text-ink hover:brightness-110 disabled:bg-or/50',
 }
 
 const CLASSES_TAILLE = {
@@ -35,9 +34,10 @@ export function Bouton({
     <button
       type={type}
       className={[
-        'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all',
-        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-2',
-        'disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 rounded-lg border-2 font-display font-bold tracking-wide transition-all',
+        'shadow-[0_3px_0_0_var(--color-ink)] active:translate-y-[3px] active:shadow-none',
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-or',
+        'disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0',
         CLASSES_VARIANTE[variante],
         CLASSES_TAILLE[taille],
         className,

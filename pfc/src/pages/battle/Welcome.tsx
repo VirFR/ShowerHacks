@@ -66,7 +66,7 @@ export function Welcome() {
     return (
       <Plein>
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-succes">All set</p>
-        <h1 className="mt-2 font-display text-4xl font-black">Welcome to the arena, {joueur.pseudo}</h1>
+        <h1 className="mt-3 font-pixel text-xl md:text-3xl">Welcome to the arena, {joueur.pseudo}</h1>
         <p className="mt-3 max-w-md text-sm text-texte-2">Open your booster, build a deck of five, and go find an opponent.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link to="/boosters">
@@ -89,7 +89,7 @@ export function Welcome() {
     return (
       <Plein>
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-or">You won 2 – 1</p>
-        <h1 className="mt-2 font-display text-4xl font-black">Your first booster</h1>
+        <h1 className="mt-3 font-pixel text-xl md:text-3xl">Your first booster</h1>
         <div className="animate-booster-pop mt-8 flex h-44 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-2 to-accent shadow-2xl shadow-accent/40">
           <Icon name="gift" size={56} className="text-white" strokeWidth={1.5} />
         </div>
@@ -103,7 +103,7 @@ export function Welcome() {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col justify-between overflow-y-auto bg-[#0a0914] px-6 py-8 text-texte [background-image:radial-gradient(ellipse_at_50%_30%,#2a1f5a_0%,#0a0914_60%)] md:px-16">
+    <div className="theme-dark fixed inset-0 flex flex-col justify-between overflow-y-auto bg-[#0f1a33] px-6 py-8 text-texte [background-image:radial-gradient(ellipse_at_50%_30%,#24407a_0%,#0f1a33_60%)] md:px-16">
       <header className="flex items-center justify-between gap-3">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent-2">Welcome, {joueur.pseudo} · warm-up</p>
         <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export function Welcome() {
 
 function Plein({ children }: { children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center overflow-y-auto bg-[#0a0914] p-6 text-center text-texte [background-image:radial-gradient(ellipse_at_50%_30%,#2a1f5a_0%,#0a0914_60%)]">
+    <div className="theme-dark fixed inset-0 flex flex-col items-center justify-center overflow-y-auto bg-[#0f1a33] p-6 text-center text-texte [background-image:radial-gradient(ellipse_at_50%_30%,#24407a_0%,#0f1a33_60%)]">
       {children}
     </div>
   )

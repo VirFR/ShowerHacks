@@ -15,7 +15,7 @@ import type { BattleState, EngineCard, RewardTier, Side } from '@/lib/engine/typ
  */
 export type Categorie = string
 
-export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'brainrot']
+export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'animaux', 'vehicules']
 
 export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
@@ -101,20 +101,32 @@ export interface StackBoosters {
   prochainA: string
 }
 
-/** Mock result of an attempt to combine two items. */
+/** Result of an attempt to combine two items. */
 export interface ResultatAssemblage {
   succes: boolean
   message: string
   objetResultat?: Objet
+  /** True the first time the player ever gets this item (its recipe is now revealed). */
+  nouvelleDecouverte?: boolean
 }
 
 /**
  * A crafting recipe: combining the two ingredients (in either order) yields
- * the item `resultatId`. See `lib/assemblage.ts` and `mocks/recettes.ts`.
+ * the item `resultatId`. See `mocks/recettes.ts` and `services/crafting.ts`.
  */
 export interface Recette {
   resultatId: string
   ingredients: [string, string]
+}
+
+/**
+ * The three base cards (rock, leaf, scissors): every player owns them, and
+ * like Little Alchemy's elements they are infinite, never consumed by a craft.
+ */
+export const CARTES_DE_BASE = ['obj-01', 'obj-04', 'obj-07']
+
+export function estCarteDeBase(objet: Pick<Objet, 'id'>): boolean {
+  return CARTES_DE_BASE.includes(objet.id)
 }
 
 /** Shared gameplay constants. */

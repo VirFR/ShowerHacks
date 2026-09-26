@@ -1,33 +1,41 @@
 import type { Chart, Matchup } from './types'
 
 /**
- * Placeholder chart over the five thematic categories of the catalog. The
- * real matchups are decided by the items team and loaded from the
- * `categories` / `category_matchups` tables; this seed keeps a circular
- * logic (every category beats some and loses to some) and one neutral pair
- * (resources vs space) so that stats matter too.
+ * Real chart over the six thematic categories of the catalog, owned by the
+ * items team. Each category has the advantage over exactly one other,
+ * forming a single cycle (every other pairing, including same-category, is
+ * neutral and falls to stats):
+ *
+ *   Fight → Animals → Plants → Resources → Vehicles → Space → (back to Fight)
+ *
+ * (weapons hunt animals; animals eat plants; roots overgrow resources; rust
+ * and scarcity corrode vehicles; rockets/rovers conquer space; cosmic-scale
+ * events eclipse any weapon.)
  */
 export const DEFAULT_CHART: Chart = {
   beats: {
-    fight: ['plantes', 'brainrot'],
-    plantes: ['ressources', 'espace'],
-    ressources: ['fight', 'brainrot'],
+    fight: ['animaux'],
+    animaux: ['plantes'],
+    plantes: ['ressources'],
+    ressources: ['vehicules'],
+    vehicules: ['espace'],
     espace: ['fight'],
-    brainrot: ['plantes', 'espace'],
   },
   verbs: {
-    fight: 'smashes',
+    fight: 'hunts',
+    animaux: 'devours',
     plantes: 'overgrows',
-    ressources: 'buries',
+    ressources: 'corrodes',
+    vehicules: 'conquers',
     espace: 'eclipses',
-    brainrot: 'melts',
   },
   labels: {
     fight: 'Fight',
     plantes: 'Plants',
     ressources: 'Resources',
     espace: 'Space',
-    brainrot: 'Brainrot',
+    animaux: 'Animals',
+    vehicules: 'Vehicles',
   },
 }
 

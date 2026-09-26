@@ -19,9 +19,9 @@ export function Accueil() {
     <>
       <PageHeader titre={`Hey, ${joueur.pseudo}`} sousTitre="Ready for a duel?" />
 
-      <Carte className="relative overflow-hidden bg-gradient-to-br from-accent/30 via-carte to-carte">
+      <Carte className="relative overflow-hidden bg-gradient-to-br from-sky-200 via-carte to-carte">
         <div className="pointer-events-none absolute -right-10 -top-10 h-56 w-56 rounded-full bg-accent/20 blur-3xl" />
-        <p className="text-sm uppercase tracking-widest text-accent-2">Gauntlet</p>
+        <p className="text-xs font-extrabold uppercase tracking-widest text-accent-2">Gauntlet</p>
         <h2 className="mt-1 font-display text-2xl font-bold">Five cards, one champion, no hit points</h2>
         <p className="mt-2 max-w-md text-sm text-texte-2">
           Build a deck of five cards, challenge a player or the Coach, and climb the leaderboard.

@@ -14,7 +14,7 @@ export function CarteRang({ rang, score, taille = 'sm' }: CarteRangProps) {
     <div className="flex items-center gap-3">
       <div
         className={[
-          'flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br font-black text-fond shadow-lg',
+          'flex shrink-0 items-center justify-center rounded-full border-2 border-ink bg-gradient-to-br font-display font-bold text-ink shadow-hard-sm',
           CLASSE_RANG[rang],
           grand ? 'h-20 w-20 text-3xl' : 'h-12 w-12 text-lg',
         ].join(' ')}

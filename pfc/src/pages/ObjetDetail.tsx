@@ -7,6 +7,9 @@ import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { HISTORIQUE_MOCK, trouverObjet } from '@/mocks'
 import { StatBadge } from '@/components/StatBadge'
+import { useSession } from '@/lib/session'
+import { useLivreRecettes } from '@/services/crafting'
+import { estCarteDeBase } from '@/types'
 import {
   CLASSE_CARTE_RARETE,
   CLASSE_RARETE,
@@ -21,6 +24,8 @@ import {
 export function ObjetDetail() {
   const { id } = useParams<{ id: string }>()
   const objet = trouverObjet(id)
+  const { joueur, decouvertes } = useSession()
+  const livre = useLivreRecettes()
 
   if (!objet) {
     return (
@@ -39,6 +44,10 @@ export function ObjetDetail() {
   const defaites = historique.filter((h) => h.resultat === 'defaite').length
   const egalites = historique.length - victoires - defaites
   const ratio = historique.length ? victoires / historique.length : 0
+  const recettes = (livre?.recettes ?? [])
+    .filter((r) => r.resultatId === objet.id)
+    .map((r) => r.ingredients.map((i) => trouverObjet(i)?.nom ?? i).join(' + '))
+  const starter = estCarteDeBase(objet)
   const victoiresExplicites = (objet.victoiresExplicites ?? [])
     .map((id) => trouverObjet(id))
     .filter((o): o is NonNullable<typeof o> => o !== undefined)
@@ -50,11 +59,11 @@ export function ObjetDetail() {
       </Link>
 
       <section
-        className={`flex flex-col gap-5 rounded-2xl border-4 p-4 sm:flex-row md:p-5 ${CLASSE_CARTE_RARETE[objet.rarete]}`}
+        className={`flex flex-col gap-5 rounded-xl border-[3px] p-4 shadow-hard sm:flex-row md:p-5 ${CLASSE_CARTE_RARETE[objet.rarete]}`}
       >
         <ObjetImage
           objet={objet}
-          className="h-40 w-40 shrink-0 self-center bg-fond/40 ring-1 ring-black/30 sm:self-start"
+          className="sticker-bg h-40 w-40 shrink-0 self-center border-2 border-ink/70 p-3 sm:self-start"
         />
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -73,6 +82,23 @@ export function ObjetDetail() {
             <div className="mt-4 text-sm">
               <p className="text-xs uppercase tracking-wider text-succes">Always beats</p>
               <p className="mt-1 text-texte-2">{victoiresExplicites.map((o) => o.nom).join(', ')}</p>
+            </div>
+          )}
+
+          {joueur && (
+            <div className="mt-4 text-sm">
+              <p className="text-xs uppercase tracking-wider text-accent-2">Recipe</p>
+              <p className="mt-1 text-texte-2">
+                {starter
+                  ? 'Base card: infinite, never used up. Everything is crafted from rock, leaf and scissors.'
+                  : recettes.length > 0
+                    ? recettes.join(' · ')
+                    : !livre
+                      ? '…'
+                      : decouvertes.includes(objet.id)
+                      ? 'Booster only: this card can’t be crafted.'
+                      : 'Unknown recipe. Craft or win this card to reveal it.'}
+              </p>
             </div>
           )}
 

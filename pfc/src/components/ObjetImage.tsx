@@ -26,7 +26,7 @@ export function ObjetImage({ objet, className = 'h-16 w-16' }: ObjetImageProps) 
     <img
       src={objet.imageUrl}
       alt={objet.nom}
-      className={`rounded-xl object-cover ${className}`}
+      className={`rounded-xl object-contain ${className}`}
       onError={() => setErreur(true)}
       draggable={false}
     />

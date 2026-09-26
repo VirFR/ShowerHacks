@@ -173,7 +173,7 @@ function Picker() {
               </p>
               <div className="flex gap-2">
                 <Bouton
-                  className="flex-1 bg-succes text-fond hover:bg-emerald-300"
+                  className="flex-1 bg-succes text-ink hover:bg-emerald-300"
                   taille="sm"
                   disabled={occupe !== null}
                   onClick={() =>

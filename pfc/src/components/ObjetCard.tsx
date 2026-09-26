@@ -33,8 +33,8 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
         )}
       </div>
 
-      <div className="relative my-2 flex flex-1 items-center justify-center overflow-hidden rounded-lg bg-fond/40 ring-1 ring-black/30">
-        <ObjetImage objet={objet} className="h-full w-full object-cover" />
+      <div className="sticker-bg relative my-2 flex flex-1 items-center justify-center overflow-hidden rounded-lg border-2 border-ink/70">
+        <ObjetImage objet={objet} className="h-full w-full p-2" />
         <div className="absolute right-1.5 top-1.5">
           <BadgeCategorie categorie={objet.categorie} />
         </div>
@@ -50,8 +50,8 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
   )
 
   const classes = [
-    'flex aspect-[3/4] w-full flex-col rounded-2xl border-4 p-2.5 transition-all',
-    selectionne ? 'border-accent-2 ring-4 ring-accent/60 shadow-lg shadow-accent/30' : CLASSE_CARTE_RARETE[objet.rarete],
+    'flex aspect-[3/4] w-full flex-col rounded-xl border-[3px] p-2.5 shadow-hard transition-all',
+    selectionne ? 'border-ink bg-carte ring-4 ring-or' : CLASSE_CARTE_RARETE[objet.rarete],
   ].join(' ')
 
   if (onSelect) {

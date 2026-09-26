@@ -2,7 +2,7 @@
 
 Web app skeleton for the **PFC** game: React 19 + Vite + TypeScript + Tailwind CSS v4 on the front end, Supabase for backend/DB.
 
-> Current state: the battle system (deck of 5, Gauntlet duels, practice bot, first-login warm-up, Google sign-in, online duels through Supabase) is implemented. Crafting and boosters are still mock pages owned by the other teams.
+> Current state: the battle system (deck of 5, Gauntlet duels, practice bot, first-login warm-up, Google sign-in, online duels through Supabase) is implemented, and so is crafting (Little-Alchemy-style recipes, hidden in the database). Boosters are still a mock page owned by the other team.
 
 ## Game rules: the Gauntlet
 
@@ -107,9 +107,27 @@ Environment variables to declare in Vercel (**Settings → Environment Variables
 | `/inventory`   | `pages/Inventaire.tsx`  | Grid of owned items, category filter                                   |
 | `/item/:id`    | `pages/ObjetDetail.tsx` | Detail page: matchups, description, W/L history (empty for now)        |
 | `/boosters`    | `pages/Boosters.tsx`    | Stack (max 8), animated Open button (5 items), 10 min timer            |
-| `/crafting`    | `pages/Assemblage.tsx`  | Drag & drop or two clicks, mock result (every recipe fails for now)    |
+| `/crafting`    | `pages/Assemblage.tsx`  | Drag & drop or two clicks; a known recipe consumes both cards and adds the result |
+| `/recipes`     | `pages/Recettes.tsx`    | Recipe book: only the recipes of cards the player has owned are revealed |
 | `/leaderboard` | `pages/Classement.tsx`  | Score / games / win rate table                                         |
 | `/profile`     | `pages/Profil.tsx`      | Sign in to a test account, profile card, switch account                |
+
+## Card art
+
+Every item picture in `public/objets/` is a 64×64 pixel-art sprite generated from
+`scripts/pixel-art/items.mjs`. Each item is a tiny drawing function that paints
+shapes (polygons, ellipses, lines, rings, stars) onto a pixel canvas; the
+rasterizer in `scripts/pixel-art/raster.mjs` snaps them to the grid, adds a
+1px outline and a bottom-right shade, and writes a crisp SVG. Edit or add an
+item there, then run:
+
+```bash
+npm run art            # all items
+npm run art obj-12     # just one
+```
+
+The script fails if an item in the mocks has no drawing. Keep shapes inside
+2..62 so the outline fits.
 
 ## Code structure
 
@@ -150,4 +168,4 @@ Each page is independent and only shares the components in `src/components`, the
 3. **Data / Supabase**: table schema (items, players, inventories, battles), gradual replacement of mocks with queries (`lib/supabase.ts`, `mocks/`).
 4. **Auth / Profile / Social**: Supabase Auth sign-in, editable profile, friend challenge, realtime leaderboard (`pages/Profil.tsx`, `pages/Classement.tsx`).
 
-`assemblerMock` (`pages/Assemblage.tsx`) is the crafting entry point. The boosters team plugs into `grant_boosters()` (SQL) and inserts `inventory` rows; the items team fills `categories`, `category_matchups` and `items`. No emoji in the UI: use `components/Icon.tsx`.
+Crafting: rock, leaf and scissors are infinite base cards (never consumed, one copy can fill both slots); every other card of the catalog (all 237, expansion included) has at least one recipe in `mocks/recettes.ts` and traces back to them, and every combination of the early cards works (checked by `mocks/recettes.test.ts`: don't loosen it when adding cards, add their recipes). Brainrot cards are set aside in `mocks/objetsBrainrot.ts`: out of boosters, crafting and category filters. After editing it run `node scripts/gen-items-sql.mjs` to regenerate `supabase/migrations/0004_recipes_seed.sql`. In supabase mode the recipes never reach the client: the `craft()` and `recipe_book()` SQL functions (`0003_crafting.sql`) do the lookup and only return the recipes of discovered cards (`discoveries` table). Never import `mocks/recettes.ts` statically from the UI, go through `services/crafting.ts`. The boosters team plugs into `grant_boosters()` (SQL) and inserts `inventory` rows; the items team fills `categories`, `category_matchups` and `items`. No emoji in the UI: use `components/Icon.tsx`.

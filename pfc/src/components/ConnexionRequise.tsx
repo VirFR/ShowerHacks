@@ -22,8 +22,8 @@ export function ConnexionRequise({ message = 'This page needs your account.' }: 
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-bordure px-4 py-16 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-carte text-accent-2">
+    <div className="flex flex-col items-center gap-4 rounded-xl border-2 border-dashed border-bordure bg-carte/60 px-4 py-16 text-center">
+      <span className="flex h-14 w-14 items-center justify-center rounded-xl border-2 border-ink bg-carte text-accent shadow-hard-sm">
         <Icon name="lock" size={26} />
       </span>
       <h2 className="font-display text-xl font-bold">{mode === 'mock' ? 'Who are you?' : 'Sign in to continue'}</h2>
