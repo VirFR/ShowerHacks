@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { Avatar } from '@/components/Avatar'
 import { Bouton } from '@/components/Bouton'
+import { ConnexionRequise } from '@/components/ConnexionRequise'
+import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { CarteRang } from '@/components/CarteRang'
 import { ObjetCard } from '@/components/ObjetCard'
@@ -16,8 +19,14 @@ export function Profil() {
   if (!joueur) {
     return (
       <>
-        <PageHeader titre="Sign in" sousTitre="Pick your test account (no password for now)." />
-        <ListeComptes comptes={comptes} onChoisir={connecter} />
+        <PageHeader titre="Sign in" sousTitre="One Google account, one player. Your first battle is a warm-up against the Coach." />
+        <ConnexionRequise message="Your profile, inventory and battles are tied to your Google account." />
+        {comptes.length > 0 && (
+          <>
+            <h2 className="mb-3 mt-8 font-semibold text-texte-2">Offline test accounts</h2>
+            <ListeComptes comptes={comptes} onChoisir={connecter} />
+          </>
+        )}
       </>
     )
   }
@@ -34,8 +43,12 @@ export function Profil() {
       />
       <CarteProfil joueur={joueur} />
 
-      <h2 className="mb-3 mt-8 font-semibold">Switch account</h2>
-      <ListeComptes comptes={comptes} actuelId={joueur.id} onChoisir={connecter} />
+      {comptes.length > 0 && (
+        <>
+          <h2 className="mb-3 mt-8 font-semibold">Switch account</h2>
+          <ListeComptes comptes={comptes} actuelId={joueur.id} onChoisir={connecter} />
+        </>
+      )}
     </>
   )
 }
@@ -65,7 +78,7 @@ function ListeComptes({ comptes, actuelId, onChoisir }: ListeComptesProps) {
                 : 'border-bordure bg-carte hover:border-accent/60 hover:bg-carte-2',
             ].join(' ')}
           >
-            <Avatar pseudo={c.pseudo} taille="sm" />
+            <Avatar pseudo={c.pseudo} avatarUrl={c.avatarUrl} taille="md" />
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold">{c.pseudo}</p>
               <p className="text-xs text-texte-2">
@@ -99,7 +112,7 @@ function CarteProfil({ joueur }: { joueur: Joueur }) {
   return (
     <>
       <Carte className="flex flex-col gap-5 sm:flex-row sm:items-center">
-        <Avatar pseudo={joueur.pseudo} taille="lg" />
+        <Avatar pseudo={joueur.pseudo} avatarUrl={joueur.avatarUrl} taille="lg" />
         <div className="flex-1">
           <h2 className="text-2xl font-bold">{joueur.pseudo}</h2>
           <p className="text-sm text-texte-2">
@@ -112,9 +125,10 @@ function CarteProfil({ joueur }: { joueur: Joueur }) {
         </div>
         <div className="flex flex-col items-stretch gap-2 sm:items-end">
           <Bouton onClick={defier} disabled={defiEnvoye}>
-            {defiEnvoye ? '✅ Challenge sent (mock)' : '🤝 Challenge a friend'}
+            <Icon name={defiEnvoye ? 'check' : 'swords'} size={16} />
+            {defiEnvoye ? 'Challenge sent (mock)' : 'Challenge a friend'}
           </Bouton>
-          <Bouton variante="secondaire" taille="sm" disabled title="Auth coming soon">
+          <Bouton variante="secondaire" taille="sm" disabled title="Coming soon">
             Edit profile
           </Bouton>
         </div>
@@ -138,23 +152,9 @@ function CarteProfil({ joueur }: { joueur: Joueur }) {
       <h2 className="mb-3 mt-6 font-semibold">Best items</h2>
       <div className="grid gap-3 sm:grid-cols-3">
         {meilleursObjets.map((objet) => (
-          <ObjetCard key={objet.id} objet={objet} />
+          <ObjetCard key={objet.inventaireId ?? objet.id} objet={objet} />
         ))}
       </div>
     </>
-  )
-}
-
-function Avatar({ pseudo, taille }: { pseudo: string; taille: 'sm' | 'lg' }) {
-  return (
-    <div
-      className={[
-        'flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-defense font-black text-white shadow-lg',
-        taille === 'lg' ? 'h-24 w-24 text-4xl' : 'h-12 w-12 text-lg',
-      ].join(' ')}
-      aria-hidden
-    >
-      {pseudo.charAt(0).toUpperCase()}
-    </div>
   )
 }

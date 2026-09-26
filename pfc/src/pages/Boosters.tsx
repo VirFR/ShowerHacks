@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Bouton } from '@/components/Bouton'
+import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { PageHeader } from '@/components/PageHeader'
@@ -84,7 +85,7 @@ export function Boosters() {
             ].join(' ')}
             aria-hidden
           >
-            🎁
+            <Icon name="gift" size={64} strokeWidth={1.5} className="text-white" />
           </div>
 
           {etat === 'revele' && objetsObtenus.length > 0 ? (
@@ -129,7 +130,7 @@ export function Boosters() {
                   ].join(' ')}
                   aria-hidden
                 >
-                  🎁
+                  <Icon name="gift" size={22} strokeWidth={1.8} />
                 </div>
               ))}
             </div>

@@ -1,10 +1,11 @@
 import { Carte } from '@/components/Carte'
+import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
 import { CLASSEMENT_MOCK } from '@/mocks'
 import { useSession } from '@/lib/session'
 import { formaterNombre, formaterPourcentage } from '@/lib/format'
 
-const MEDAILLES = ['🥇', '🥈', '🥉']
+const MEDAILLES = ['text-or', 'text-slate-300', 'text-amber-600']
 
 /** /leaderboard — Players ranked by score. */
 export function Classement() {
@@ -38,7 +39,14 @@ export function Classement() {
                   ].join(' ')}
                 >
                   <td className="px-4 py-3 tabular-nums">
-                    {MEDAILLES[e.position - 1] ?? e.position}
+                    {MEDAILLES[e.position - 1] ? (
+                      <span className={`inline-flex items-center gap-1 ${MEDAILLES[e.position - 1]}`}>
+                        <Icon name="medal" size={16} />
+                        {e.position}
+                      </span>
+                    ) : (
+                      e.position
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     {e.pseudo}

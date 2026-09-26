@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { BadgeCategorie } from '@/components/BadgeCategorie'
 import { Bouton } from '@/components/Bouton'
+import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
@@ -26,7 +27,7 @@ export function ObjetDetail() {
         <PageHeader titre="Item not found" />
         <p className="text-texte-2">No item matches the id “{id}”.</p>
         <Link to="/inventory" className="mt-4 inline-block">
-          <Bouton variante="secondaire">← Back to inventory</Bouton>
+          <Bouton variante="secondaire">Back to inventory</Bouton>
         </Link>
       </>
     )
@@ -37,13 +38,13 @@ export function ObjetDetail() {
   const defaites = historique.filter((h) => h.resultat === 'defaite').length
   const egalites = historique.length - victoires - defaites
   const ratio = historique.length ? victoires / historique.length : 0
-  const bat = BEATS[objet.categorie]
+  const bat = BEATS[objet.categorie] ?? []
   const perd = perdContre(objet.categorie)
 
   return (
     <>
       <Link to="/inventory" className="mb-3 inline-block text-sm text-accent-2 hover:underline">
-        ← Inventory
+        Inventory
       </Link>
 
       <Carte className="flex flex-col gap-5 sm:flex-row">
@@ -82,10 +83,16 @@ export function ObjetDetail() {
 
           <div className="mt-5 flex flex-wrap gap-2">
             <Link to="/battle">
-              <Bouton>⚔️ Use in battle</Bouton>
+              <Bouton>
+                <Icon name="swords" size={16} />
+                Use in battle
+              </Bouton>
             </Link>
             <Link to="/crafting">
-              <Bouton variante="secondaire">🧪 Craft</Bouton>
+              <Bouton variante="secondaire">
+                <Icon name="flask" size={16} />
+                Craft
+              </Bouton>
             </Link>
           </div>
         </div>

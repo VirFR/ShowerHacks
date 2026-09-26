@@ -67,6 +67,20 @@ export const CLASSE_RARETE: Record<Rarete, string> = {
   legendaire: 'text-or',
 }
 
+/** Rank thresholds (score needed to reach each rank). */
+export const SEUILS_RANG: [Rang, number][] = [
+  ['Master', 4000],
+  ['Diamond', 2000],
+  ['Platinum', 1000],
+  ['Gold', 500],
+  ['Silver', 200],
+  ['Bronze', 0],
+]
+
+export function rangPourScore(score: number): Rang {
+  return SEUILS_RANG.find(([, seuil]) => score >= seuil)?.[0] ?? 'Bronze'
+}
+
 export const CLASSE_RANG: Record<Rang, string> = {
   Bronze: 'from-amber-700 to-amber-900',
   Silver: 'from-slate-300 to-slate-500',

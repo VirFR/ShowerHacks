@@ -5,7 +5,7 @@
  * engine types live in `lib/engine/types.ts`.
  */
 
-import type { BattleState, RewardTier, Side } from '@/lib/engine/types'
+import type { BattleState, EngineCard, RewardTier, Side } from '@/lib/engine/types'
 
 /**
  * Item category slug. Categories and the "who beats whom" chart are data
@@ -130,13 +130,14 @@ export interface Battle {
   status: 'waiting' | 'active' | 'finished'
   state: BattleState
   /** Cards still in my hand (private). */
-  hand: Objet[]
+  hand: EngineCard[]
   /** Reward for me, set once finished. */
   reward?: BattleRewardRow
   updatedAt: string
 }
 
 export interface BattleRewardRow {
+  result: 'win' | 'draw' | 'loss'
   points: number
   boosters: number
   tier: RewardTier
