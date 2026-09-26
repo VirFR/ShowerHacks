@@ -19,13 +19,13 @@ export function Avatar({ pseudo, avatarUrl, taille = 'md', className = '' }: Ava
         src={avatarUrl}
         alt=""
         referrerPolicy="no-referrer"
-        className={`shrink-0 rounded-full object-cover ${TAILLES[taille]} ${className}`}
+        className={`shrink-0 rounded-full border-2 border-ink object-cover ${TAILLES[taille]} ${className}`}
       />
     )
   }
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent to-defense font-black text-white shadow-lg ${TAILLES[taille]} ${className}`}
+      className={`flex shrink-0 items-center justify-center rounded-full border-2 border-ink bg-gradient-to-br from-accent to-defense font-display font-bold text-white shadow-hard-sm ${TAILLES[taille]} ${className}`}
       aria-hidden
     >
       {pseudo.charAt(0).toUpperCase()}

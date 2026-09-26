@@ -52,7 +52,7 @@ export function Recettes() {
             <Link
               key={resultatId}
               to={`/item/${resultat.id}`}
-              className={`rounded-2xl border bg-carte p-4 transition-transform hover:-translate-y-0.5 ${CLASSE_CARTE_RARETE[resultat.rarete]}`}
+              className={`rounded-xl border-[3px] bg-carte p-4 shadow-hard transition-transform hover:-translate-y-0.5 ${CLASSE_CARTE_RARETE[resultat.rarete]}`}
             >
               <div className="flex items-center gap-3">
                 <ObjetImage objet={resultat} className="h-16 w-16" />
@@ -85,7 +85,7 @@ export function Recettes() {
         {Array.from({ length: verrouillees }, (_, i) => (
           <div
             key={`verrou-${i}`}
-            className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-bordure bg-carte/40 p-4 text-center"
+            className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-bordure bg-carte/60 p-4 text-center"
           >
             <Icon name="lock" size={28} className="text-texte-2" />
             <p className="text-sm font-semibold text-texte-2">???</p>

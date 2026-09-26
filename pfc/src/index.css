@@ -1,24 +1,49 @@
 @import 'tailwindcss';
 
-/* PFC theme — custom palette and tokens (Tailwind v4) */
-@theme {
-  --color-fond: #0f0e1a;
-  --color-fond-2: #17162a;
-  --color-carte: #1e1d33;
-  --color-carte-2: #27264a;
-  --color-bordure: #34335a;
-  --color-texte: #f1f0ff;
-  --color-texte-2: #a7a5c9;
-  --color-accent: #8b5cf6;
-  --color-accent-2: #c084fc;
-  --color-attaque: #fb7185;
-  --color-defense: #38bdf8;
-  --color-succes: #4ade80;
-  --color-echec: #f87171;
-  --color-or: #fbbf24;
+/* Self-hosted fonts (latin subsets, Google Fonts / OFL). */
+@font-face {
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/press-start-2p.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('/fonts/fredoka.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/nunito.woff2') format('woff2');
+}
 
-  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Sora', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+/* PFC theme — light, retro handheld look (Tailwind v4 tokens) */
+@theme {
+  --color-fond: #dbe4f0; /* page background (console shell) */
+  --color-fond-2: #c7d4e6; /* deeper shell tone */
+  --color-carte: #ffffff; /* panels */
+  --color-carte-2: #eaf1fa; /* panel hover / zebra */
+  --color-bordure: #8e9dba; /* soft borders, dashed outlines */
+  --color-ink: #1f2337; /* hard outlines, dark text */
+  --color-texte: #1f2337;
+  --color-texte-2: #5b6580;
+  --color-accent: #2f7fe3; /* 3DS blue */
+  --color-accent-2: #1a5cb8; /* darker blue: links, hover */
+  --color-attaque: #d92653;
+  --color-defense: #1e7fcf;
+  --color-succes: #1f9d55;
+  --color-echec: #d63a2f;
+  --color-or: #d99a00;
+
+  --font-sans: 'Nunito', ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fredoka', 'Nunito', ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  --font-pixel: 'Press Start 2P', 'Courier New', monospace;
 }
 
 html,
@@ -29,9 +54,66 @@ body,
 
 body {
   @apply bg-fond text-texte antialiased;
+  /* Fine dot grid, like the textured shell of a handheld */
+  background-image: radial-gradient(rgba(31, 35, 55, 0.13) 1px, transparent 1.2px);
+  background-size: 12px 12px;
+}
+
+/* Pixel font for big titles only; body copy stays in Nunito. */
+.font-pixel {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+}
+
+/* Hard, flat "sticker" shadows used by panels, buttons and cards. */
+.shadow-hard {
+  box-shadow: 4px 4px 0 0 var(--color-ink);
+}
+.shadow-hard-sm {
+  box-shadow: 2px 2px 0 0 var(--color-ink);
+}
+
+/* Light checkerboard behind item pictures (sticker sheet). */
+.sticker-bg {
+  background-color: #f4f7fb;
   background-image:
-    radial-gradient(ellipse at top, rgba(139, 92, 246, 0.15), transparent 60%),
-    radial-gradient(ellipse at bottom, rgba(56, 189, 248, 0.08), transparent 60%);
+    linear-gradient(45deg, #e3eaf4 25%, transparent 25%, transparent 75%, #e3eaf4 75%),
+    linear-gradient(45deg, #e3eaf4 25%, transparent 25%, transparent 75%, #e3eaf4 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 6px 6px;
+}
+
+/* Filter chips (inventory, deck builder). */
+.chip {
+  @apply rounded-lg border-2 border-ink bg-carte px-3 py-1.5 text-sm font-bold text-texte-2 transition-colors hover:bg-carte-2 hover:text-texte;
+}
+.chip-active {
+  @apply rounded-lg border-2 border-ink bg-accent px-3 py-1.5 text-sm font-bold text-white;
+  box-shadow: 2px 2px 0 0 var(--color-ink);
+}
+
+/*
+ * Full-screen battle scenes keep a dark "top screen" so the clash effects
+ * pop. They only remap the tokens, so every component inside just works.
+ */
+.theme-dark {
+  --color-fond: #0f1a33;
+  --color-fond-2: #16254a;
+  --color-carte: #1c2d55;
+  --color-carte-2: #243a6b;
+  --color-bordure: #3a5188;
+  --color-ink: #0a1226;
+  --color-texte: #f1f5ff;
+  --color-texte-2: #a9b8d8;
+  --color-accent: #4f9cf5;
+  --color-accent-2: #8cc4ff;
+  --color-attaque: #ff6b8a;
+  --color-defense: #5ec1ff;
+  --color-succes: #4ade80;
+  --color-echec: #ff7b72;
+  --color-or: #fbbf24;
+  color: var(--color-texte);
 }
 
 /* Booster opening animation (/boosters page) */

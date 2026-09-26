@@ -50,7 +50,7 @@ function HubConnecte() {
         titre="Battle"
         sousTitre="Gauntlet · 5 cards · the chart decides first, then attack against defense."
         action={
-          <span className="inline-flex items-center gap-2 rounded-xl border border-bordure bg-carte px-3 py-2 text-xs text-texte-2">
+          <span className="inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-carte px-3 py-2 text-xs font-bold text-texte-2 shadow-hard-sm">
             <span className={`h-2 w-2 rounded-full ${lobby.enLigne ? 'bg-succes' : 'bg-texte-2'}`} />
             {lobby.enLigne ? `${enLigne} player${enLigne === 1 ? '' : 's'} online` : 'Offline mode'}
           </span>
@@ -58,7 +58,7 @@ function HubConnecte() {
       />
 
       {lobby.defisRecus.length > 0 && (
-        <Carte className="mb-4 flex items-center gap-4 border-accent/60 bg-accent/10">
+        <Carte className="mb-4 flex items-center gap-4 bg-sky-100">
           <Icon name="swords" size={22} className="text-accent-2" />
           <p className="flex-1 text-sm">
             <span className="font-semibold">{lobby.defisRecus[0].from.pseudo}</span> wants to fight you.
@@ -72,7 +72,7 @@ function HubConnecte() {
       <div className="grid gap-4 md:grid-cols-3">
         <Link
           to="/battle/opponent"
-          className="group relative flex min-h-56 flex-col justify-between overflow-hidden rounded-2xl border border-bordure bg-carte p-6 transition-colors hover:border-accent/70 md:col-span-2"
+          className="group relative flex min-h-56 flex-col justify-between overflow-hidden rounded-xl border-2 border-ink bg-gradient-to-br from-sky-200 via-carte to-carte p-6 shadow-hard transition-transform hover:-translate-y-0.5 md:col-span-2"
         >
           <div className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-accent/20 blur-2xl" />
           <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-accent-2">
@@ -85,7 +85,7 @@ function HubConnecte() {
               Live, both of you online. Win points, earn boosters. Cards never leave your inventory.
             </p>
           </div>
-          <span className="inline-flex w-fit items-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-bold text-white shadow-lg shadow-accent/30 transition-colors group-hover:bg-accent-2">
+          <span className="inline-flex w-fit items-center gap-2 rounded-lg border-2 border-ink bg-accent px-5 py-3 font-display text-sm font-bold text-white shadow-[0_3px_0_0_var(--color-ink)] transition-colors group-hover:bg-accent-2">
             Find an opponent
             <Icon name="arrowRight" size={16} strokeWidth={2.5} />
           </span>

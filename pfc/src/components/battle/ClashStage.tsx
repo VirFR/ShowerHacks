@@ -31,7 +31,7 @@ export function ClashStage({ state, chart, mySide, reveal, adversairePret, moiPr
           <BattleCard card={theirs} chart={chart} taille="lg" momentum={reveal.momentum[theirSide]} />
         </Champion>
         <div className="flex w-72 flex-col items-center gap-3 text-center">
-          <p className="animate-clash-word font-display text-5xl font-black tracking-tight text-white [text-shadow:0_0_40px_rgba(192,132,252,0.7)]">
+          <p className="animate-clash-word font-pixel text-2xl text-white [text-shadow:0_0_40px_rgba(79,156,245,0.8)] md:text-4xl">
             CLASH
           </p>
           <p className="animate-rise-late text-sm leading-relaxed text-violet-100">{reveal.clash.text}</p>

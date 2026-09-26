@@ -143,7 +143,7 @@ function Builder() {
               type="button"
               onClick={() => setFiltre(f.v)}
               aria-pressed={filtre === f.v}
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${filtre === f.v ? 'bg-accent text-white' : 'bg-carte text-texte-2 ring-1 ring-bordure hover:text-texte'}`}
+              className={filtre === f.v ? 'chip-active text-xs' : 'chip text-xs'}
             >
               {f.l}
             </button>
@@ -151,7 +151,7 @@ function Builder() {
         </div>
       </div>
       {inventaire.length < DECK_SIZE && (
-        <p className="mb-3 rounded-xl border border-or/40 bg-or/10 p-3 text-sm text-or">
+        <p className="mb-3 rounded-lg border-2 border-amber-500 bg-amber-100 p-3 text-sm font-semibold text-amber-900">
           You need at least {DECK_SIZE} cards. Open a booster first.
         </p>
       )}

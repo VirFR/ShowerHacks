@@ -23,6 +23,7 @@ async function charger(fichier) {
 }
 const { OBJETS_MOCK, CATALOGUE_MOCK } = await charger('pfc/src/mocks/objets.ts')
 const { RECETTES } = await charger('pfc/src/mocks/recettes.ts')
+const { DEFAULT_CHART } = await charger('pfc/src/lib/engine/chart.ts')
 const OBJETS_BOOSTER_MOCK = CATALOGUE_MOCK.slice(OBJETS_MOCK.length)
 
 const RARITY = { commun: 'common', peu_commun: 'uncommon', rare: 'rare', epique: 'epic', legendaire: 'legendary', secret_rare: 'secret_rare' }
@@ -44,8 +45,32 @@ const rows = [...OBJETS_MOCK, ...OBJETS_BOOSTER_MOCK].map((o) =>
   ')',
 )
 
+// Categories and the chart come from DEFAULT_CHART (pfc/src/lib/engine/chart.ts),
+// so every item's category exists before the items are inserted.
+const couleurs = { fight: '#fb7185', plantes: '#34d399', ressources: '#f59e0b', espace: '#818cf8', animaux: '#fb923c', vehicules: '#22d3ee' }
+const categories = Object.keys(DEFAULT_CHART.beats).map(
+  (slug) =>
+    `  (${q(slug)}, ${q(DEFAULT_CHART.labels?.[slug] ?? slug)}, ${couleurs[slug] ? q(couleurs[slug]) : 'null'}, ${q(DEFAULT_CHART.verbs?.[slug] ?? 'beats')})`,
+)
+const matchups = Object.entries(DEFAULT_CHART.beats).flatMap(([gagnant, perdants]) =>
+  perdants.map((perdant) => `  (${q(gagnant)}, ${q(perdant)})`),
+)
+
 const sql = `-- PFC · items catalog seed, GENERATED from pfc/src/mocks by scripts/gen-items-sql.mjs.
 -- Re-run the script after the items team changes the catalog; the insert is idempotent.
+
+-- Categories and chart, from DEFAULT_CHART (pfc/src/lib/engine/chart.ts). Categories
+-- no longer in the chart are kept (owned cards may still use them) but lose their matchups.
+insert into public.categories (slug, label, color, verb) values
+${categories.join(',\n')}
+on conflict (slug) do update set label = excluded.label, color = excluded.color, verb = excluded.verb;
+
+delete from public.category_matchups where (winner, loser) not in (values
+${matchups.join(',\n')}
+);
+insert into public.category_matchups (winner, loser) values
+${matchups.join(',\n')}
+on conflict do nothing;
 
 insert into public.items (id, name, category, attack, defense, image_url, rarity, description, explicit_wins) values
 ${rows.join(',\n')}

@@ -40,7 +40,11 @@ export interface Session {
   connecterGoogle: () => Promise<void>
   deconnecter: () => Promise<void>
   /** Adds items (e.g. from an opened booster or a successful craft) to the signed-in player's inventory. */
-  ajouterObjets: (objets: Objet[]) => void
+  /**
+   * Resolves once the items are saved; rejects if the database refused them
+   * (supabase mode), so the caller can tell the player instead of losing them.
+   */
+  ajouterObjets: (objets: Objet[]) => Promise<void>
   /**
    * Combines two inventory copies (Little-Alchemy style). On success both are
    * consumed and the result is added. Supabase mode: `craft()` RPC, the

@@ -29,16 +29,16 @@ export function couleurCategorie(c: Categorie): string {
 }
 
 const CLASSE_PAR_CATEGORIE: Record<string, string> = {
-  fight: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
-  plantes: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
-  ressources: 'bg-amber-600/20 text-amber-200 ring-amber-500/40',
-  espace: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
-  animaux: 'bg-orange-500/20 text-orange-200 ring-orange-400/40',
-  vehicules: 'bg-cyan-500/20 text-cyan-200 ring-cyan-400/40',
+  fight: 'bg-rose-100 text-rose-800 ring-rose-700/60',
+  plantes: 'bg-emerald-100 text-emerald-800 ring-emerald-700/60',
+  ressources: 'bg-amber-100 text-amber-800 ring-amber-700/60',
+  espace: 'bg-indigo-100 text-indigo-800 ring-indigo-700/60',
+  animaux: 'bg-orange-100 text-orange-800 ring-orange-700/60',
+  vehicules: 'bg-cyan-100 text-cyan-800 ring-cyan-700/60',
 }
 
 export function classeCategorie(c: Categorie): string {
-  return CLASSE_PAR_CATEGORIE[c] ?? 'bg-accent/20 text-accent-2 ring-accent/40'
+  return CLASSE_PAR_CATEGORIE[c] ?? 'bg-violet-100 text-violet-800 ring-violet-700/60'
 }
 
 /** @deprecated prefer `classeCategorie(slug)`. */
@@ -68,27 +68,25 @@ export const ORDRE_RARETE: Record<Rarete, number> = {
 
 export const CLASSE_RARETE: Record<Rarete, string> = {
   commun: 'text-texte-2',
-  peu_commun: 'text-emerald-300',
-  rare: 'text-sky-300',
-  epique: 'text-fuchsia-300',
+  peu_commun: 'text-emerald-700',
+  rare: 'text-sky-700',
+  epique: 'text-fuchsia-700',
   legendaire: 'text-or',
-  secret_rare: 'bg-gradient-to-r from-rose-300 via-amber-200 to-sky-300 bg-clip-text text-transparent font-semibold',
+  secret_rare: 'bg-gradient-to-r from-rose-500 via-amber-500 to-sky-500 bg-clip-text text-transparent font-bold',
 }
 
 /**
- * Card frame by rarity: a thick border + a background tinted almost
- * entirely in the rarity's color, and — from `rare` upward — a colored
- * glow (halo) around the card that gets more intense with rarity.
+ * Card frame by rarity: a colored outline on a light card face, with a
+ * header tint in the rarity's color. Higher rarities get a stronger frame
+ * color; secret rare gets a pastel rainbow face.
  */
 export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
-  commun: 'border-slate-400/70 bg-gradient-to-b from-slate-600/50 via-carte to-carte',
-  peu_commun: 'border-emerald-400/80 bg-gradient-to-b from-emerald-800/60 via-carte to-carte',
-  rare: 'border-sky-400/90 bg-gradient-to-b from-sky-800/60 via-carte to-carte shadow-[0_0_18px_-2px] shadow-sky-400/50',
-  epique:
-    'border-fuchsia-400/90 bg-gradient-to-b from-fuchsia-800/60 via-carte to-carte shadow-[0_0_22px_-2px] shadow-fuchsia-400/60',
-  legendaire:
-    'border-amber-300 bg-gradient-to-b from-amber-800/60 via-carte to-carte shadow-[0_0_26px_-2px] shadow-amber-300/70',
-  secret_rare: 'border-white bg-gradient-to-b from-slate-700/60 via-carte to-carte shadow-[0_0_30px_-2px] shadow-white/70',
+  commun: 'border-slate-500 bg-gradient-to-b from-slate-200 via-carte to-carte',
+  peu_commun: 'border-emerald-600 bg-gradient-to-b from-emerald-200 via-carte to-carte',
+  rare: 'border-sky-600 bg-gradient-to-b from-sky-200 via-carte to-carte',
+  epique: 'border-fuchsia-600 bg-gradient-to-b from-fuchsia-200 via-carte to-carte',
+  legendaire: 'border-amber-500 bg-gradient-to-b from-amber-200 via-carte to-carte',
+  secret_rare: 'border-ink bg-gradient-to-b from-rose-200 via-amber-100 to-sky-200',
 }
 
 /** Rank thresholds (score needed to reach each rank). */

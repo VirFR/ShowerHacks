@@ -42,6 +42,8 @@ export function Boosters() {
   const [etat, setEtat] = useState<EtatOuverture>('idle')
   const [objetsObtenus, setObjetsObtenus] = useState<Objet[]>([])
   const [indexCarte, setIndexCarte] = useState(0)
+  /** Save state of the last draw: the cards only count once they're in the inventory. */
+  const [sauvegarde, setSauvegarde] = useState<'ok' | 'en_cours' | 'echec'>('ok')
   /** Pack flipped over to inspect its back (only while idle, before arming the tear). */
   const [retourne, setRetourne] = useState(false)
 
@@ -81,6 +83,15 @@ export function Boosters() {
     setEtat('dechirure')
   }
 
+  /** Saves a draw to the inventory; on failure the player can retry the same cards. */
+  const sauvegarder = (tirage: Objet[]) => {
+    setSauvegarde('en_cours')
+    ajouterObjets(tirage).then(
+      () => setSauvegarde('ok'),
+      () => setSauvegarde('echec'),
+    )
+  }
+
   /** Finishes the tear once it's fully torn (drag progress reached 1): draws the items. */
   const terminerDechirure = () => {
     if (dechirureEnCours.current) return
@@ -90,7 +101,7 @@ export function Boosters() {
       const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
-      ajouterObjets(tirage)
+      sauvegarder(tirage)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
         // If the stack was full, the timer restarts from now.
@@ -221,8 +232,8 @@ export function Boosters() {
                   <div className="foil-crimp absolute inset-x-3 bottom-1.5" aria-hidden />
                   <div className="foil-crimp-vert absolute inset-y-2 left-1" aria-hidden />
                   <div className="foil-crimp-vert absolute inset-y-2 right-1" aria-hidden />
-                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-fond" aria-hidden>
-                    <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">PFC Booster</span>
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 text-ink" aria-hidden>
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-ink/70">PFC Booster</span>
                   </div>
                   {etat === 'ouverture' && (
                     <div className="pointer-events-none absolute inset-0 bg-white animate-flash" aria-hidden />
@@ -270,7 +281,7 @@ export function Boosters() {
                 {/* Perforated seam between the strip and the body */}
                 {etat !== 'ouverture' && (
                   <div
-                    className="pointer-events-none absolute inset-x-4 top-1/4 -translate-y-1/2 border-t-2 border-dashed border-fond/50"
+                    className="pointer-events-none absolute inset-x-4 top-1/4 -translate-y-1/2 border-t-2 border-dashed border-ink/50"
                     aria-hidden
                   />
                 )}
@@ -278,10 +289,10 @@ export function Boosters() {
 
               {/* Back face: drop odds, only reachable by flipping the pack while idle */}
               <div
-                className="foil-pack absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-hidden rounded-xl p-4 text-center text-fond shadow-2xl shadow-black/50 ring-1 ring-white/40"
+                className="foil-pack absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-hidden rounded-xl p-4 text-center text-ink shadow-2xl shadow-black/50 ring-1 ring-white/40"
                 style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
               >
-                <span className="text-xs font-black uppercase tracking-[0.3em] text-fond/70">Drop odds</span>
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-ink/70">Drop odds</span>
                 <ul className="mt-1 w-full max-w-[10.5rem] space-y-1 text-xs">
                   {CHANCES_RARETE.map(({ rarete, pourcentage }) => (
                     <li key={rarete} className="flex items-center justify-between gap-2">
@@ -290,7 +301,7 @@ export function Boosters() {
                     </li>
                   ))}
                 </ul>
-                <span className="mt-1 text-[0.65rem] text-fond/60">{OBJETS_PAR_BOOSTER} cards per pack</span>
+                <span className="mt-1 text-[0.65rem] text-ink/60">{OBJETS_PAR_BOOSTER} cards per pack</span>
               </div>
             </div>
           </div>
@@ -326,6 +337,15 @@ export function Boosters() {
         {etat === 'revele' && objetsObtenus.length > 0 && (
           <div className="animate-booster-pop w-full max-w-lg">
             <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} cards:</p>
+            {sauvegarde === 'echec' && (
+              <div role="alert" className="mb-3 rounded-2xl border border-echec/50 bg-echec/10 p-3 text-center text-sm">
+                <p className="font-semibold text-echec">These cards couldn’t be saved to your inventory.</p>
+                <Bouton taille="sm" variante="secondaire" className="mt-2" onClick={() => sauvegarder(objetsObtenus)}>
+                  Try again
+                </Bouton>
+              </div>
+            )}
+            {sauvegarde === 'en_cours' && <p className="mb-2 text-xs text-texte-2">Saving to your inventory…</p>}
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {objetsObtenus.map((objet, i) => (
                 <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
@@ -348,7 +368,7 @@ export function Boosters() {
         </p>
 
         {(etat === 'idle' || etat === 'revele') && (
-          <Bouton taille="lg" disabled={actuel <= 0} onClick={commencerOuverture}>
+          <Bouton taille="lg" disabled={actuel <= 0 || sauvegarde === 'en_cours'} onClick={commencerOuverture}>
             {etat === 'revele' ? 'Open another' : 'Open'}
           </Bouton>
         )}
@@ -372,7 +392,7 @@ export function Boosters() {
                   className="foil-pack relative aspect-square overflow-hidden rounded-md shadow-md shadow-accent/30 ring-1 ring-white/40 transition-all"
                   aria-hidden
                 >
-                  <div className="absolute inset-x-0 top-[30%] border-t border-dashed border-fond/40" aria-hidden />
+                  <div className="absolute inset-x-0 top-[30%] border-t border-dashed border-ink/40" aria-hidden />
                 </div>
               ) : (
                 <div
