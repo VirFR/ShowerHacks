@@ -1,4 +1,5 @@
 export { INVENTAIRE_DEPART, OBJETS_MOCK, trouverObjet } from './objets'
+export { OBJETS_BOOSTER_MOCK } from './objetsBooster'
 export {
   BOOSTERS_MOCK,
   CLASSEMENT_MOCK,

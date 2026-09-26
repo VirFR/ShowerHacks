@@ -22,24 +22,30 @@ export const CLASSE_CATEGORIE: Record<Categorie, string> = {
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {
   commun: 'Common',
+  peu_commun: 'Uncommon',
   rare: 'Rare',
   epique: 'Epic',
   legendaire: 'Legendary',
+  secret_rare: 'Secret Rare',
 }
 
 /** Sort order of rarities, lowest first. */
 export const ORDRE_RARETE: Record<Rarete, number> = {
   commun: 0,
-  rare: 1,
-  epique: 2,
-  legendaire: 3,
+  peu_commun: 1,
+  rare: 2,
+  epique: 3,
+  legendaire: 4,
+  secret_rare: 5,
 }
 
 export const CLASSE_RARETE: Record<Rarete, string> = {
   commun: 'text-texte-2',
+  peu_commun: 'text-emerald-300',
   rare: 'text-sky-300',
   epique: 'text-fuchsia-300',
   legendaire: 'text-or',
+  secret_rare: 'bg-gradient-to-r from-rose-300 via-amber-200 to-sky-300 bg-clip-text text-transparent font-semibold',
 }
 
 export const CLASSE_RANG: Record<Rang, string> = {

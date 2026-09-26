@@ -10,7 +10,7 @@ export type Categorie = 'pierre' | 'feuille' | 'ciseaux'
 
 export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux']
 
-export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
+export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
 /**
  * An item. There are no attack/defense stats: an item wins or loses purely
