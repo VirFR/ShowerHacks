@@ -3,7 +3,7 @@ import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { useSession } from '@/lib/session'
 import { CLASSE_CARTE_RARETE, CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
-import { RECETTES, trouverObjet } from '@/mocks'
+import { trouverObjet } from '@/mocks'
 import type { Objet } from '@/types'
 
 /** Small ingredient thumbnail used inside a recipe row. */
@@ -18,44 +18,28 @@ function Ingredient({ objet }: { objet: Objet }) {
 
 /** /recipes — Pokédex-style recipe book: discovered crafts are revealed, the rest stay a mystery. */
 export function Recettes() {
-  const { joueur, recettesConnues } = useSession()
+  const { joueur, livreRecettes } = useSession()
 
   if (!joueur) return <ConnexionRequise />
 
-  const total = RECETTES.length
-  const decouvertes = RECETTES.filter((r) => recettesConnues.includes(r.resultatId)).length
+  const { total, decouvertes } = livreRecettes
+  const verrouillees = Math.max(0, total - decouvertes.length)
 
   return (
     <>
       <PageHeader
         titre="Recipe Book"
-        sousTitre={`${decouvertes} / ${total} recipes discovered`}
+        sousTitre={`${decouvertes.length} / ${total} recipes discovered`}
       />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {RECETTES.map((recette) => {
-          const connue = recettesConnues.includes(recette.resultatId)
+        {decouvertes.map((recette) => {
           const resultat = trouverObjet(recette.resultatId)
           const [idA, idB] = recette.ingredients
           const ingredientA = trouverObjet(idA)
           const ingredientB = trouverObjet(idB)
 
-          if (!connue || !resultat || !ingredientA || !ingredientB) {
-            return (
-              <div
-                key={recette.resultatId}
-                className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-bordure bg-carte/40 p-4 text-center"
-              >
-                <span className="text-3xl" aria-hidden>
-                  🔒
-                </span>
-                <p className="text-sm font-semibold text-texte-2">???</p>
-                <p className="text-xs text-texte-2">
-                  Pull this card from a booster, or discover the combo by experimenting in Crafting.
-                </p>
-              </div>
-            )
-          }
+          if (!resultat || !ingredientA || !ingredientB) return null
 
           return (
             <div
@@ -80,6 +64,21 @@ export function Recettes() {
             </div>
           )
         })}
+
+        {Array.from({ length: verrouillees }, (_, i) => (
+          <div
+            key={`locked-${i}`}
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-bordure bg-carte/40 p-4 text-center"
+          >
+            <span className="text-3xl" aria-hidden>
+              🔒
+            </span>
+            <p className="text-sm font-semibold text-texte-2">???</p>
+            <p className="text-xs text-texte-2">
+              Pull this card from a booster, or discover the combo by experimenting in Crafting.
+            </p>
+          </div>
+        ))}
       </div>
     </>
   )

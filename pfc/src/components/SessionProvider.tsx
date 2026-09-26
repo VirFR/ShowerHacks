@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { DEFAULT_CHART, type Chart } from '@/lib/engine'
 import { signInWithGoogle, signOut } from '@/lib/auth'
-import { trouverRecetteParResultat } from '@/lib/assemblage'
+import { trouverRecette, trouverRecetteParResultat } from '@/lib/assemblage'
 import {
   ecrireInventairesExtra,
   ecrireJoueurId,
@@ -17,9 +17,10 @@ import {
   type Session,
 } from '@/lib/session'
 import { supabase } from '@/lib/supabase'
-import { JOUEURS_MOCK, trouverJoueur } from '@/mocks'
+import { JOUEURS_MOCK, RECETTES, trouverJoueur, trouverObjet } from '@/mocks'
 import { ajouterObjetsDistant, chargerChart, chargerJoueur, terminerOnboardingDistant } from '@/services/profile'
-import type { Joueur, Objet } from '@/types'
+import { chargerLivreRecettes, codeErreurCraft, combinerDistant } from '@/services/craft'
+import type { Joueur, Objet, Recette, ResultatAssemblage } from '@/types'
 
 /** Picks the mock or the Supabase session once, from the env variables. */
 export function SessionProvider({ children }: { children: ReactNode }) {
@@ -120,6 +121,24 @@ function useMockSession(): Session {
     [joueurId],
   )
 
+  /** Resolves a combination against `mocks/recettes.ts` and, on success, applies it. */
+  const combiner = useCallback(
+    async (a: Objet, b: Objet): Promise<ResultatAssemblage> => {
+      if (a.id === b.id) {
+        return { succes: false, message: 'Can’t combine: you need two different cards.' }
+      }
+      const recette = trouverRecette(a.id, b.id)
+      const resultat = recette ? trouverObjet(recette.resultatId) : undefined
+      if (!recette || !resultat) {
+        return { succes: false, message: `Can’t combine: no known recipe for ${a.nom} + ${b.nom}.` }
+      }
+      retirerObjets([a.id, b.id])
+      ajouterObjets([resultat])
+      return { succes: true, message: `You crafted ${resultat.nom}!`, objetResultat: resultat }
+    },
+    [ajouterObjets, retirerObjets],
+  )
+
   const connecter = useCallback((id: string) => {
     if (!trouverJoueur(id)) return
     ecrireJoueurId(id)
@@ -146,6 +165,7 @@ function useMockSession(): Session {
     const joueur: Joueur | null = base
       ? { ...avecInventaireExtra(base, inventairesExtra, retraits), onboardedAt: lireOnboarding(base.id) }
       : null
+    const connues = new Set(joueurId ? (recettesParJoueur[joueurId] ?? []) : [])
     return {
       mode: 'mock',
       chargement: false,
@@ -156,7 +176,8 @@ function useMockSession(): Session {
       deconnecter,
       ajouterObjets,
       retirerObjets,
-      recettesConnues: joueurId ? (recettesParJoueur[joueurId] ?? []) : [],
+      combiner,
+      livreRecettes: { total: RECETTES.length, decouvertes: RECETTES.filter((r) => connues.has(r.resultatId)) },
       chart: DEFAULT_CHART,
       terminerOnboarding,
       rafraichir,
@@ -174,6 +195,7 @@ function useMockSession(): Session {
     deconnecter,
     ajouterObjets,
     retirerObjets,
+    combiner,
     terminerOnboarding,
     rafraichir,
   ])
@@ -186,29 +208,40 @@ function useSupabaseSession(): Session {
   const [joueur, setJoueur] = useState<Joueur | null>(null)
   const [chart, setChart] = useState<Chart>(DEFAULT_CHART)
   const [chargement, setChargement] = useState(true)
-  const [recettesParJoueur, setRecettesParJoueur] = useState<Record<string, string[]>>(() => lireRecettesConnues())
+  const [livre, setLivre] = useState<{ total: number; decouvertes: Recette[] }>({ total: 0, decouvertes: [] })
 
-  const charger = useCallback(async (id: string | null) => {
-    if (!id) {
-      setJoueur(null)
-      return
-    }
-    try {
-      // The profile row is created by a trigger right after sign-up; retry briefly.
-      for (let essai = 0; essai < 5; essai++) {
-        const j = await chargerJoueur(id)
-        if (j) {
-          setJoueur(j)
-          return
-        }
-        await new Promise((r) => window.setTimeout(r, 400))
-      }
-      setJoueur(null)
-    } catch (e) {
-      console.error('[PFC] profile load failed', e)
-      setJoueur(null)
-    }
+  /** Recipe book from the DB (see `services/craft.ts`): source of truth in supabase mode. */
+  const chargerLivre = useCallback(() => {
+    chargerLivreRecettes()
+      .then(setLivre)
+      .catch((e) => console.error('[PFC] recipe book load failed', e))
   }, [])
+
+  const charger = useCallback(
+    async (id: string | null) => {
+      if (!id) {
+        setJoueur(null)
+        return
+      }
+      try {
+        // The profile row is created by a trigger right after sign-up; retry briefly.
+        for (let essai = 0; essai < 5; essai++) {
+          const j = await chargerJoueur(id)
+          if (j) {
+            setJoueur(j)
+            chargerLivre()
+            return
+          }
+          await new Promise((r) => window.setTimeout(r, 400))
+        }
+        setJoueur(null)
+      } catch (e) {
+        console.error('[PFC] profile load failed', e)
+        setJoueur(null)
+      }
+    },
+    [chargerLivre],
+  )
 
   useEffect(() => {
     const sb = supabase!
@@ -241,37 +274,23 @@ function useSupabaseSession(): Session {
     setUserId(null)
   }, [])
 
-  const marquerRecettesDecouvertes = useCallback(
-    (objets: Objet[]) => {
-      if (!userId) return
-      const decouvertes = decouvrirRecettes(objets)
-      if (decouvertes.length === 0) return
-      setRecettesParJoueur((prev) => {
-        const connues = new Set(prev[userId] ?? [])
-        decouvertes.forEach((id) => connues.add(id))
-        const suivant = { ...prev, [userId]: [...connues] }
-        ecrireRecettesConnues(suivant)
-        return suivant
-      })
-    },
-    [userId],
-  )
-
   const ajouterObjets = useCallback(
     (objets: Objet[]) => {
       if (!userId || objets.length === 0) return
+      // The `on_inventory_insert_discover` trigger updates `discoveries` server-side;
+      // reloading the recipe book after the insert picks that up.
       ajouterObjetsDistant(userId, objets)
         .then(() => charger(userId))
         .catch((e) => console.error('[PFC] inventory insert failed', e))
-      marquerRecettesDecouvertes(objets)
     },
-    [userId, charger, marquerRecettesDecouvertes],
+    [userId, charger],
   )
 
   /**
-   * No backend mutation exists yet to delete inventory rows, so this only
-   * updates the signed-in view; it won't survive the next `rafraichir()`.
-   * Enough to demo crafting until a real removal call is wired up.
+   * Optimistic-only: no generic inventory-removal mutation exists (crafting,
+   * the one thing that needs it, goes through `combiner`/`craft` instead,
+   * which deletes server-side and reloads). Kept so other features that
+   * still call `retirerObjets` don't crash; it won't survive `rafraichir()`.
    */
   const retirerObjets = useCallback((ids: string[]) => {
     setJoueur((prev) => {
@@ -285,6 +304,35 @@ function useSupabaseSession(): Session {
     })
   }, [])
 
+  /** Crafting: the `craft` RPC owns ownership checks, the recipe match and the discovery ledger. */
+  const combiner = useCallback(
+    async (a: Objet, b: Objet): Promise<ResultatAssemblage> => {
+      if (!a.inventaireId || !b.inventaireId || a.inventaireId === b.inventaireId) {
+        return { succes: false, message: 'Can’t combine: you need two different cards.' }
+      }
+      try {
+        const { resultatId } = await combinerDistant(a.inventaireId, b.inventaireId)
+        const resultat = trouverObjet(resultatId)
+        await charger(userId)
+        return resultat
+          ? { succes: true, message: `You crafted ${resultat.nom}!`, objetResultat: resultat }
+          : { succes: true, message: 'Crafted!' }
+      } catch (e) {
+        const code = codeErreurCraft(e)
+        const message =
+          code === 'no_recipe'
+            ? `Can’t combine: no known recipe for ${a.nom} + ${b.nom}.`
+            : code === 'card_not_owned'
+              ? 'Can’t combine: you don’t own one of these cards anymore.'
+              : code === 'not_authenticated'
+                ? 'You need to be signed in to craft.'
+                : 'Can’t combine: you need two different cards.'
+        return { succes: false, message }
+      }
+    },
+    [userId, charger],
+  )
+
   return useMemo<Session>(
     () => ({
       mode: 'supabase',
@@ -296,11 +344,12 @@ function useSupabaseSession(): Session {
       deconnecter,
       ajouterObjets,
       retirerObjets,
-      recettesConnues: userId ? (recettesParJoueur[userId] ?? []) : [],
+      combiner,
+      livreRecettes: livre,
       chart,
       terminerOnboarding,
       rafraichir,
     }),
-    [chargement, joueur, userId, recettesParJoueur, chart, deconnecter, ajouterObjets, retirerObjets, terminerOnboarding, rafraichir],
+    [chargement, joueur, livre, chart, deconnecter, ajouterObjets, retirerObjets, combiner, terminerOnboarding, rafraichir],
   )
 }

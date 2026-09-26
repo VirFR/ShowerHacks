@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { Chart } from '@/lib/engine'
-import type { Joueur, Objet } from '@/types'
+import type { Joueur, Objet, Recette, ResultatAssemblage } from '@/types'
 
 /**
  * Session shared by every page.
@@ -47,8 +47,15 @@ export interface Session {
    * Supabase mode: local-only until a matching backend mutation exists.
    */
   retirerObjets: (ids: string[]) => void
-  /** Result item ids of the recipes the signed-in player has discovered. */
-  recettesConnues: string[]
+  /**
+   * Combines two owned cards into a recipe's result, consuming both.
+   * Mock mode: resolved against `mocks/recettes.ts`, persisted to
+   * localStorage. Supabase mode: the `craft` RPC (`services/craft.ts`),
+   * which owns ingredient ownership and the recipe match server-side.
+   */
+  combiner: (a: Objet, b: Objet) => Promise<ResultatAssemblage>
+  /** Recipe book: total recipe count + full ingredients of the ones discovered so far. */
+  livreRecettes: { total: number; decouvertes: Recette[] }
   /** Category chart (who beats whom), loaded from the DB or the default one. */
   chart: Chart
   /** Marks the first-login tutorial as done. */

@@ -6,31 +6,11 @@ import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
-import { trouverRecette } from '@/lib/assemblage'
 import { ORDRE_RARETE } from '@/lib/format'
 import { useSession } from '@/lib/session'
-import { trouverObjet } from '@/mocks'
 import type { Objet, ResultatAssemblage } from '@/types'
 
 type Emplacement = 'a' | 'b'
-
-/**
- * Little-Alchemy-style resolution: any two owned cards can be tried, no
- * prior knowledge of the recipe required. A match consumes both ingredients
- * and produces the result (see `retirerObjets`/`ajouterObjets` in the page
- * component, which also unlocks the recipe in the recipe book).
- */
-function assembler(a: Objet, b: Objet): ResultatAssemblage {
-  if (a.id === b.id) {
-    return { succes: false, message: 'Can’t combine: you need two different cards.' }
-  }
-  const recette = trouverRecette(a.id, b.id)
-  const resultat = recette ? trouverObjet(recette.resultatId) : undefined
-  if (!recette || !resultat) {
-    return { succes: false, message: `Can’t combine: no known recipe for ${a.nom} + ${b.nom}.` }
-  }
-  return { succes: true, message: `You crafted ${resultat.nom}!`, objetResultat: resultat }
-}
 
 interface SlotProps {
   emplacement: Emplacement
@@ -84,11 +64,12 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
 
 /** /crafting — Combine two items (drag & drop or two-click selection). */
 export function Assemblage() {
-  const { joueur, ajouterObjets, retirerObjets } = useSession()
+  const { joueur, combiner } = useSession()
   const inventaire = (joueur?.inventaire ?? []).toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
   const [slotA, setSlotA] = useState<Objet | null>(null)
   const [slotB, setSlotB] = useState<Objet | null>(null)
   const [resultat, setResultat] = useState<ResultatAssemblage | null>(null)
+  const [enCours, setEnCours] = useState(false)
   const [survol, setSurvol] = useState<Emplacement | null>(null)
 
   const placer = (objet: Objet, emplacement?: Emplacement) => {
@@ -116,14 +97,14 @@ export function Assemblage() {
     setResultat(null)
   }
 
-  /** Tries the combination: on success, consumes the two ingredients and adds the crafted card. */
-  const combiner = () => {
-    if (!slotA || !slotB) return
-    const issue = assembler(slotA, slotB)
+  /** Tries the combination: on success, the session has already consumed the ingredients and added the result. */
+  const tenterCombinaison = async () => {
+    if (!slotA || !slotB || enCours) return
+    setEnCours(true)
+    const issue = await combiner(slotA, slotB)
+    setEnCours(false)
     setResultat(issue)
-    if (issue.succes && issue.objetResultat) {
-      retirerObjets([slotA.id, slotB.id])
-      ajouterObjets([issue.objetResultat])
+    if (issue.succes) {
       setSlotA(null)
       setSlotB(null)
     }
@@ -168,9 +149,9 @@ export function Assemblage() {
         </div>
 
         <div className="mt-5 text-center">
-          <Bouton taille="lg" disabled={!slotA || !slotB} onClick={combiner}>
+          <Bouton taille="lg" disabled={!slotA || !slotB || enCours} onClick={tenterCombinaison}>
             <Icon name="flask" size={18} />
-            Combine
+            {enCours ? 'Combining…' : 'Combine'}
           </Bouton>
         </div>
 

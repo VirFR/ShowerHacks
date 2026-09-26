@@ -47,7 +47,7 @@ Claude session at the repository if it can read it.
 ```
 Same Supabase project as before. Install the battle system's backend. Do it in this order and report each step.
 
-1. Apply the migrations in order with apply_migration: `supabase/migrations/0001_combat.sql` (name: combat_schema) then `supabase/migrations/0002_items_seed.sql` (name: items_seed). Both are idempotent. Then list_tables in the public schema and confirm these exist: profiles, categories, category_matchups, items, inventory, decks, challenges, battles, battle_secrets, battle_rewards, booster_credits.
+1. Apply the migrations in order with apply_migration: `supabase/migrations/0001_combat.sql` (name: combat_schema), `supabase/migrations/0002_items_seed.sql` (name: items_seed), `supabase/migrations/0003_crafting.sql` (name: crafting), then `supabase/migrations/0004_recipes_seed.sql` (name: recipes_seed). All four are idempotent. Then list_tables in the public schema and confirm these exist: profiles, categories, category_matchups, items, inventory, decks, challenges, battles, battle_secrets, battle_rewards, booster_credits, recipes, discoveries.
 
 2. Verify Realtime: run `select tablename from pg_publication_tables where pubname = 'supabase_realtime'` with execute_sql and confirm battles and challenges are listed.
 
@@ -79,6 +79,22 @@ Same Supabase project as before. Install the battle system's backend. Do it in t
   Replace its body with the real booster credit. `tier` is `bronze`, `silver`
   or `gold` and should drive the rarity odds. Inventory copies are rows in
   `inventory` (one per card).
+- **Crafting / recipes**: the `recipes` table (`item_a`, `item_b` → `result`,
+  canonical `item_a <= item_b`) has no direct SELECT policy on purpose — it's
+  only readable through two RPCs, both `security definer` and granted to
+  `authenticated` only:
+  - `recipe_book()` returns `{ total, recipes: [...] }`, where `recipes` is
+    the caller's own discovered pairs only (from the `discoveries` table,
+    filled by the `on_inventory_insert_discover` trigger on every inventory
+    insert — booster pull or craft result alike). Undiscovered pairs never
+    reach the client.
+  - `craft(p_a, p_b)` takes two of the caller's own **inventory row ids**
+    (not catalog item ids), deletes them and inserts the result in one
+    transaction if a recipe matches, raising `not_authenticated`,
+    `two_cards_needed`, `card_not_owned` or `no_recipe` otherwise.
+  Front end: `pfc/src/services/craft.ts` wraps both RPCs;
+  `SessionProvider`'s `combiner()`/`livreRecettes` call them in supabase mode
+  and fall back to `mocks/recettes.ts` + localStorage in mock mode.
 
 ## Online checklist (once the keys are in place)
 
