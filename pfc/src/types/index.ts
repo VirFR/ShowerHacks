@@ -1,27 +1,38 @@
 /**
  * Core types of the PFC game.
  *
- * These interfaces are intentionally minimal: they act as a shared contract
- * between pages and will grow over time (crafting, real battles, auth…).
+ * These interfaces are a shared contract between pages. Battle-specific
+ * engine types live in `lib/engine/types.ts`.
  */
 
-/** Item categories: the three classic families. */
-export type Categorie = 'pierre' | 'feuille' | 'ciseaux'
+import type { BattleState, RewardTier, Side } from '@/lib/engine/types'
 
-export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux']
+/**
+ * Item category slug. Categories and the "who beats whom" chart are data
+ * (tables `categories` / `category_matchups`), owned by the items team.
+ * `CATEGORIES` only lists the placeholder seed used offline.
+ */
+export type Categorie = string
+
+export const CATEGORIES: Categorie[] = ['rock', 'paper', 'scissors', 'fire', 'water']
 
 export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
 
 /**
- * An item. There are no attack/defense stats: an item wins or loses purely
- * on its category, rock-paper-scissors style (see `lib/combat.ts`).
+ * An item. In a duel the category chart decides first; when two categories
+ * are neutral, attack and defense decide (see `lib/engine/clash.ts`).
  */
 export interface Objet {
+  /** Catalog id (shared by every copy of the item). */
   id: string
+  /** Id of this copy in the player's inventory. Absent for catalog entries. */
+  inventaireId?: string
   nom: string
   categorie: Categorie
+  attaque: number
+  defense: number
   imageUrl: string
-  /** Emoji fallback used when the image fails to load. */
+  /** Emoji fallback used by the items team when the image fails to load. */
   icone: string
   rarete: Rarete
   description: string
@@ -39,12 +50,14 @@ export interface Joueur {
   id: string
   pseudo: string
   score: number
-  /** Items owned by the player. */
+  /** Items owned by the player (one entry per copy). */
   inventaire: Objet[]
   rang: Rang
   avatarUrl?: string
   nbParties: number
   nbVictoires: number
+  /** ISO date of the end of the first-login tutorial, null until then. */
+  onboardedAt?: string | null
 }
 
 /** One leaderboard row (aggregated player data). */
@@ -92,3 +105,50 @@ export interface ResultatAssemblage {
 export const BOOSTERS_MAX = 8
 export const BOOSTER_INTERVALLE_MS = 10 * 60 * 1000 // 10 minutes
 export const OBJETS_PAR_BOOSTER = 5
+
+/* ---------- Battle (battle team) ---------- */
+
+export type BattleKind = 'pvp' | 'bot'
+
+/** A public opponent, as listed in the lobby. */
+export interface Adversaire {
+  id: string
+  pseudo: string
+  avatarUrl?: string
+  score: number
+  rang: Rang
+  enLigne: boolean
+}
+
+export interface Battle {
+  id: string
+  kind: BattleKind
+  /** Which side the signed-in player is on. */
+  mySide: Side
+  me: Adversaire
+  opponent: Adversaire
+  status: 'waiting' | 'active' | 'finished'
+  state: BattleState
+  /** Cards still in my hand (private). */
+  hand: Objet[]
+  /** Reward for me, set once finished. */
+  reward?: BattleRewardRow
+  updatedAt: string
+}
+
+export interface BattleRewardRow {
+  points: number
+  boosters: number
+  tier: RewardTier
+  breakdown: { label: string; points: number }[]
+  bonusBooster: boolean
+}
+
+export interface Defi {
+  id: string
+  from: Adversaire
+  to: Adversaire
+  status: 'pending' | 'accepted' | 'declined' | 'expired'
+  battleId?: string | null
+  createdAt: string
+}

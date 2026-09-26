@@ -1,24 +1,49 @@
 import type { Categorie, Rang, Rarete, ResultatCombat } from '@/types'
+import { DEFAULT_CHART, categoryLabel } from '@/lib/engine'
 
 /** Labels, colors and display helpers shared by the pages. */
 
-export const LIBELLE_CATEGORIE: Record<Categorie, string> = {
-  pierre: 'Rock',
-  feuille: 'Paper',
-  ciseaux: 'Scissors',
+/** Label of a category slug (falls back to a capitalised slug). */
+export function libelleCategorie(c: Categorie): string {
+  return categoryLabel(DEFAULT_CHART, c)
 }
 
-export const ICONE_CATEGORIE: Record<Categorie, string> = {
-  pierre: '✊',
-  feuille: '✋',
-  ciseaux: '✌️',
+/** @deprecated prefer `libelleCategorie(slug)`: categories are data now. */
+export const LIBELLE_CATEGORIE: Record<Categorie, string> = new Proxy(
+  {},
+  { get: (_t, key: string) => libelleCategorie(key) },
+) as Record<Categorie, string>
+
+/** Hex colour per category; unknown categories get the accent colour. */
+const COULEUR_PAR_CATEGORIE: Record<string, string> = {
+  rock: '#a8a29e',
+  paper: '#34d399',
+  scissors: '#fb7185',
+  fire: '#fb923c',
+  water: '#38bdf8',
 }
 
-export const CLASSE_CATEGORIE: Record<Categorie, string> = {
-  pierre: 'bg-stone-500/20 text-stone-200 ring-stone-400/40',
-  feuille: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
-  ciseaux: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
+export function couleurCategorie(c: Categorie): string {
+  return COULEUR_PAR_CATEGORIE[c] ?? '#c084fc'
 }
+
+const CLASSE_PAR_CATEGORIE: Record<string, string> = {
+  rock: 'bg-stone-500/20 text-stone-200 ring-stone-400/40',
+  paper: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
+  scissors: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
+  fire: 'bg-orange-500/20 text-orange-200 ring-orange-400/40',
+  water: 'bg-sky-500/20 text-sky-200 ring-sky-400/40',
+}
+
+export function classeCategorie(c: Categorie): string {
+  return CLASSE_PAR_CATEGORIE[c] ?? 'bg-accent/20 text-accent-2 ring-accent/40'
+}
+
+/** @deprecated prefer `classeCategorie(slug)`. */
+export const CLASSE_CATEGORIE: Record<Categorie, string> = new Proxy(
+  {},
+  { get: (_t, key: string) => classeCategorie(key) },
+) as Record<Categorie, string>
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {
   commun: 'Common',

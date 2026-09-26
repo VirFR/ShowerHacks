@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { useSession } from '@/lib/session'
 import { CATEGORIES, type Categorie } from '@/types'
-import { ICONE_CATEGORIE, LIBELLE_CATEGORIE } from '@/lib/format'
+import { libelleCategorie } from '@/lib/format'
 
 type Filtre = Categorie | 'toutes'
 
@@ -18,7 +18,7 @@ export function Inventaire() {
 
   const filtres: { valeur: Filtre; label: string }[] = [
     { valeur: 'toutes', label: 'All' },
-    ...CATEGORIES.map((c) => ({ valeur: c, label: `${ICONE_CATEGORIE[c]} ${LIBELLE_CATEGORIE[c]}` })),
+    ...CATEGORIES.map((c) => ({ valeur: c, label: libelleCategorie(c) })),
   ]
 
   if (!joueur) return <ConnexionRequise />
