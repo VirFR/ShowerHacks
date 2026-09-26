@@ -112,8 +112,11 @@ export function Boosters() {
     }, 480)
   }
 
+  /** The strip can be grabbed straight from idle: no need to press "Open" first. */
+  const peutDechirer = (e: EtatOuverture) => e === 'idle' || e === 'dechirure'
+
   const onPointerDownBandelette = (e: PointerEvent<HTMLDivElement>) => {
-    if (etat !== 'dechirure') return
+    if (!peutDechirer(etat) || actuel <= 0) return
     e.currentTarget.setPointerCapture(e.pointerId)
     dragStartX.current = e.clientX
     progressDepart.current = dragProgress
@@ -124,11 +127,16 @@ export function Boosters() {
    * Only a right-to-left drag adds progress; pulling the other way gives it back.
    * Progress builds on top of `progressDepart`, so releasing and re-grabbing the
    * strip (several back-and-forths) keeps what was already torn instead of resetting it.
+   * The first bit of real movement is what actually arms the booster (from idle).
    */
   const onPointerMoveBandelette = (e: PointerEvent<HTMLDivElement>) => {
-    if (etat !== 'dechirure' || dragStartX.current === null) return
+    if (!peutDechirer(etat) || dragStartX.current === null) return
     const dx = dragStartX.current - e.clientX
     const nouvelleProgression = Math.min(1, Math.max(0, progressDepart.current + dx / SEUIL_DECHIRURE_PX))
+    if (etat === 'idle' && nouvelleProgression > 0) {
+      setRetourne(false)
+      setEtat('dechirure')
+    }
     setDragProgress(nouvelleProgression)
     if (nouvelleProgression >= 1) {
       dragStartX.current = null
@@ -144,9 +152,11 @@ export function Boosters() {
     setIsDragging(false)
   }
 
-  /** Keyboard fallback: each Enter/Space press pulls the strip a bit further. */
+  /** Keyboard fallback: each Enter/Space press pulls the strip a bit further, arming it from idle if needed. */
   const avancerDechirureClavier = () => {
-    if (etat !== 'dechirure') return
+    if (!peutDechirer(etat) || actuel <= 0) return
+    if (etat === 'idle') setRetourne(false)
+    setEtat('dechirure')
     const suivant = Math.min(1, dragProgress + PAS_CLAVIER)
     setDragProgress(suivant)
     if (suivant >= 1) terminerDechirure()
@@ -249,15 +259,15 @@ export function Boosters() {
                   onPointerMove={onPointerMoveBandelette}
                   onPointerUp={onPointerUpBandelette}
                   onPointerCancel={onPointerUpBandelette}
-                  role={etat === 'dechirure' ? 'button' : undefined}
-                  tabIndex={etat === 'dechirure' ? 0 : undefined}
+                  role={peutDechirer(etat) && actuel > 0 ? 'button' : undefined}
+                  tabIndex={peutDechirer(etat) && actuel > 0 ? 0 : undefined}
                   aria-label={
-                    etat === 'dechirure'
+                    peutDechirer(etat) && actuel > 0
                       ? `Tear strip, ${Math.round(dragProgress * 100)}% torn: drag right to left, you can let go and pull again`
                       : undefined
                   }
                   onKeyDown={(e) => {
-                    if (etat === 'dechirure' && (e.key === 'Enter' || e.key === ' ')) {
+                    if (peutDechirer(etat) && (e.key === 'Enter' || e.key === ' ')) {
                       e.preventDefault()
                       avancerDechirureClavier()
                     }
@@ -353,7 +363,7 @@ export function Boosters() {
         <p className="text-sm text-texte-2">
           {etat === 'idle' &&
             (actuel > 0
-              ? `Tap the pack to flip it over, or open it to discover ${OBJETS_PAR_BOOSTER} new items.`
+              ? 'Tap to flip it over, or drag the top strip right to left to tear it open ✋'
               : 'No boosters left, hang on a bit.')}
           {etat === 'dechirure' &&
             (dragProgress > 0
