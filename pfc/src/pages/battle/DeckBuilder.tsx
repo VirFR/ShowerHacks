@@ -9,6 +9,7 @@ import { BattleCard } from '@/components/battle/BattleCard'
 import { versCarte } from '@/lib/combat'
 import { DECK_SIZE, beatenBy, categoryLabel, chartCategories, matchup } from '@/lib/engine'
 import { couleurCategorie, libelleCategorie } from '@/lib/format'
+import { trierInventaire } from '@/lib/inventaire'
 import { useSession } from '@/lib/session'
 import { battleService } from '@/services/battle'
 import { chargerDeckIds, sauverDeckIds } from '@/services/deck'
@@ -74,7 +75,7 @@ function Builder() {
     }
   }
 
-  const visibles = filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre)
+  const visibles = trierInventaire(filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre))
   const categoriesInventaire = [...new Set(inventaire.map((o) => o.categorie))]
 
   return (

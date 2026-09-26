@@ -1,5 +1,15 @@
 import { useState } from 'react'
-import type { Objet } from '@/types'
+import { ORDRE_RARETE } from '@/lib/format'
+import { CARTES_DE_BASE, type Objet } from '@/types'
+
+/** Rock, leaf and scissors (the classics) first, in that order, then from common to rarest. */
+export function trierInventaire(objets: Objet[]): Objet[] {
+  const rangBase = (o: Objet) => {
+    const i = CARTES_DE_BASE.indexOf(o.id)
+    return i === -1 ? CARTES_DE_BASE.length : i
+  }
+  return objets.toSorted((a, b) => rangBase(a) - rangBase(b) || ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
+}
 
 /** Every owned copy of one catalog item. */
 export interface Pile {

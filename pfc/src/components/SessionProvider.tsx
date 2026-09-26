@@ -47,14 +47,11 @@ function SupabaseSessionProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Shared pre-check of a combination, before any recipe lookup. The base cards
- * are infinite, so one copy may fill both slots (Mossy Rock + Mossy Rock).
+ * Shared pre-check of a combination, before any recipe lookup. One copy may
+ * fill both slots (Iron Ore + Iron Ore with a single Iron Ore).
  */
 function verifierPaire(a: Objet, b: Objet): ResultatAssemblage | null {
   if (!a.inventaireId || !b.inventaireId) return { succes: false, message: 'Pick two cards.' }
-  if (a.inventaireId === b.inventaireId && !estCarteDeBase(a)) {
-    return { succes: false, message: 'Pick two different cards.' }
-  }
   return null
 }
 
@@ -165,7 +162,7 @@ function useMockSession(): Session {
       const resultat = recette ? trouverObjet(recette.resultatId) : undefined
       if (!resultat) return { succes: false, message: messageErreurCraft({ message: 'no_recipe' }) }
       // Base cards are infinite: only the other ingredients are consumed.
-      retirerCopies([a, b].filter((o) => !estCarteDeBase(o)).map((o) => o.inventaireId!))
+      retirerCopies([...new Set([a, b].filter((o) => !estCarteDeBase(o)).map((o) => o.inventaireId!))])
       ajouterObjets([resultat])
       return {
         succes: true,
