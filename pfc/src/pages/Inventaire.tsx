@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ObjetCard } from '@/components/ObjetCard'
 import { PageHeader } from '@/components/PageHeader'
-import { JOUEUR_COURANT } from '@/mocks'
+import { ConnexionRequise } from '@/components/ConnexionRequise'
+import { useSession } from '@/lib/session'
 import { CATEGORIES, type Categorie } from '@/types'
 import { ICONE_CATEGORIE, LIBELLE_CATEGORIE } from '@/lib/format'
 
@@ -9,22 +10,20 @@ type Filtre = Categorie | 'toutes'
 
 /** /inventory — Grid of owned items, filterable by category. */
 export function Inventaire() {
+  const { joueur } = useSession()
   const [filtre, setFiltre] = useState<Filtre>('toutes')
+  const inventaire = joueur?.inventaire ?? []
 
-  const objets = useMemo(
-    () =>
-      filtre === 'toutes'
-        ? JOUEUR_COURANT.inventaire
-        : JOUEUR_COURANT.inventaire.filter((o) => o.categorie === filtre),
-    [filtre],
-  )
+  const objets = filtre === 'toutes' ? inventaire : inventaire.filter((o) => o.categorie === filtre)
 
   const filtres: { valeur: Filtre; label: string }[] = [
     { valeur: 'toutes', label: 'All' },
     ...CATEGORIES.map((c) => ({ valeur: c, label: `${ICONE_CATEGORIE[c]} ${LIBELLE_CATEGORIE[c]}` })),
   ]
 
-  const total = JOUEUR_COURANT.inventaire.length
+  if (!joueur) return <ConnexionRequise />
+
+  const total = inventaire.length
 
   return (
     <>

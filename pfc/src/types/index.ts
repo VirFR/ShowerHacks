@@ -5,10 +5,10 @@
  * between pages and will grow over time (crafting, real battles, auth…).
  */
 
-/** Item categories: the three classic families plus a special one. */
-export type Categorie = 'pierre' | 'feuille' | 'ciseaux' | 'special'
+/** Item categories: the three classic families. */
+export type Categorie = 'pierre' | 'feuille' | 'ciseaux'
 
-export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux', 'special']
+export const CATEGORIES: Categorie[] = ['pierre', 'feuille', 'ciseaux']
 
 export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
 
@@ -89,5 +89,6 @@ export interface ResultatAssemblage {
 }
 
 /** Shared gameplay constants. */
-export const BOOSTERS_MAX = 10
+export const BOOSTERS_MAX = 8
 export const BOOSTER_INTERVALLE_MS = 10 * 60 * 1000 // 10 minutes
+export const OBJETS_PAR_BOOSTER = 5

@@ -4,30 +4,23 @@ import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
-import { JOUEUR_COURANT, OBJETS_MOCK } from '@/mocks'
+import { ConnexionRequise } from '@/components/ConnexionRequise'
+import { useSession } from '@/lib/session'
 import type { Objet, ResultatAssemblage } from '@/types'
 
 type Emplacement = 'a' | 'b'
 
 /**
- * Mock result: two items of the same category combine, otherwise the
- * combination fails. To be replaced by the real crafting logic.
+ * Mock result: no recipe exists yet, so every combination fails.
+ * To be replaced by the real crafting logic (recipes, created items).
  */
 function assemblerMock(a: Objet, b: Objet): ResultatAssemblage {
   if (a.id === b.id) {
     return { succes: false, message: 'Can’t combine: you need two different items.' }
   }
-  if (a.categorie !== b.categorie) {
-    return { succes: false, message: 'Can’t combine: the categories don’t match.' }
-  }
-  const candidats = OBJETS_MOCK.filter(
-    (o) => o.categorie === a.categorie && o.id !== a.id && o.id !== b.id,
-  )
-  const objetResultat = candidats[0] ?? OBJETS_MOCK.find((o) => o.categorie === 'special')
   return {
-    succes: true,
-    message: 'Combination successful!',
-    objetResultat,
+    succes: false,
+    message: `Can’t combine: no known recipe for ${a.nom} + ${b.nom} (crafting coming soon).`,
   }
 }
 
@@ -83,6 +76,8 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
 
 /** /crafting — Combine two items (drag & drop or two-click selection). */
 export function Assemblage() {
+  const { joueur } = useSession()
+  const inventaire = joueur?.inventaire ?? []
   const [slotA, setSlotA] = useState<Objet | null>(null)
   const [slotB, setSlotB] = useState<Objet | null>(null)
   const [resultat, setResultat] = useState<ResultatAssemblage | null>(null)
@@ -122,11 +117,13 @@ export function Assemblage() {
     e.preventDefault()
     setSurvol(null)
     const id = e.dataTransfer.getData('text/plain')
-    const objet = JOUEUR_COURANT.inventaire.find((o) => o.id === id)
+    const objet = inventaire.find((o) => o.id === id)
     if (objet) placer(objet, emplacement)
   }
 
   const propsSlot = { onSurvol: setSurvol, onDrop, onRetirer: retirer }
+
+  if (!joueur) return <ConnexionRequise />
 
   return (
     <>
@@ -181,7 +178,7 @@ export function Assemblage() {
 
       <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {JOUEUR_COURANT.inventaire.map((objet) => (
+        {inventaire.map((objet) => (
           <div key={objet.id} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
             <ObjetCard
               objet={objet}
