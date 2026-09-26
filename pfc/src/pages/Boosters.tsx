@@ -42,6 +42,8 @@ export function Boosters() {
   const [etat, setEtat] = useState<EtatOuverture>('idle')
   const [objetsObtenus, setObjetsObtenus] = useState<Objet[]>([])
   const [indexCarte, setIndexCarte] = useState(0)
+  /** Save state of the last draw: the cards only count once they're in the inventory. */
+  const [sauvegarde, setSauvegarde] = useState<'ok' | 'en_cours' | 'echec'>('ok')
   /** Pack flipped over to inspect its back (only while idle, before arming the tear). */
   const [retourne, setRetourne] = useState(false)
 
@@ -81,6 +83,15 @@ export function Boosters() {
     setEtat('dechirure')
   }
 
+  /** Saves a draw to the inventory; on failure the player can retry the same cards. */
+  const sauvegarder = (tirage: Objet[]) => {
+    setSauvegarde('en_cours')
+    ajouterObjets(tirage).then(
+      () => setSauvegarde('ok'),
+      () => setSauvegarde('echec'),
+    )
+  }
+
   /** Finishes the tear once it's fully torn (drag progress reached 1): draws the items. */
   const terminerDechirure = () => {
     if (dechirureEnCours.current) return
@@ -90,7 +101,7 @@ export function Boosters() {
       const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
-      ajouterObjets(tirage)
+      sauvegarder(tirage)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
         // If the stack was full, the timer restarts from now.
@@ -335,6 +346,15 @@ export function Boosters() {
         {etat === 'revele' && objetsObtenus.length > 0 && (
           <div className="animate-booster-pop w-full max-w-lg">
             <p className="mb-2 text-sm font-semibold text-accent-2">You got {objetsObtenus.length} cards:</p>
+            {sauvegarde === 'echec' && (
+              <div role="alert" className="mb-3 rounded-2xl border border-echec/50 bg-echec/10 p-3 text-center text-sm">
+                <p className="font-semibold text-echec">These cards couldn’t be saved to your inventory.</p>
+                <Bouton taille="sm" variante="secondaire" className="mt-2" onClick={() => sauvegarder(objetsObtenus)}>
+                  Try again
+                </Bouton>
+              </div>
+            )}
+            {sauvegarde === 'en_cours' && <p className="mb-2 text-xs text-texte-2">Saving to your inventory…</p>}
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {objetsObtenus.map((objet, i) => (
                 <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
@@ -357,7 +377,7 @@ export function Boosters() {
         </p>
 
         {(etat === 'idle' || etat === 'revele') && (
-          <Bouton taille="lg" disabled={actuel <= 0} onClick={commencerOuverture}>
+          <Bouton taille="lg" disabled={actuel <= 0 || sauvegarde === 'en_cours'} onClick={commencerOuverture}>
             {etat === 'revele' ? 'Open another' : 'Open'}
           </Bouton>
         )}
