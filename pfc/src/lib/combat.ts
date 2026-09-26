@@ -68,11 +68,15 @@ const BONUS_AVANTAGE = 2
  *    rarity is converted to fighting points (see `POINTS_RARETE`), the
  *    advantaged side gets `BONUS_AVANTAGE` extra points, and the higher
  *    total wins. Same category, or a category pair with no advantage
- *    either way, skips straight to step 3.
- * 3. Circular tournament tiebreaker: used whenever step 2 doesn't apply
- *    (neutral category matchup) or ends in an exact points tie. Every item
- *    sits on a fixed circle and beats half of all others, so this always
- *    resolves cleanly with an even ~50/50 split.
+ *    either way, skips straight to step 4.
+ * 3. Rarity tiebreak: if step 2 ends in an exact points tie, whichever item
+ *    has the rarer tier wins outright (e.g. a common with the advantage
+ *    tying a rare's points still loses to it — the rare is simply rarer).
+ * 4. Circular tournament tiebreaker: used whenever step 2 doesn't apply
+ *    (neutral category matchup) or steps 2 and 3 both end in an exact tie
+ *    (same rarity, no advantage either way). Every item sits on a fixed
+ *    circle and beats half of all others, so this always resolves cleanly
+ *    with an even ~50/50 split.
  */
 export function resoudreCombat(a: Objet, b: Objet): ResultatCombat {
   if (a.id === b.id) return 'egalite'
@@ -90,7 +94,11 @@ export function resoudreCombat(a: Objet, b: Objet): ResultatCombat {
     const scoreB = POINTS_RARETE[b.rarete] + (bAvantage ? BONUS_AVANTAGE : 0)
     if (scoreA > scoreB) return 'victoire'
     if (scoreB > scoreA) return 'defaite'
-    // Exact tie (e.g. a one-tier rarity gap exactly canceling the bonus): fall through.
+
+    // Exact tie on fighting points: the rarer item wins outright.
+    if (POINTS_RARETE[a.rarete] > POINTS_RARETE[b.rarete]) return 'victoire'
+    if (POINTS_RARETE[b.rarete] > POINTS_RARETE[a.rarete]) return 'defaite'
+    // Still tied (same rarity too): fall through to the tournament tiebreaker.
   }
 
   return resoudreParTournoiCirculaire(a, b)
