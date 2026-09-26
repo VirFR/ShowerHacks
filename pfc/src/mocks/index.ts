@@ -1,4 +1,4 @@
-export { INVENTAIRE_DEPART, OBJETS_MOCK, trouverObjet } from './objets'
+export { INVENTAIRE_DEPART, OBJETS_MOCK, inventaireDepart, trouverObjet } from './objets'
 export { OBJETS_BOOSTER_MOCK } from './objetsBooster'
 export { RECETTES } from './recettes'
 export {

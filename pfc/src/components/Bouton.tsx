@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react'
 
-type Variante = 'primaire' | 'secondaire' | 'danger' | 'fantome'
+type Variante = 'primaire' | 'secondaire' | 'danger' | 'fantome' | 'clair' | 'or'
 
 interface BoutonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variante?: Variante
@@ -14,6 +14,8 @@ const CLASSES_VARIANTE: Record<Variante, string> = {
     'bg-carte text-texte ring-1 ring-bordure hover:bg-carte-2 disabled:text-texte-2',
   danger: 'bg-attaque text-white hover:brightness-110 disabled:bg-attaque/40',
   fantome: 'text-texte-2 hover:bg-carte hover:text-texte',
+  clair: 'bg-white text-fond shadow-lg shadow-white/10 hover:bg-slate-200 disabled:bg-white/50',
+  or: 'bg-or text-fond shadow-lg shadow-or/30 hover:bg-amber-300 disabled:bg-or/40',
 }
 
 const CLASSES_TAILLE = {

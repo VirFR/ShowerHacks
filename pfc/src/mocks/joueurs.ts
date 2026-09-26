@@ -1,10 +1,10 @@
 import type { EntreeClassement, HistoriqueCombat, Joueur, StackBoosters } from '@/types'
 import { BOOSTER_INTERVALLE_MS, BOOSTERS_MAX } from '@/types'
-import { INVENTAIRE_DEPART } from './objets'
+import { inventaireDepart } from './objets'
 
 /**
  * The four test accounts. Everyone starts from the same point:
- * score 0, Bronze rank, the three base items.
+ * score 0, Bronze rank, one copy of every offline item.
  * Sign-in happens from /profile (see `lib/session.ts`).
  */
 const compte = (id: string, pseudo: string): Joueur => ({
@@ -14,7 +14,8 @@ const compte = (id: string, pseudo: string): Joueur => ({
   rang: 'Bronze',
   nbParties: 0,
   nbVictoires: 0,
-  inventaire: [...INVENTAIRE_DEPART],
+  inventaire: inventaireDepart(id),
+  onboardedAt: null,
 })
 
 export const JOUEURS_MOCK: Joueur[] = [

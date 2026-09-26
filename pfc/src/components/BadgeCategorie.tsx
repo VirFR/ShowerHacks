@@ -1,17 +1,23 @@
 import type { Categorie } from '@/types'
-import { CLASSE_CATEGORIE, ICONE_CATEGORIE, LIBELLE_CATEGORIE } from '@/lib/format'
+import { classeCategorie, couleurCategorie, libelleCategorie } from '@/lib/format'
 
 interface BadgeCategorieProps {
   categorie: Categorie
+  /** Optional label override (e.g. from the chart loaded in the session). */
+  label?: string
 }
 
-export function BadgeCategorie({ categorie }: BadgeCategorieProps) {
+export function BadgeCategorie({ categorie, label }: BadgeCategorieProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ${CLASSE_CATEGORIE[categorie]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ${classeCategorie(categorie)}`}
     >
-      <span aria-hidden>{ICONE_CATEGORIE[categorie]}</span>
-      {LIBELLE_CATEGORIE[categorie]}
+      <span
+        aria-hidden
+        className="inline-block h-1.5 w-1.5 rounded-full"
+        style={{ backgroundColor: couleurCategorie(categorie) }}
+      />
+      {label ?? libelleCategorie(categorie)}
     </span>
   )
 }

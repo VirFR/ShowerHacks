@@ -1,30 +1,49 @@
 import type { Categorie, Rang, Rarete, ResultatCombat } from '@/types'
+import { DEFAULT_CHART, categoryLabel } from '@/lib/engine'
 
 /** Labels, colors and display helpers shared by the pages. */
 
-export const LIBELLE_CATEGORIE: Record<Categorie, string> = {
-  fight: 'Fight',
-  plantes: 'Plants',
-  ressources: 'Resources',
-  espace: 'Space',
-  brainrot: 'Brainrot',
+/** Label of a category slug (falls back to a capitalised slug). */
+export function libelleCategorie(c: Categorie): string {
+  return categoryLabel(DEFAULT_CHART, c)
 }
 
-export const ICONE_CATEGORIE: Record<Categorie, string> = {
-  fight: '⚔️',
-  plantes: '🌿',
-  ressources: '⛏️',
-  espace: '🌌',
-  brainrot: '🧠',
+/** @deprecated prefer `libelleCategorie(slug)`: categories are data now. */
+export const LIBELLE_CATEGORIE: Record<Categorie, string> = new Proxy(
+  {},
+  { get: (_t, key: string) => libelleCategorie(key) },
+) as Record<Categorie, string>
+
+/** Hex colour per category; unknown categories get the accent colour. */
+const COULEUR_PAR_CATEGORIE: Record<string, string> = {
+  fight: '#fb7185',
+  plantes: '#34d399',
+  ressources: '#f59e0b',
+  espace: '#818cf8',
+  brainrot: '#a3e635',
 }
 
-export const CLASSE_CATEGORIE: Record<Categorie, string> = {
+export function couleurCategorie(c: Categorie): string {
+  return COULEUR_PAR_CATEGORIE[c] ?? '#c084fc'
+}
+
+const CLASSE_PAR_CATEGORIE: Record<string, string> = {
   fight: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
   plantes: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
   ressources: 'bg-amber-600/20 text-amber-200 ring-amber-500/40',
   espace: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
   brainrot: 'bg-lime-500/20 text-lime-200 ring-lime-400/40',
 }
+
+export function classeCategorie(c: Categorie): string {
+  return CLASSE_PAR_CATEGORIE[c] ?? 'bg-accent/20 text-accent-2 ring-accent/40'
+}
+
+/** @deprecated prefer `classeCategorie(slug)`. */
+export const CLASSE_CATEGORIE: Record<Categorie, string> = new Proxy(
+  {},
+  { get: (_t, key: string) => classeCategorie(key) },
+) as Record<Categorie, string>
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {
   commun: 'Common',
@@ -54,14 +73,34 @@ export const CLASSE_RARETE: Record<Rarete, string> = {
   secret_rare: 'bg-gradient-to-r from-rose-300 via-amber-200 to-sky-300 bg-clip-text text-transparent font-semibold',
 }
 
-/** Card border/glow by rarity: gray, green, blue, purple, gold, prism. */
+/**
+ * Card frame by rarity: a thick border + a background tinted almost
+ * entirely in the rarity's color, and — from `rare` upward — a colored
+ * glow (halo) around the card that gets more intense with rarity.
+ */
 export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
-  commun: 'border-bordure hover:border-texte-2/70',
-  peu_commun: 'border-emerald-500/40 hover:border-emerald-400/70',
-  rare: 'border-sky-500/40 hover:border-sky-400/70',
-  epique: 'border-fuchsia-500/40 hover:border-fuchsia-400/70',
-  legendaire: 'border-amber-400/50 hover:border-amber-300/80 shadow-[0_0_16px_-4px] shadow-amber-400/40',
-  secret_rare: 'border-white/60 hover:border-white/90 shadow-[0_0_20px_-4px] shadow-white/40',
+  commun: 'border-slate-400/70 bg-gradient-to-b from-slate-600/50 via-carte to-carte',
+  peu_commun: 'border-emerald-400/80 bg-gradient-to-b from-emerald-800/60 via-carte to-carte',
+  rare: 'border-sky-400/90 bg-gradient-to-b from-sky-800/60 via-carte to-carte shadow-[0_0_18px_-2px] shadow-sky-400/50',
+  epique:
+    'border-fuchsia-400/90 bg-gradient-to-b from-fuchsia-800/60 via-carte to-carte shadow-[0_0_22px_-2px] shadow-fuchsia-400/60',
+  legendaire:
+    'border-amber-300 bg-gradient-to-b from-amber-800/60 via-carte to-carte shadow-[0_0_26px_-2px] shadow-amber-300/70',
+  secret_rare: 'border-white bg-gradient-to-b from-slate-700/60 via-carte to-carte shadow-[0_0_30px_-2px] shadow-white/70',
+}
+
+/** Rank thresholds (score needed to reach each rank). */
+export const SEUILS_RANG: [Rang, number][] = [
+  ['Master', 4000],
+  ['Diamond', 2000],
+  ['Platinum', 1000],
+  ['Gold', 500],
+  ['Silver', 200],
+  ['Bronze', 0],
+]
+
+export function rangPourScore(score: number): Rang {
+  return SEUILS_RANG.find(([, seuil]) => score >= seuil)?.[0] ?? 'Bronze'
 }
 
 export const CLASSE_RANG: Record<Rang, string> = {

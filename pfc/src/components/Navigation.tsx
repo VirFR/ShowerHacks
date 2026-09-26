@@ -1,22 +1,23 @@
 import { NavLink } from 'react-router-dom'
 import { useSession } from '@/lib/session'
+import { Icon, type IconName } from './Icon'
 
 interface LienNav {
   to: string
   label: string
-  icone: string
+  icone: IconName
 }
 
 /** Links of the navigation bar shared by every page. */
 const LIENS_NAV: LienNav[] = [
-  { to: '/home', label: 'Home', icone: '🏠' },
-  { to: '/battle', label: 'Battle', icone: '⚔️' },
-  { to: '/inventory', label: 'Inventory', icone: '🎒' },
-  { to: '/boosters', label: 'Boosters', icone: '🎁' },
-  { to: '/crafting', label: 'Crafting', icone: '🧪' },
-  { to: '/recipes', label: 'Recipes', icone: '📖' },
-  { to: '/leaderboard', label: 'Leaderboard', icone: '🏆' },
-  { to: '/profile', label: 'Profile', icone: '👤' },
+  { to: '/home', label: 'Home', icone: 'home' },
+  { to: '/battle', label: 'Battle', icone: 'swords' },
+  { to: '/inventory', label: 'Inventory', icone: 'bag' },
+  { to: '/boosters', label: 'Boosters', icone: 'gift' },
+  { to: '/crafting', label: 'Crafting', icone: 'flask' },
+  { to: '/recipes', label: 'Recipes', icone: 'book' },
+  { to: '/leaderboard', label: 'Leaderboard', icone: 'trophy' },
+  { to: '/profile', label: 'Profile', icone: 'user' },
 ]
 
 /**
@@ -32,10 +33,12 @@ export function Navigation() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-bordure bg-fond-2/95 backdrop-blur md:inset-y-0 md:left-0 md:w-56 md:border-t-0 md:border-r"
     >
       <div className="hidden items-center gap-3 px-5 py-6 md:flex">
-        <span className="text-3xl">✊</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/20 text-accent-2">
+          <Icon name="swords" size={22} />
+        </span>
         <div>
-          <p className="text-lg font-bold tracking-tight">PFC</p>
-          <p className="text-xs text-texte-2">Rock Paper Scissors</p>
+          <p className="font-display text-lg font-bold tracking-tight">PFC</p>
+          <p className="text-xs text-texte-2">Objects at war</p>
         </div>
       </div>
 
@@ -44,6 +47,7 @@ export function Navigation() {
           <li key={lien.to} className="min-w-0 flex-1 md:flex-none">
             <NavLink
               to={lien.to}
+              end={lien.to === '/battle'}
               className={({ isActive }) =>
                 [
                   'flex flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[11px] transition-colors md:flex-row md:gap-3 md:px-3 md:py-2.5 md:text-sm',
@@ -53,9 +57,7 @@ export function Navigation() {
                 ].join(' ')
               }
             >
-              <span className="text-lg md:text-xl" aria-hidden>
-                {lien.icone}
-              </span>
+              <Icon name={lien.icone} size={20} />
               <span className="max-w-full truncate">{lien.label}</span>
             </NavLink>
           </li>

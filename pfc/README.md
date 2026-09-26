@@ -1,31 +1,48 @@
-# PFC — Rock Paper Scissors, evolved
+# PFC — Objects at war
 
 Web app skeleton for the **PFC** game: React 19 + Vite + TypeScript + Tailwind CSS v4 on the front end, Supabase for backend/DB.
 
-> Current state: working navigation between every page, **mock** data only.
-> Four test accounts (guilhem, airbus, virgile, mathieu) selectable from `/profile`,
-> three base items (Rock, Paper, Scissors) and the classic rule for duels.
-> No crafting, score persistence or real authentication yet.
+> Current state: the battle system (deck of 5, Gauntlet duels, practice bot, first-login warm-up, Google sign-in, online duels through Supabase) is implemented. Crafting and boosters are still mock pages owned by the other teams.
 
-## Game rules
+## Game rules: the Gauntlet
 
-Each item belongs to a category. An item simply **wins or loses** against another based on its category, exactly like rock-paper-scissors. There are no attack or defense stats.
+Every item has a **category**, an **attack** and a **defense** value (all three are data owned by the items team: tables `categories`, `category_matchups`, `items`). A battle is 5 cards against 5, no hit points:
 
-| Category | Beats    | Loses to |
-| -------- | -------- | -------- |
-| Rock     | Scissors | Paper    |
-| Paper    | Rock     | Scissors |
-| Scissors | Paper    | Rock     |
+1. Both players send a card face down; the flips happen together.
+2. **Explicit wins come first.** An item that lists another in `victoiresExplicites` always beats it.
+3. **Then the chart.** If the winner's category beats the loser's (`category_matchups`), that is the clash. A pair that is not in the chart, or the same category twice, is neutral.
+4. **Neutral matchups use the numbers.** A card breaks through when its attack (plus momentum) is strictly higher than the other card's defense. Exactly one breakthrough wins; both or none is a stand-off.
+5. The loser's card is out. The winner's card stays on the field, visible, with **+1 momentum** (added to attack in neutral matchups) per consecutive win.
+6. The player without a champion sends a new card, knowing what they face. The other player may **hold**, or **retreat** once per battle: the champion goes back to the hidden hand and another card comes in. Both decisions are revealed together.
+7. A stand-off takes **both** cards down. A player with no champion and no cards loses; both empty is a draw. At most 9 turns, 20 s per decision.
 
-Two items of the same category are a draw. The rules live in `src/lib/combat.ts` (`BEATS`, `resoudreCombat`, `expliquerCombat`).
+Nobody wins or loses cards. A battle produces **points**, which become **boosters** (with a rarity tier), see below.
 
-## Test accounts and session
+The engine is pure TypeScript in `src/lib/engine/` (chart, clash, gauntlet, bot, reward) with tests in `engine.test.ts`; the same files are copied into the edge function by `node scripts/sync-engine.mjs`. `src/lib/combat.ts` keeps one-card helpers for the item pages.
 
-- Accounts are defined in `src/mocks/joueurs.ts`. Each one starts at 0 points, Bronze rank, with the three base items.
-- "Signing in" happens from `/profile` by clicking an account: no password. The chosen account is remembered in `localStorage` (key `pfc.joueurId`), so each browser or private tab can play as a different player.
-- The `useSession()` hook (`src/lib/session.ts`) exposes `joueur`, `comptes`, `connecter(id)` and `deconnecter()`. The provider is mounted in `main.tsx`.
-- Pages that need a player (home, battle, inventory, crafting) show `ConnexionRequise` until someone is signed in.
-- The opponent plays a random item from their inventory; scores are not recorded yet.
+### After a battle: points and boosters
+
+| Source | Points |
+| --- | --- |
+| Win / draw / loss | 100 / 50 / 20 |
+| Each card still standing at the end | +15 |
+| Comeback (won from your last card) | +30 |
+| Momentum streak of 3+ | +20 |
+| PvP win streak | +10 % per consecutive win, capped at +50 % |
+| First PvP win of the day | +1 booster |
+| Practice vs the Coach | everything × 0.5, no streak or daily bonus |
+
+`boosters = floor(points / 50)`; tier `bronze` (< 100 pts), `silver` (100–149), `gold` (150+). The tier is handed to the boosters team through the SQL function `grant_boosters(user, count, tier, source)`, the only hook between the two systems. `profiles.score` adds the points; the leaderboard reads it.
+
+### First login
+
+A signed-in player who has not played the warm-up is sent to `/welcome`: a classic rock-paper-scissors best of three against the Coach, who sees the player's throw and lets them win 2–1. The end screen offers the first booster (`complete_onboarding()` → `grant_boosters(user, 1, 'silver', 'welcome')`) and unlocks the site. Visitors who are not signed in can browse every page.
+
+## Session, sign-in and modes
+
+- **Supabase mode** (env variables set): Google sign-in through Supabase Auth, profile and inventory from the database, live duels through the `battle` edge function and Realtime. Setup steps and the prompts for the teammate who owns the Supabase project are in [`docs/SUPABASE_SETUP.md`](../docs/SUPABASE_SETUP.md).
+- **Offline mode** (no `.env`): the four test accounts (`src/mocks/joueurs.ts`), localStorage, the practice battle against the Coach running entirely in the browser. "Continue with Google" signs in as the first test account.
+- `useSession()` (`src/lib/session.ts`) exposes `joueur`, `mode`, `chart`, `connecterGoogle()`, `deconnecter()`, `terminerOnboarding()` and `rafraichir()`.
 
 ## Prerequisites
 
@@ -73,7 +90,7 @@ The repository contains two `vercel.json` files:
 - `vercel.json` at the root: tells Vercel to build the `pfc/` subfolder (`npm install --prefix pfc`, `npm run build --prefix pfc`, output `pfc/dist`). Works with the **Root Directory** left at the repository root.
 - `pfc/vercel.json`: used if you set **Root Directory** to `pfc` in the Vercel project settings.
 
-Both contain the `/(.*) → /index.html` rewrite, required so that react-router routes (`/battle`, `/item/pierre`…) respond on direct access or refresh; otherwise Vercel returns a 404.
+Both contain the `/(.*) → /index.html` rewrite, required so that react-router routes (`/battle`, `/item/obj-01`…) respond on direct access or refresh; otherwise Vercel returns a 404.
 
 Environment variables to declare in Vercel (**Settings → Environment Variables**) once Supabase is wired up: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Without them, the site runs on mocks.
 
@@ -82,7 +99,11 @@ Environment variables to declare in Vercel (**Settings → Environment Variables
 | Route          | Page                    | Current content                                                        |
 | -------------- | ----------------------- | ---------------------------------------------------------------------- |
 | `/home`        | `pages/Accueil.tsx`     | Play button, booster stack (x/8), rank preview                         |
-| `/battle`      | `pages/Combat.tsx`      | Pick an opponent among the accounts, pick an item, Attack, result      |
+| `/battle`      | `pages/battle/Hub.tsx`  | Ranked duel, practice, your deck, how the Gauntlet works                |
+| `/battle/deck` | `pages/battle/DeckBuilder.tsx` | Pick the 5 cards, coverage of the chart                          |
+| `/battle/opponent` | `pages/battle/OpponentPicker.tsx` | Online players (Presence), challenges, practice           |
+| `/battle/:id`  | `pages/battle/Arena.tsx` | Full-screen fight (outside the layout), reveal, result overlay        |
+| `/welcome`     | `pages/battle/Welcome.tsx` | First-login warm-up vs the Coach, first booster (full screen)       |
 | `/inventory`   | `pages/Inventaire.tsx`  | Grid of owned items, category filter                                   |
 | `/item/:id`    | `pages/ObjetDetail.tsx` | Detail page: matchups, description, W/L history (empty for now)        |
 | `/boosters`    | `pages/Boosters.tsx`    | Stack (max 8), animated Open button (5 items), 10 min timer            |
@@ -100,9 +121,13 @@ pfc/
 │   ├── lib/
 │   │   ├── supabase.ts   # Supabase client (env variables)
 │   │   ├── session.ts    # Mock session (signed-in account, localStorage)
-│   │   ├── combat.ts     # Rock-paper-scissors rules
+│   │   ├── engine/       # Battle engine (pure TS, shared with the edge function)
+│   │   ├── combat.ts     # One-card helpers over the engine (item pages)
+│   │   ├── tutorial.ts   # Rigged warm-up vs the Coach
+│   │   ├── auth.ts       # Supabase Auth helpers (Google)
 │   │   └── format.ts     # Labels, colors, display helpers
-│   ├── mocks/            # Fake data: 3 base items, 4 accounts, leaderboard
+│   ├── services/         # deck, profile, lobby, battle (local + remote)
+│   ├── mocks/            # Offline data: 7 items, 4 accounts, leaderboard
 │   ├── pages/            # One page per route
 │   ├── types/            # Interfaces: Objet, Joueur, EntreeClassement, StackBoosters…
 │   ├── App.tsx           # Route table (react-router)
@@ -120,9 +145,9 @@ Identifiers in the code (components, types, variables) are still in French from 
 
 Each page is independent and only shares the components in `src/components`, the types and the mocks. Suggested split for four people:
 
-1. **Battle**: matchmaking, real results on top of `lib/combat.ts`, score updates (`pages/Combat.tsx`).
+1. **Battle** (done): engine, deck, lobby, arena, rewards, auth and onboarding (`lib/engine`, `services/`, `pages/battle/`, `supabase/`).
 2. **Crafting / Boosters**: crafting recipes, booster draws, persistence of the stack and timer (`pages/Assemblage.tsx`, `pages/Boosters.tsx`).
 3. **Data / Supabase**: table schema (items, players, inventories, battles), gradual replacement of mocks with queries (`lib/supabase.ts`, `mocks/`).
 4. **Auth / Profile / Social**: Supabase Auth sign-in, editable profile, friend challenge, realtime leaderboard (`pages/Profil.tsx`, `pages/Classement.tsx`).
 
-`resoudreCombat` (`lib/combat.ts`) and `assemblerMock` (`pages/Assemblage.tsx`) are the entry points to build on; `SessionProvider` is to be replaced by Supabase Auth.
+`assemblerMock` (`pages/Assemblage.tsx`) is the crafting entry point. The boosters team plugs into `grant_boosters()` (SQL) and inserts `inventory` rows; the items team fills `categories`, `category_matchups` and `items`. No emoji in the UI: use `components/Icon.tsx`.
