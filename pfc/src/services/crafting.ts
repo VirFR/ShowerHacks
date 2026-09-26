@@ -86,7 +86,7 @@ export function useLivreRecettes(): LivreRecettes | null {
     let actif = true
     chargerLivre(mode, cle ? cle.split(',') : [])
       .then((l) => actif && setLivre(l))
-      .catch((e) => console.error('[PFC] recipe book load failed', e))
+      .catch((e) => console.error('[RPS] recipe book load failed', e))
     return () => {
       actif = false
     }

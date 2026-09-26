@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useSession } from '@/lib/session'
 import { Icon, type IconName } from './Icon'
+import { LogoMark } from './Logo'
 
 interface LienNav {
   to: string
@@ -33,11 +34,9 @@ export function Navigation() {
       className="fixed inset-x-0 bottom-0 z-40 border-t-4 border-ink bg-carte md:inset-y-6 md:left-6 md:w-52 md:rounded-2xl md:border-4 md:shadow-hard"
     >
       <div className="hidden items-center gap-3 border-b-2 border-ink px-4 py-4 md:flex">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-ink bg-accent text-white shadow-hard-sm">
-          <Icon name="swords" size={20} />
-        </span>
+        <LogoMark size={44} />
         <div className="min-w-0">
-          <p className="font-pixel text-sm">PFC</p>
+          <p className="font-pixel text-sm">RPS</p>
           <p className="text-[11px] font-semibold text-texte-2">Objects at war</p>
         </div>
       </div>
