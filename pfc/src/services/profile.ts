@@ -27,6 +27,7 @@ export interface ItemRow {
   image_url: string | null
   rarity: string
   description: string | null
+  explicit_wins: string[] | null
 }
 
 interface InventoryRow {
@@ -36,9 +37,21 @@ interface InventoryRow {
 
 const RARETE: Record<string, Rarete> = {
   common: 'commun',
+  uncommon: 'peu_commun',
   rare: 'rare',
   epic: 'epique',
   legendary: 'legendaire',
+  secret_rare: 'secret_rare',
+}
+
+/** Rarity slug as stored in the `items` table. */
+export const RARETE_DB: Record<Rarete, string> = {
+  commun: 'common',
+  peu_commun: 'uncommon',
+  rare: 'rare',
+  epique: 'epic',
+  legendaire: 'legendary',
+  secret_rare: 'secret_rare',
 }
 
 export function versObjet(inventaireId: string, item: ItemRow): Objet {
@@ -52,7 +65,8 @@ export function versObjet(inventaireId: string, item: ItemRow): Objet {
     imageUrl: item.image_url ?? '',
     icone: '',
     rarete: RARETE[item.rarity] ?? 'commun',
-    description: item.description ?? '',
+    description: item.description ?? undefined,
+    victoiresExplicites: item.explicit_wins ?? undefined,
   }
 }
 
@@ -134,4 +148,16 @@ export async function listerJoueurs(saufId: string): Promise<Adversaire[]> {
     .limit(50)
   if (error) throw error
   return (data ?? []).map((p) => versAdversaire(p as ProfileRow))
+}
+
+/**
+ * Adds copies of catalog items to a player's inventory (boosters page).
+ * The boosters team should move this server-side; until then the
+ * `inventory` insert policy lets a signed-in player add to their own rows.
+ */
+export async function ajouterObjetsDistant(userId: string, objets: Objet[]): Promise<void> {
+  const { error } = await getSupabase()
+    .from('inventory')
+    .insert(objets.map((o) => ({ owner: userId, item_id: o.id })))
+  if (error) throw error
 }

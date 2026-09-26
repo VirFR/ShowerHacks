@@ -28,6 +28,8 @@ export function batCategories(c: Categorie): Categorie[] {
 export function versCarte(objet: Objet): EngineCard {
   return {
     id: objet.inventaireId ?? objet.id,
+    itemId: objet.id,
+    explicitWins: objet.victoiresExplicites,
     name: objet.nom,
     category: objet.categorie,
     attack: objet.attaque,
@@ -45,7 +47,7 @@ export function resoudreCombat(mien: Objet, adverse: Objet): ResultatCombat {
   return 'egalite'
 }
 
-/** One-line explanation of the outcome ("Rock (Rock) crushes Scissors (Scissors)."). */
+/** One-line explanation of the outcome ("Katana (Fight) smashes Oak Leaf (Plants)."). */
 export function expliquerCombat(mien: Objet, adverse: Objet): string {
   return clash(DEFAULT_CHART, versCarte(mien), versCarte(adverse)).text
 }

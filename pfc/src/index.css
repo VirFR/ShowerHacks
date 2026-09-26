@@ -186,3 +186,145 @@ body {
 .font-display {
   font-family: var(--font-display);
 }
+
+/* Booster pack styles (boosters page) */
+/* Léger flottement du booster fermé, pour inviter à l'ouvrir */
+@keyframes @keyframes pack-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-pack-float {
+  animation: pack-float 2.4s ease-in-out infinite;
+}
+
+/* Déchirure du booster : la bandelette s'envole vers la gauche une fois le seuil franchi */
+@keyframes tear-burst-gauche {
+  to {
+    transform: translateX(-220px) translateY(-20px) rotate(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-tear-burst-gauche {
+  animation: tear-burst-gauche 0.45s ease-in forwards;
+}
+
+.animate-flash {
+  animation: flash 0.45s ease-out forwards;
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-120%) rotate(15deg);
+  }
+  100% {
+    transform: translateX(220%) rotate(15deg);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+}
+
+/* Emballage du booster : effet feuille d'aluminium métallisée */
+.foil-pack {
+  background-image: linear-gradient(
+    115deg,
+    #eef0f4 0%,
+    #aeb3c2 10%,
+    #fafbfd 22%,
+    #888ea3 36%,
+    #e6e8ee 50%,
+    #9a9fb2 64%,
+    #f6f7fa 78%,
+    #7d8296 90%,
+    #dfe1e8 100%
+  );
+  background-size: 180% 180%;
+}
+
+.foil-pack-shine {
+  background-image: linear-gradient(
+    100deg,
+    transparent 28%,
+    rgba(192, 132, 252, 0.55) 44%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(139, 92, 246, 0.55) 56%,
+    transparent 72%
+  );
+  mix-blend-mode: overlay;
+}
+
+@keyframes foil-shine-idle {
+  0%,
+  100% {
+    transform: translate(-25%, -15%) rotate(8deg);
+  }
+  50% {
+    transform: translate(25%, 15%) rotate(8deg);
+  }
+}
+
+.animate-foil-shine {
+  animation: foil-shine-idle 3.6s ease-in-out infinite;
+}
+
+.foil-crimp {
+  height: 9px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(23, 22, 42, 0.35) 0px,
+    rgba(23, 22, 42, 0.35) 2px,
+    transparent 2px,
+    transparent 7px
+  );
+}
+
+/* Bords scellés sur les côtés du pack (perpendiculaires à .foil-crimp) */
+.foil-crimp-vert {
+  width: 9px;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(23, 22, 42, 0.35) 0px,
+    rgba(23, 22, 42, 0.35) 2px,
+    transparent 2px,
+    transparent 7px
+  );
+}
+
+/* Petite encoche triangulaire sur le bord droit de la bandelette : prise pour tirer */
+.pack-encoche-droite {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 38%, calc(100% - 10px) 50%, 100% 62%, 100% 100%, 0% 100%);
+}
+
+/* Reflet arc-en-ciel des objets secret rare (holographique) */
+.shimmer-holo {
+  background-image: linear-gradient(
+    100deg,
+    transparent 15%,
+    rgba(255, 120, 150, 0.55) 30%,
+    rgba(255, 210, 120, 0.55) 42%,
+    rgba(140, 255, 170, 0.55) 54%,
+    rgba(120, 190, 255, 0.55) 66%,
+    rgba(220, 140, 255, 0.55) 80%,
+    transparent 95%
+  );
+}

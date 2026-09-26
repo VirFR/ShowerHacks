@@ -8,19 +8,20 @@
 import type { BattleState, EngineCard, RewardTier, Side } from '@/lib/engine/types'
 
 /**
- * Item category slug. Categories and the "who beats whom" chart are data
- * (tables `categories` / `category_matchups`), owned by the items team.
- * `CATEGORIES` only lists the placeholder seed used offline.
+ * Item category slug, by theme. The "who beats whom" chart between
+ * categories is data (`categories` / `category_matchups` tables, default in
+ * `lib/engine/chart.ts`) owned by the items team; `CATEGORIES` lists the
+ * offline seed.
  */
 export type Categorie = string
 
-export const CATEGORIES: Categorie[] = ['rock', 'paper', 'scissors', 'fire', 'water']
+export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'brainrot']
 
-export type Rarete = 'commun' | 'rare' | 'epique' | 'legendaire'
+export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
 /**
- * An item. In a duel the category chart decides first; when two categories
- * are neutral, attack and defense decide (see `lib/engine/clash.ts`).
+ * An item. In a clash the explicit wins decide first, then the category
+ * chart, then attack against defense (see `lib/engine/clash.ts`).
  */
 export interface Objet {
   /** Catalog id (shared by every copy of the item). */
@@ -28,14 +29,19 @@ export interface Objet {
   /** Id of this copy in the player's inventory. Absent for catalog entries. */
   inventaireId?: string
   nom: string
-  categorie: Categorie
   attaque: number
   defense: number
+  categorie: Categorie
   imageUrl: string
   /** Emoji fallback used by the items team when the image fails to load. */
   icone: string
   rarete: Rarete
-  description: string
+  description?: string
+  /**
+   * Explicit wins: ids of items this one always beats, whatever the chart
+   * and the stats say (e.g. the hatchet eventually splits the shield).
+   */
+  victoiresExplicites?: string[]
 }
 
 export type Rang =

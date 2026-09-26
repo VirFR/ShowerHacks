@@ -7,6 +7,10 @@
 export interface EngineCard {
   /** Unique per copy (inventory row id), never the catalog item id. */
   id: string
+  /** Catalog item id (target of other cards' explicit wins). */
+  itemId?: string
+  /** Catalog ids this card always beats, whatever the chart and stats say. */
+  explicitWins?: string[]
   name: string
   category: string
   attack: number
@@ -34,8 +38,8 @@ export type ClashOutcome = Side | 'draw'
 
 export interface ClashResult {
   outcome: ClashOutcome
-  /** `chart`: the category table decided; `breakthrough`: attack vs defense; `standoff`: draw. */
-  reason: 'chart' | 'breakthrough' | 'standoff'
+  /** `explicit`: a catalog exception; `chart`: the category table; `breakthrough`: attack vs defense; `standoff`: draw. */
+  reason: 'explicit' | 'chart' | 'breakthrough' | 'standoff'
   text: string
 }
 

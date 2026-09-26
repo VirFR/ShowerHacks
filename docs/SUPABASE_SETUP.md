@@ -47,20 +47,20 @@ Claude session at the repository if it can read it.
 ```
 Same Supabase project as before. Install the battle system's backend. Do it in this order and report each step.
 
-1. Apply the migration: run the SQL of `supabase/migrations/0001_combat.sql` from the repository with apply_migration (name: combat_schema). It is idempotent. Then list_tables in the public schema and confirm these exist: profiles, categories, category_matchups, items, inventory, decks, challenges, battles, battle_secrets, battle_rewards, booster_credits.
+1. Apply the migrations in order with apply_migration: `supabase/migrations/0001_combat.sql` (name: combat_schema) then `supabase/migrations/0002_items_seed.sql` (name: items_seed). Both are idempotent. Then list_tables in the public schema and confirm these exist: profiles, categories, category_matchups, items, inventory, decks, challenges, battles, battle_secrets, battle_rewards, booster_credits.
 
 2. Verify Realtime: run `select tablename from pg_publication_tables where pubname = 'supabase_realtime'` with execute_sql and confirm battles and challenges are listed.
 
 3. Deploy the edge function named `battle` with deploy_edge_function. Its entry file is `supabase/functions/battle/index.ts`; it imports `../_shared/engine/*.ts` (seven files in `supabase/functions/_shared/engine/`). Send every one of those files with the deployment, keeping the relative paths. verify_jwt must stay enabled (default). No extra secret is needed: the function uses the SUPABASE_URL, SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY that Supabase injects.
 
-4. Smoke test with execute_sql: `select count(*) from public.categories` (expect 5) and `select count(*) from public.items` (expect 7). Then run get_advisors for security and performance and list anything it flags on the new tables.
+4. Smoke test with execute_sql: `select count(*) from public.categories` (expect 5), `select count(*) from public.category_matchups` (expect 9) and `select count(*) from public.items` (expect 65). Then run get_advisors for security and performance and list anything it flags on the new tables.
 
 5. Existing users: anyone who signed in BEFORE the migration has no profile row. Run
    insert into public.profiles (id, username, avatar_url)
    select u.id, coalesce(nullif(regexp_replace(lower(split_part(u.email,'@',1)),'[^a-z0-9_]','','g'),''),'player') || '_' || left(u.id::text, 4), u.raw_user_meta_data->>'avatar_url'
    from auth.users u where not exists (select 1 from public.profiles p where p.id = u.id);
    and give those users the three base items:
-   insert into public.inventory (owner, item_id) select p.id, i.id from public.profiles p cross join public.items i where i.id in ('pierre','feuille','ciseaux') and not exists (select 1 from public.inventory v where v.owner = p.id);
+   insert into public.inventory (owner, item_id) select p.id, i.id from public.profiles p cross join public.items i where i.id in ('obj-01','obj-04','obj-07') and not exists (select 1 from public.inventory v where v.owner = p.id);
 
 6. Print a summary: tables created, realtime tables, function URL, advisor warnings.
 ```
@@ -71,8 +71,9 @@ Same Supabase project as before. Install the battle system's backend. Do it in t
 
 - **Items team**: `categories` (slug, label, color, verb), `category_matchups`
   (winner, loser: a missing pair is neutral) and `items` (category, attack,
-  defense, art). The battle engine reads them at battle time, nothing to
-  change in code.
+  defense, explicit_wins, art). The seed comes from the front-end mocks
+  through `node --experimental-strip-types scripts/gen-items-sql.mjs`; the
+  battle engine reads the tables at battle time, nothing to change in code.
 - **Boosters team**: `grant_boosters(user, count, tier, source)` is called
   after every battle and once at the end of the warm-up (`complete_onboarding`).
   Replace its body with the real booster credit. `tier` is `bronze`, `silver`

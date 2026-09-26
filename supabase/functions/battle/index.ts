@@ -148,10 +148,13 @@ interface ItemRow {
   defense: number
   image_url: string | null
   rarity: string
+  explicit_wins: string[] | null
 }
 
 const toCard = (invId: string, item: ItemRow): EngineCard => ({
   id: invId,
+  itemId: item.id,
+  explicitWins: item.explicit_wins ?? undefined,
   name: item.name,
   category: item.category,
   attack: item.attack,

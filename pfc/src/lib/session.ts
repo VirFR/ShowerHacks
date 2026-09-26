@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { Chart } from '@/lib/engine'
-import type { Joueur } from '@/types'
+import type { Joueur, Objet } from '@/types'
 
 /**
  * Session shared by every page.
@@ -17,6 +17,8 @@ import type { Joueur } from '@/types'
 
 export const CLE_STOCKAGE_SESSION = 'pfc.joueurId'
 export const CLE_STOCKAGE_ONBOARDING = 'pfc.onboarded'
+/** Mock mode: items won from boosters, on top of each account's starting inventory. */
+export const CLE_STOCKAGE_INVENTAIRE_EXTRA = 'pfc.inventaireExtra'
 
 export type ModeSession = 'mock' | 'supabase'
 
@@ -33,6 +35,8 @@ export interface Session {
   /** Starts the Google OAuth flow (mock mode: signs in as the first account). */
   connecterGoogle: () => Promise<void>
   deconnecter: () => Promise<void>
+  /** Adds items (e.g. from an opened booster) to the signed-in player's inventory. */
+  ajouterObjets: (objets: Objet[]) => void
   /** Category chart (who beats whom), loaded from the DB or the default one. */
   chart: Chart
   /** Marks the first-login tutorial as done. */
@@ -73,6 +77,26 @@ export function ecrireOnboarding(id: string, iso: string) {
     window.localStorage.setItem(`${CLE_STOCKAGE_ONBOARDING}.${id}`, iso)
   } catch {
     // ignore
+  }
+}
+
+/** Extra items won from boosters, keyed by player id (mock mode). */
+export function lireInventairesExtra(): Record<string, Objet[]> {
+  try {
+    const brut = window.localStorage.getItem(CLE_STOCKAGE_INVENTAIRE_EXTRA)
+    if (!brut) return {}
+    const valeur = JSON.parse(brut)
+    return valeur && typeof valeur === 'object' ? valeur : {}
+  } catch {
+    return {}
+  }
+}
+
+export function ecrireInventairesExtra(inventaires: Record<string, Objet[]>) {
+  try {
+    window.localStorage.setItem(CLE_STOCKAGE_INVENTAIRE_EXTRA, JSON.stringify(inventaires))
+  } catch {
+    // Storage unavailable (private browsing…): the extra items stay in memory.
   }
 }
 

@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom'
 import type { Objet } from '@/types'
-import { CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
+import { CLASSE_CARTE_RARETE, CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
+import { BadgeCategorie } from './BadgeCategorie'
 import { ObjetImage } from './ObjetImage'
+import { StatBadge } from './StatBadge'
 
 interface ObjetCardProps {
   objet: Objet
   /** If provided, the card becomes a selectable button. Otherwise it links to /item/:id. */
   onSelect?: (objet: Objet) => void
   selectionne?: boolean
-  /** Hides the rarity label (dense grid). */
+  /** Hides the rarity label and description (dense grid). */
   compact?: boolean
 }
 
@@ -22,15 +24,22 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
         {!compact && (
           <p className={`mt-0.5 text-xs ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
         )}
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <StatBadge type="attaque" valeur={objet.attaque} />
+          <StatBadge type="defense" valeur={objet.defense} />
+        </div>
+        <div className="mt-2">
+          <BadgeCategorie categorie={objet.categorie} />
+        </div>
       </div>
     </>
   )
 
   const classes = [
-    'flex w-full items-center gap-3 rounded-2xl border bg-carte p-3 transition-all',
+    'flex w-full gap-3 rounded-2xl border bg-carte p-3 transition-all hover:bg-carte-2',
     selectionne
       ? 'border-accent-2 ring-2 ring-accent/60 shadow-lg shadow-accent/20'
-      : 'border-bordure hover:border-accent/60 hover:bg-carte-2',
+      : CLASSE_CARTE_RARETE[objet.rarete],
   ].join(' ')
 
   if (onSelect) {

@@ -16,11 +16,11 @@ export const LIBELLE_CATEGORIE: Record<Categorie, string> = new Proxy(
 
 /** Hex colour per category; unknown categories get the accent colour. */
 const COULEUR_PAR_CATEGORIE: Record<string, string> = {
-  rock: '#a8a29e',
-  paper: '#34d399',
-  scissors: '#fb7185',
-  fire: '#fb923c',
-  water: '#38bdf8',
+  fight: '#fb7185',
+  plantes: '#34d399',
+  ressources: '#f59e0b',
+  espace: '#818cf8',
+  brainrot: '#a3e635',
 }
 
 export function couleurCategorie(c: Categorie): string {
@@ -28,11 +28,11 @@ export function couleurCategorie(c: Categorie): string {
 }
 
 const CLASSE_PAR_CATEGORIE: Record<string, string> = {
-  rock: 'bg-stone-500/20 text-stone-200 ring-stone-400/40',
-  paper: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
-  scissors: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
-  fire: 'bg-orange-500/20 text-orange-200 ring-orange-400/40',
-  water: 'bg-sky-500/20 text-sky-200 ring-sky-400/40',
+  fight: 'bg-rose-500/20 text-rose-200 ring-rose-400/40',
+  plantes: 'bg-emerald-500/20 text-emerald-200 ring-emerald-400/40',
+  ressources: 'bg-amber-600/20 text-amber-200 ring-amber-500/40',
+  espace: 'bg-indigo-500/20 text-indigo-200 ring-indigo-400/40',
+  brainrot: 'bg-lime-500/20 text-lime-200 ring-lime-400/40',
 }
 
 export function classeCategorie(c: Categorie): string {
@@ -47,24 +47,40 @@ export const CLASSE_CATEGORIE: Record<Categorie, string> = new Proxy(
 
 export const LIBELLE_RARETE: Record<Rarete, string> = {
   commun: 'Common',
+  peu_commun: 'Uncommon',
   rare: 'Rare',
   epique: 'Epic',
   legendaire: 'Legendary',
+  secret_rare: 'Secret Rare',
 }
 
 /** Sort order of rarities, lowest first. */
 export const ORDRE_RARETE: Record<Rarete, number> = {
   commun: 0,
-  rare: 1,
-  epique: 2,
-  legendaire: 3,
+  peu_commun: 1,
+  rare: 2,
+  epique: 3,
+  legendaire: 4,
+  secret_rare: 5,
 }
 
 export const CLASSE_RARETE: Record<Rarete, string> = {
   commun: 'text-texte-2',
+  peu_commun: 'text-emerald-300',
   rare: 'text-sky-300',
   epique: 'text-fuchsia-300',
   legendaire: 'text-or',
+  secret_rare: 'bg-gradient-to-r from-rose-300 via-amber-200 to-sky-300 bg-clip-text text-transparent font-semibold',
+}
+
+/** Card border/glow by rarity: gray, green, blue, purple, gold, prism. */
+export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
+  commun: 'border-bordure hover:border-texte-2/70',
+  peu_commun: 'border-emerald-500/40 hover:border-emerald-400/70',
+  rare: 'border-sky-500/40 hover:border-sky-400/70',
+  epique: 'border-fuchsia-500/40 hover:border-fuchsia-400/70',
+  legendaire: 'border-amber-400/50 hover:border-amber-300/80 shadow-[0_0_16px_-4px] shadow-amber-400/40',
+  secret_rare: 'border-white/60 hover:border-white/90 shadow-[0_0_20px_-4px] shadow-white/40',
 }
 
 /** Rank thresholds (score needed to reach each rank). */

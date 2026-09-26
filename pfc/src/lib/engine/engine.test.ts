@@ -30,38 +30,46 @@ const deck = (prefix: string, cats: string[], attack = 5, defense = 5) =>
 
 describe('chart', () => {
   it('keeps the rock-paper-scissors cycle', () => {
-    expect(matchup(DEFAULT_CHART, 'rock', 'scissors')).toBe('wins')
-    expect(matchup(DEFAULT_CHART, 'scissors', 'paper')).toBe('wins')
-    expect(matchup(DEFAULT_CHART, 'paper', 'rock')).toBe('wins')
-    expect(matchup(DEFAULT_CHART, 'rock', 'paper')).toBe('loses')
+    expect(matchup(DEFAULT_CHART, 'ressources', 'fight')).toBe('wins')
+    expect(matchup(DEFAULT_CHART, 'fight', 'plantes')).toBe('wins')
+    expect(matchup(DEFAULT_CHART, 'plantes', 'ressources')).toBe('wins')
+    expect(matchup(DEFAULT_CHART, 'ressources', 'plantes')).toBe('loses')
   })
   it('is neutral for same category, unknown pairs and unknown categories', () => {
-    expect(matchup(DEFAULT_CHART, 'rock', 'rock')).toBe('neutral')
-    expect(matchup(DEFAULT_CHART, 'scissors', 'water')).toBe('neutral')
-    expect(matchup(DEFAULT_CHART, 'plasma', 'rock')).toBe('neutral')
-    expect(beatenBy(DEFAULT_CHART, 'rock')).toEqual(['paper', 'water'])
+    expect(matchup(DEFAULT_CHART, 'ressources', 'ressources')).toBe('neutral')
+    expect(matchup(DEFAULT_CHART, 'ressources', 'espace')).toBe('neutral')
+    expect(matchup(DEFAULT_CHART, 'plasma', 'ressources')).toBe('neutral')
+    expect(beatenBy(DEFAULT_CHART, 'ressources')).toEqual(['plantes'])
   })
 })
 
 describe('clash', () => {
   it('lets the chart decide first, whatever the stats', () => {
-    const r = clash(DEFAULT_CHART, card('r', 'rock', 1, 1), card('s', 'scissors', 99, 99))
+    const r = clash(DEFAULT_CHART, card('r', 'ressources', 1, 1), card('s', 'fight', 99, 99))
     expect(r.outcome).toBe('a')
     expect(r.reason).toBe('chart')
-    expect(r.text).toBe('r (Rock) crushes s (Scissors).')
+    expect(r.text).toBe('r (Resources) buries s (Fight).')
+  })
+  it('lets explicit wins override the chart and the stats', () => {
+    const hatchet = { ...card('h1', 'plantes', 1, 1), itemId: 'hatchet', explicitWins: ['shield'] }
+    const shield = { ...card('s1', 'ressources', 99, 99), itemId: 'shield' }
+    const r = clash(DEFAULT_CHART, hatchet, shield)
+    expect(r.outcome).toBe('a')
+    expect(r.reason).toBe('explicit')
+    expect(r.text).toBe('h1 always gets the better of s1.')
   })
   it('uses breakthrough on neutral matchups', () => {
-    expect(clash(DEFAULT_CHART, card('x', 'rock', 6, 5), card('y', 'rock', 5, 5)).outcome).toBe('a')
-    expect(clash(DEFAULT_CHART, card('x', 'rock', 5, 5), card('y', 'rock', 5, 5)).outcome).toBe('draw')
-    expect(clash(DEFAULT_CHART, card('x', 'rock', 9, 1), card('y', 'rock', 9, 1)).outcome).toBe('draw')
+    expect(clash(DEFAULT_CHART, card('x', 'ressources', 6, 5), card('y', 'ressources', 5, 5)).outcome).toBe('a')
+    expect(clash(DEFAULT_CHART, card('x', 'ressources', 5, 5), card('y', 'ressources', 5, 5)).outcome).toBe('draw')
+    expect(clash(DEFAULT_CHART, card('x', 'ressources', 9, 1), card('y', 'ressources', 9, 1)).outcome).toBe('draw')
   })
   it('adds momentum to attack', () => {
-    expect(clash(DEFAULT_CHART, card('x', 'rock', 5, 5), card('y', 'rock', 5, 5), 1, 0).outcome).toBe('a')
+    expect(clash(DEFAULT_CHART, card('x', 'ressources', 5, 5), card('y', 'ressources', 5, 5), 1, 0).outcome).toBe('a')
   })
 })
 
 describe('gauntlet', () => {
-  const start = () => createBattle(deck('a', ['rock', 'paper', 'scissors', 'fire', 'water']), deck('b', ['scissors', 'rock', 'paper', 'water', 'fire']))
+  const start = () => createBattle(deck('a', ['ressources', 'plantes', 'fight', 'brainrot', 'espace']), deck('b', ['fight', 'ressources', 'plantes', 'espace', 'brainrot']))
 
   it('requires a send when there is no champion, then hold or retreat once', () => {
     let s = start()
@@ -90,7 +98,7 @@ describe('gauntlet', () => {
   })
 
   it('eliminates both champions on a draw and can end in a battle draw', () => {
-    let s = createBattle(deck('a', ['rock', 'rock', 'rock', 'rock', 'rock']), deck('b', ['rock', 'rock', 'rock', 'rock', 'rock']))
+    let s = createBattle(deck('a', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']), deck('b', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']))
     for (let i = 0; i < 5; i++) {
       s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: `a${i}` }, b: { type: 'send', cardId: `b${i}` } })
       expect(s.sides.a.champion).toBeNull()
@@ -102,7 +110,7 @@ describe('gauntlet', () => {
   })
 
   it('a single champion can sweep the whole enemy deck', () => {
-    let s = createBattle(deck('a', ['rock', 'rock', 'rock', 'rock', 'rock']), deck('b', ['scissors', 'scissors', 'scissors', 'scissors', 'scissors']))
+    let s = createBattle(deck('a', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']), deck('b', ['fight', 'fight', 'fight', 'fight', 'fight']))
     s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: 'a0' }, b: { type: 'send', cardId: 'b0' } })
     for (let i = 1; i < 5; i++) {
       s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'hold' }, b: { type: 'send', cardId: `b${i}` } })
@@ -134,19 +142,19 @@ describe('gauntlet', () => {
 
 describe('bot', () => {
   it('counters the visible champion when it can and is deterministic with a seed', () => {
-    let s = createBattle(deck('a', ['rock', 'rock', 'rock', 'rock', 'rock']), deck('b', ['scissors', 'paper', 'fire', 'water', 'rock']))
+    let s = createBattle(deck('a', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']), deck('b', ['fight', 'plantes', 'brainrot', 'espace', 'ressources']))
     s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: 'a0' }, b: { type: 'send', cardId: 'b0' } })
     const m1 = botMove(DEFAULT_CHART, s, 'b', seededRandom(7))
     const m2 = botMove(DEFAULT_CHART, s, 'b', seededRandom(7))
     expect(m1).toEqual(m2)
     expect(m1.type).toBe('send')
     const chosen = s.hands.b.find((c) => c.id === (m1 as { cardId: string }).cardId)!
-    expect(['paper', 'water']).toContain(chosen.category)
+    expect(['plantes', 'espace']).toContain(chosen.category)
   })
 
   it('sometimes retreats after a win to pre-empt the likely counter, never twice', () => {
     // b0 rock beats a0 scissors; the likely answer is paper or water, which fire and scissors... scissors beat paper.
-    let s = createBattle(deck('a', ['scissors', 'paper', 'paper', 'paper', 'paper']), deck('b', ['rock', 'scissors', 'fire', 'rock', 'rock']))
+    let s = createBattle(deck('a', ['fight', 'plantes', 'plantes', 'plantes', 'plantes']), deck('b', ['ressources', 'fight', 'brainrot', 'ressources', 'ressources']))
     s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: 'a0' }, b: { type: 'send', cardId: 'b0' } })
     expect(s.sides.b.champion?.id).toBe('b0')
     const moves = new Set<string>()
@@ -164,7 +172,7 @@ describe('bot', () => {
 
   it('plays a full battle against itself without errors', () => {
     const rng = seededRandom(42)
-    const catalog = deck('c', ['rock', 'paper', 'scissors', 'fire', 'water', 'rock', 'paper'], 6, 4)
+    const catalog = deck('c', ['ressources', 'plantes', 'fight', 'brainrot', 'espace', 'ressources', 'plantes'], 6, 4)
     let s = createBattle(botDeck(catalog, rng, 'x'), botDeck(catalog, rng, 'y'))
     let guard = 0
     while (s.status === 'active' && guard++ < 20) {
@@ -177,7 +185,7 @@ describe('bot', () => {
 
 describe('reward', () => {
   const sweep = () => {
-    let s = createBattle(deck('a', ['rock', 'rock', 'rock', 'rock', 'rock']), deck('b', ['scissors', 'scissors', 'scissors', 'scissors', 'scissors']))
+    let s = createBattle(deck('a', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']), deck('b', ['fight', 'fight', 'fight', 'fight', 'fight']))
     s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: 'a0' }, b: { type: 'send', cardId: 'b0' } })
     for (let i = 1; i < 5; i++) s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'hold' }, b: { type: 'send', cardId: `b${i}` } })
     return publicView(s)

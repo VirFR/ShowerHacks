@@ -130,7 +130,7 @@ function HubConnecte() {
             </>
           ) : (
             <div className="mt-4 rounded-xl border border-dashed border-bordure p-6 text-center text-sm text-texte-2">
-              Pick 5 cards from your {joueur.inventaire.length} items before your first fight.
+              Pick 5 of your {joueur.inventaire.length} card{joueur.inventaire.length === 1 ? '' : 's'} before your first fight.
               <div className="mt-3">
                 <Link to="/battle/deck">
                   <Bouton taille="sm">Build your deck</Bouton>

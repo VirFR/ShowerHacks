@@ -2,33 +2,33 @@
 import type { Chart, Matchup } from './types.ts'
 
 /**
- * Placeholder chart. The real categories and matchups are decided by the
- * items team and loaded from the `categories` / `category_matchups` tables.
- * This one keeps the classic rock-paper-scissors cycle and adds two
- * categories so that neutral matchups exist (scissors vs water, and any
- * category against itself).
+ * Placeholder chart over the five thematic categories of the catalog. The
+ * real matchups are decided by the items team and loaded from the
+ * `categories` / `category_matchups` tables; this seed keeps a circular
+ * logic (every category beats some and loses to some) and one neutral pair
+ * (resources vs space) so that stats matter too.
  */
 export const DEFAULT_CHART: Chart = {
   beats: {
-    rock: ['scissors', 'fire'],
-    paper: ['rock', 'water'],
-    scissors: ['paper'],
-    fire: ['paper', 'scissors'],
-    water: ['fire', 'rock'],
+    fight: ['plantes', 'brainrot'],
+    plantes: ['ressources', 'espace'],
+    ressources: ['fight', 'brainrot'],
+    espace: ['fight'],
+    brainrot: ['plantes', 'espace'],
   },
   verbs: {
-    rock: 'crushes',
-    paper: 'wraps',
-    scissors: 'cut',
-    fire: 'burns',
-    water: 'drowns',
+    fight: 'smashes',
+    plantes: 'overgrows',
+    ressources: 'buries',
+    espace: 'eclipses',
+    brainrot: 'melts',
   },
   labels: {
-    rock: 'Rock',
-    paper: 'Paper',
-    scissors: 'Scissors',
-    fire: 'Fire',
-    water: 'Water',
+    fight: 'Fight',
+    plantes: 'Plants',
+    ressources: 'Resources',
+    espace: 'Space',
+    brainrot: 'Brainrot',
   },
 }
 

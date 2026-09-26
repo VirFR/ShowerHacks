@@ -59,19 +59,21 @@ drop policy if exists "matchups are public" on public.category_matchups;
 create policy "matchups are public" on public.category_matchups for select using (true);
 
 insert into public.categories (slug, label, color, verb) values
-  ('rock', 'Rock', '#a8a29e', 'crushes'),
-  ('paper', 'Paper', '#34d399', 'wraps'),
-  ('scissors', 'Scissors', '#fb7185', 'cut'),
-  ('fire', 'Fire', '#fb923c', 'burns'),
-  ('water', 'Water', '#38bdf8', 'drowns')
+  ('fight', 'Fight', '#fb7185', 'smashes'),
+  ('plantes', 'Plants', '#34d399', 'overgrows'),
+  ('ressources', 'Resources', '#f59e0b', 'buries'),
+  ('espace', 'Space', '#818cf8', 'eclipses'),
+  ('brainrot', 'Brainrot', '#a3e635', 'melts')
 on conflict (slug) do nothing;
 
+-- Placeholder chart (items team: edit freely). Missing pair = neutral,
+-- e.g. resources vs space is decided by attack against defense.
 insert into public.category_matchups (winner, loser) values
-  ('rock', 'scissors'), ('rock', 'fire'),
-  ('paper', 'rock'), ('paper', 'water'),
-  ('scissors', 'paper'),
-  ('fire', 'paper'), ('fire', 'scissors'),
-  ('water', 'fire'), ('water', 'rock')
+  ('fight', 'plantes'), ('fight', 'brainrot'),
+  ('plantes', 'ressources'), ('plantes', 'espace'),
+  ('ressources', 'fight'), ('ressources', 'brainrot'),
+  ('espace', 'fight'),
+  ('brainrot', 'plantes'), ('brainrot', 'espace')
 on conflict do nothing;
 
 -- ---------------------------------------------------------------------------
@@ -84,8 +86,10 @@ create table if not exists public.items (
   attack integer not null default 5 check (attack between 0 and 99),
   defense integer not null default 5 check (defense between 0 and 99),
   image_url text,
-  rarity text not null default 'common' check (rarity in ('common', 'rare', 'epic', 'legendary')),
-  description text
+  rarity text not null default 'common' check (rarity in ('common', 'uncommon', 'rare', 'epic', 'legendary', 'secret_rare')),
+  description text,
+  -- Catalog ids this item always beats (items team).
+  explicit_wins text[]
 );
 
 create table if not exists public.inventory (
@@ -102,16 +106,12 @@ drop policy if exists "items are public" on public.items;
 create policy "items are public" on public.items for select using (true);
 drop policy if exists "users read their inventory" on public.inventory;
 create policy "users read their inventory" on public.inventory for select using (auth.uid() = owner);
+-- Boosters page inserts the cards it draws (client side for now; the boosters
+-- team should move the draw server-side and drop this policy).
+drop policy if exists "users add to their inventory" on public.inventory;
+create policy "users add to their inventory" on public.inventory for insert with check (auth.uid() = owner);
 
-insert into public.items (id, name, category, attack, defense, image_url, rarity, description) values
-  ('pierre', 'Rock', 'rock', 5, 6, '/objets/pierre.svg', 'common', 'Crushes scissors. Gets wrapped by paper.'),
-  ('feuille', 'Paper', 'paper', 5, 5, '/objets/feuille.svg', 'common', 'Wraps rock. Gets cut by scissors.'),
-  ('ciseaux', 'Scissors', 'scissors', 6, 4, '/objets/ciseaux.svg', 'common', 'Cut paper. Get crushed by rock.'),
-  ('toaster', 'Toaster', 'fire', 7, 3, '/objets/toaster.svg', 'rare', 'Runs hot. Burns paper and scissors, hates water.'),
-  ('garden-hose', 'Garden Hose', 'water', 5, 6, '/objets/garden-hose.svg', 'rare', 'Drowns fire and rock. Paper soaks it up.'),
-  ('brick', 'Brick', 'rock', 4, 8, '/objets/brick.svg', 'common', 'Hard to get through. Not fast, not clever.'),
-  ('origami-crane', 'Origami Crane', 'paper', 6, 4, '/objets/origami-crane.svg', 'epic', 'Folded sharp. Wraps rock, soaks water.')
-on conflict (id) do nothing;
+-- The catalog itself is seeded by 0002_items_seed.sql (generated from the front-end mocks).
 
 -- ---------------------------------------------------------------------------
 -- New user: profile row + the three base items.
@@ -145,7 +145,7 @@ begin
   );
 
   insert into public.inventory (owner, item_id)
-  select new.id, id from public.items where id in ('pierre', 'feuille', 'ciseaux');
+  select new.id, id from public.items where id in ('obj-01', 'obj-04', 'obj-07');
 
   return new;
 end;

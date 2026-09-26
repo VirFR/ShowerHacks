@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { DEFAULT_CHART, type Chart } from '@/lib/engine'
 import { signInWithGoogle, signOut } from '@/lib/auth'
 import {
+  ecrireInventairesExtra,
   ecrireJoueurId,
   ecrireOnboarding,
+  lireInventairesExtra,
   lireJoueurId,
   lireOnboarding,
   SessionContext,
@@ -11,8 +13,8 @@ import {
 } from '@/lib/session'
 import { supabase } from '@/lib/supabase'
 import { JOUEURS_MOCK, trouverJoueur } from '@/mocks'
-import { chargerChart, chargerJoueur, terminerOnboardingDistant } from '@/services/profile'
-import type { Joueur } from '@/types'
+import { ajouterObjetsDistant, chargerChart, chargerJoueur, terminerOnboardingDistant } from '@/services/profile'
+import type { Joueur, Objet } from '@/types'
 
 /** Picks the mock or the Supabase session once, from the env variables. */
 export function SessionProvider({ children }: { children: ReactNode }) {
@@ -31,9 +33,30 @@ function SupabaseSessionProvider({ children }: { children: ReactNode }) {
 
 /* ---------- mock mode (no env variables) ---------- */
 
+/** Merges the items won from boosters into a player's starting inventory. */
+function avecInventaireExtra(joueur: Joueur, inventairesExtra: Record<string, Objet[]>): Joueur {
+  const extra = inventairesExtra[joueur.id]
+  return extra && extra.length > 0 ? { ...joueur, inventaire: [...joueur.inventaire, ...extra] } : joueur
+}
+
 function useMockSession(): Session {
   const [joueurId, setJoueurId] = useState<string | null>(() => lireJoueurId())
+  const [inventairesExtra, setInventairesExtra] = useState<Record<string, Objet[]>>(() => lireInventairesExtra())
   const [version, setVersion] = useState(0)
+
+  /** Adds booster items to the signed-in player's inventory, each copy with its own id. */
+  const ajouterObjets = useCallback(
+    (objets: Objet[]) => {
+      if (!joueurId || objets.length === 0) return
+      setInventairesExtra((prev) => {
+        const copies = objets.map((o, i) => ({ ...o, inventaireId: `${joueurId}-${Date.now().toString(36)}-${i}-${o.id}` }))
+        const suivant = { ...prev, [joueurId]: [...(prev[joueurId] ?? []), ...copies] }
+        ecrireInventairesExtra(suivant)
+        return suivant
+      })
+    },
+    [joueurId],
+  )
 
   const connecter = useCallback((id: string) => {
     if (!trouverJoueur(id)) return
@@ -58,22 +81,23 @@ function useMockSession(): Session {
 
   return useMemo<Session>(() => {
     const base = trouverJoueur(joueurId)
-    const joueur: Joueur | null = base ? { ...base, onboardedAt: lireOnboarding(base.id) } : null
+    const joueur: Joueur | null = base ? { ...avecInventaireExtra(base, inventairesExtra), onboardedAt: lireOnboarding(base.id) } : null
     return {
       mode: 'mock',
       chargement: false,
       joueur,
-      comptes: JOUEURS_MOCK,
+      comptes: JOUEURS_MOCK.map((j) => avecInventaireExtra(j, inventairesExtra)),
       connecter,
       connecterGoogle,
       deconnecter,
+      ajouterObjets,
       chart: DEFAULT_CHART,
       terminerOnboarding,
       rafraichir,
     }
     // `version` forces a re-read of localStorage after onboarding.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [joueurId, version, connecter, connecterGoogle, deconnecter, terminerOnboarding, rafraichir])
+  }, [joueurId, version, inventairesExtra, connecter, connecterGoogle, deconnecter, ajouterObjets, terminerOnboarding, rafraichir])
 }
 
 /* ---------- supabase mode ---------- */
@@ -137,6 +161,16 @@ function useSupabaseSession(): Session {
     setUserId(null)
   }, [])
 
+  const ajouterObjets = useCallback(
+    (objets: Objet[]) => {
+      if (!userId || objets.length === 0) return
+      ajouterObjetsDistant(userId, objets)
+        .then(() => charger(userId))
+        .catch((e) => console.error('[PFC] inventory insert failed', e))
+    },
+    [userId, charger],
+  )
+
   return useMemo<Session>(
     () => ({
       mode: 'supabase',
@@ -146,10 +180,11 @@ function useSupabaseSession(): Session {
       connecter: () => {},
       connecterGoogle: signInWithGoogle,
       deconnecter,
+      ajouterObjets,
       chart,
       terminerOnboarding,
       rafraichir,
     }),
-    [chargement, joueur, chart, deconnecter, terminerOnboarding, rafraichir],
+    [chargement, joueur, chart, deconnecter, ajouterObjets, terminerOnboarding, rafraichir],
   )
 }

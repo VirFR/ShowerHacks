@@ -1,4 +1,4 @@
-# PFC — Rock Paper Scissors, evolved
+# PFC — Objects at war
 
 Web app skeleton for the **PFC** game: React 19 + Vite + TypeScript + Tailwind CSS v4 on the front end, Supabase for backend/DB.
 
@@ -9,11 +9,12 @@ Web app skeleton for the **PFC** game: React 19 + Vite + TypeScript + Tailwind C
 Every item has a **category**, an **attack** and a **defense** value (all three are data owned by the items team: tables `categories`, `category_matchups`, `items`). A battle is 5 cards against 5, no hit points:
 
 1. Both players send a card face down; the flips happen together.
-2. **The chart decides first.** If the winner's category beats the loser's (`category_matchups`), that is the clash. A pair that is not in the chart, or the same category twice, is neutral.
-3. **Neutral matchups use the numbers.** A card breaks through when its attack (plus momentum) is strictly higher than the other card's defense. Exactly one breakthrough wins; both or none is a stand-off.
-4. The loser's card is out. The winner's card stays on the field, visible, with **+1 momentum** (added to attack in neutral matchups) per consecutive win.
-5. The player without a champion sends a new card, knowing what they face. The other player may **hold**, or **retreat** once per battle: the champion goes back to the hidden hand and another card comes in. Both decisions are revealed together.
-6. A stand-off takes **both** cards down. A player with no champion and no cards loses; both empty is a draw. At most 9 turns, 20 s per decision.
+2. **Explicit wins come first.** An item that lists another in `victoiresExplicites` always beats it.
+3. **Then the chart.** If the winner's category beats the loser's (`category_matchups`), that is the clash. A pair that is not in the chart, or the same category twice, is neutral.
+4. **Neutral matchups use the numbers.** A card breaks through when its attack (plus momentum) is strictly higher than the other card's defense. Exactly one breakthrough wins; both or none is a stand-off.
+5. The loser's card is out. The winner's card stays on the field, visible, with **+1 momentum** (added to attack in neutral matchups) per consecutive win.
+6. The player without a champion sends a new card, knowing what they face. The other player may **hold**, or **retreat** once per battle: the champion goes back to the hidden hand and another card comes in. Both decisions are revealed together.
+7. A stand-off takes **both** cards down. A player with no champion and no cards loses; both empty is a draw. At most 9 turns, 20 s per decision.
 
 Nobody wins or loses cards. A battle produces **points**, which become **boosters** (with a rarity tier), see below.
 
@@ -89,7 +90,7 @@ The repository contains two `vercel.json` files:
 - `vercel.json` at the root: tells Vercel to build the `pfc/` subfolder (`npm install --prefix pfc`, `npm run build --prefix pfc`, output `pfc/dist`). Works with the **Root Directory** left at the repository root.
 - `pfc/vercel.json`: used if you set **Root Directory** to `pfc` in the Vercel project settings.
 
-Both contain the `/(.*) → /index.html` rewrite, required so that react-router routes (`/battle`, `/item/pierre`…) respond on direct access or refresh; otherwise Vercel returns a 404.
+Both contain the `/(.*) → /index.html` rewrite, required so that react-router routes (`/battle`, `/item/obj-01`…) respond on direct access or refresh; otherwise Vercel returns a 404.
 
 Environment variables to declare in Vercel (**Settings → Environment Variables**) once Supabase is wired up: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Without them, the site runs on mocks.
 

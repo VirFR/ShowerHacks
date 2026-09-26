@@ -17,7 +17,7 @@ type Emplacement = 'a' | 'b'
  */
 function assemblerMock(a: Objet, b: Objet): ResultatAssemblage {
   if (a.id === b.id) {
-    return { succes: false, message: 'Can’t combine: you need two different items.' }
+    return { succes: false, message: 'Can’t combine: you need two different cards.' }
   }
   return {
     succes: false,
@@ -65,7 +65,7 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
         <>
           <p className="text-3xl text-texte-2">＋</p>
           <p className="text-xs text-texte-2">
-            Drag an item here
+            Drag a card here
             <br />
             or click one in your inventory
           </p>
@@ -130,7 +130,7 @@ export function Assemblage() {
     <>
       <PageHeader
         titre="Crafting"
-        sousTitre="Combine two items to create a new one."
+        sousTitre="Combine two cards to create a new one."
         action={
           (slotA || slotB) && (
             <Bouton variante="fantome" taille="sm" onClick={reinitialiser}>
@@ -180,8 +180,8 @@ export function Assemblage() {
 
       <h2 className="mb-3 mt-6 font-semibold">Your inventory</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {inventaire.map((objet) => (
-          <div key={objet.id} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
+        {inventaire.map((objet, i) => (
+          <div key={`${objet.id}-${i}`} draggable onDragStart={(e) => onDragStart(e, objet)} className="cursor-grab active:cursor-grabbing">
             <ObjetCard
               objet={objet}
               compact
