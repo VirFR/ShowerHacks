@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CATALOGUE_MOCK } from './objets'
 import { CARTES_DE_BASE, RECETTES, trouverRecette } from './recettes'
 
+const craftables = CATALOGUE_MOCK.filter((o) => !CARTES_DE_BASE.includes(o.id))
 const ids = new Set(CATALOGUE_MOCK.map((o) => o.id))
 
 describe('recipes', () => {
@@ -12,8 +13,9 @@ describe('recipes', () => {
     }
   })
 
-  it('never produce a base card', () => {
-    for (const r of RECETTES) expect(CARTES_DE_BASE.includes(r.resultatId), r.resultatId).toBe(false)
+  it('give every non-base card at least one recipe, and never produce a base card', () => {
+    const resultats = new Set(RECETTES.map((r) => r.resultatId))
+    expect(resultats).toEqual(new Set(craftables.map((o) => o.id)))
   })
 
   it('never reuse a pair of ingredients', () => {
@@ -21,15 +23,7 @@ describe('recipes', () => {
     expect(new Set(paires).size).toBe(paires.length)
   })
 
-  /**
-   * Not every catalog item is craftable on purpose: the items team's booster
-   * expansion (200+ cards across 6 categories) is largely booster-exclusive
-   * chase content, only the original tier-1/tier-2 chain below is wired into
-   * the crafting tree. This checks that every recipe's result is actually
-   * reachable by chaining from the base cards (no recipe stranded behind a
-   * missing intermediate step), not that the whole catalog is craftable.
-   */
-  it('every recipe result traces back to rock, leaf and scissors', () => {
+  it('link the whole catalog back to rock, leaf and scissors', () => {
     const atteints = new Set(CARTES_DE_BASE)
     let progres = true
     while (progres) {
@@ -41,7 +35,8 @@ describe('recipes', () => {
         }
       }
     }
-    for (const r of RECETTES) expect(atteints.has(r.resultatId), r.resultatId).toBe(true)
+    const orphelins = CATALOGUE_MOCK.filter((o) => !atteints.has(o.id)).map((o) => o.nom)
+    expect(orphelins).toEqual([])
   })
 
   it('make every combination of the early cards work', () => {

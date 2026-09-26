@@ -47,7 +47,7 @@ Claude session at the repository if it can read it.
 ```
 Same Supabase project as before. Install the battle system's backend. Do it in this order and report each step.
 
-1. Apply the migrations in order with apply_migration: `supabase/migrations/0001_combat.sql` (name: combat_schema), `supabase/migrations/0002_items_seed.sql` (name: items_seed), `supabase/migrations/0003_crafting.sql` (name: crafting) then `supabase/migrations/0004_recipes_seed.sql` (name: recipes_seed). All are idempotent. Then list_tables in the public schema and confirm these exist: profiles, categories, category_matchups, items, inventory, decks, challenges, battles, battle_secrets, battle_rewards, booster_credits, recipes, discoveries.
+1. Apply the migrations in order with apply_migration: `supabase/migrations/0001_combat.sql` (name: combat_schema), `supabase/migrations/0002_items_seed.sql` (name: items_seed), `supabase/migrations/0003_crafting.sql` (name: crafting) then `supabase/migrations/0004_recipes_seed.sql` (name: recipes_seed). All are idempotent. Whenever the catalog or the recipes change, re-apply `0002`, `0003` and `0004` in that order (`0002` also seeds the categories and the chart, so the items' categories exist; `0003` keeps rock, leaf and scissors infinite in `craft()`). Then list_tables in the public schema and confirm these exist: profiles, categories, category_matchups, items, inventory, decks, challenges, battles, battle_secrets, battle_rewards, booster_credits, recipes, discoveries.
 
 2. Verify Realtime: run `select tablename from pg_publication_tables where pubname = 'supabase_realtime'` with execute_sql and confirm battles and challenges are listed.
 

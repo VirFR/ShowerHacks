@@ -1,6 +1,34 @@
 -- PFC · items catalog seed, GENERATED from pfc/src/mocks by scripts/gen-items-sql.mjs.
 -- Re-run the script after the items team changes the catalog; the insert is idempotent.
 
+-- Categories and chart, from DEFAULT_CHART (pfc/src/lib/engine/chart.ts). Categories
+-- no longer in the chart are kept (owned cards may still use them) but lose their matchups.
+insert into public.categories (slug, label, color, verb) values
+  ('fight', 'Fight', '#fb7185', 'hunts'),
+  ('animaux', 'Animals', '#fb923c', 'devours'),
+  ('plantes', 'Plants', '#34d399', 'overgrows'),
+  ('ressources', 'Resources', '#f59e0b', 'corrodes'),
+  ('vehicules', 'Vehicles', '#22d3ee', 'conquers'),
+  ('espace', 'Space', '#818cf8', 'eclipses')
+on conflict (slug) do update set label = excluded.label, color = excluded.color, verb = excluded.verb;
+
+delete from public.category_matchups where (winner, loser) not in (values
+  ('fight', 'animaux'),
+  ('animaux', 'plantes'),
+  ('plantes', 'ressources'),
+  ('ressources', 'vehicules'),
+  ('vehicules', 'espace'),
+  ('espace', 'fight')
+);
+insert into public.category_matchups (winner, loser) values
+  ('fight', 'animaux'),
+  ('animaux', 'plantes'),
+  ('plantes', 'ressources'),
+  ('ressources', 'vehicules'),
+  ('vehicules', 'espace'),
+  ('espace', 'fight')
+on conflict do nothing;
+
 insert into public.items (id, name, category, attack, defense, image_url, rarity, description, explicit_wins) values
   ('obj-01', 'Mossy Rock', 'ressources', 4, 7, '/objets/obj-01.svg', 'common', 'A good old stone. Solid, if not exactly fast.', null),
   ('obj-04', 'Oak Leaf', 'plantes', 3, 5, '/objets/obj-04.svg', 'common', 'Light and unassuming. Wraps around things without trying.', null),
