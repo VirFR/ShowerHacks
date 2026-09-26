@@ -7,6 +7,7 @@ import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { trouverRecette } from '@/lib/assemblage'
+import { ORDRE_RARETE } from '@/lib/format'
 import { useSession } from '@/lib/session'
 import { trouverObjet } from '@/mocks'
 import type { Objet, ResultatAssemblage } from '@/types'
@@ -84,7 +85,7 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
 /** /crafting — Combine two items (drag & drop or two-click selection). */
 export function Assemblage() {
   const { joueur, ajouterObjets, retirerObjets } = useSession()
-  const inventaire = joueur?.inventaire ?? []
+  const inventaire = (joueur?.inventaire ?? []).toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
   const [slotA, setSlotA] = useState<Objet | null>(null)
   const [slotB, setSlotB] = useState<Objet | null>(null)
   const [resultat, setResultat] = useState<ResultatAssemblage | null>(null)
