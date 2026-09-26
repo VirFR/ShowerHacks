@@ -111,6 +111,19 @@ Environment variables to declare in Vercel (**Settings → Environment Variables
 | `/leaderboard` | `pages/Classement.tsx`  | Score / games / win rate table                                         |
 | `/profile`     | `pages/Profil.tsx`      | Sign in to a test account, profile card, switch account                |
 
+## Card art
+
+Every item picture in `public/objets/` is a 16×16 pixel-art sprite generated from
+`scripts/pixel-art/sprites.mjs`. Each sprite is a grid of palette letters
+(`.` = transparent); edit or add one there, then run:
+
+```bash
+npm run art
+```
+
+The script rewrites the SVGs and fails if a row is not 16 wide, a letter is not
+in the palette, or an item in the mocks has no sprite.
+
 ## Code structure
 
 ```
