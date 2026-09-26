@@ -1,38 +1,46 @@
 /**
  * Core types of the PFC game.
  *
- * These interfaces are intentionally minimal: they act as a shared contract
- * between pages and will grow over time (crafting, real battles, auth…).
+ * These interfaces are a shared contract between pages. Battle-specific
+ * engine types live in `lib/engine/types.ts`.
  */
 
-/** Item categories, by theme (not by combat role). */
-export type Categorie = 'fight' | 'plantes' | 'ressources' | 'espace' | 'animaux' | 'vehicules'
+import type { BattleState, EngineCard, RewardTier, Side } from '@/lib/engine/types'
+
+/**
+ * Item category slug, by theme. The "who beats whom" chart between
+ * categories is data (`categories` / `category_matchups` tables, default in
+ * `lib/engine/chart.ts`) owned by the items team; `CATEGORIES` lists the
+ * offline seed.
+ */
+export type Categorie = string
 
 export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espace', 'animaux', 'vehicules']
 
 export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
 /**
- * An item. Combat is resolved from `attaque`/`defense` plus the circular
- * tournament in `lib/combat.ts` — category is purely organizational.
+ * An item. In a clash the explicit wins decide first, then the category
+ * chart, then attack against defense (see `lib/engine/clash.ts`).
  */
 export interface Objet {
+  /** Catalog id (shared by every copy of the item). */
   id: string
+  /** Id of this copy in the player's inventory. Absent for catalog entries. */
+  inventaireId?: string
   nom: string
   attaque: number
   defense: number
   categorie: Categorie
   imageUrl: string
-  /** Emoji fallback used when the image fails to load. */
+  /** Emoji fallback used by the items team when the image fails to load. */
   icone: string
   rarete: Rarete
   /** Short flavor text shown on the card, under the picture. */
   description: string
   /**
-   * Explicit wins: ids of items this one always beats, on top of the
-   * circular tournament (see `lib/combat.ts`). Gives an item a one-off
-   * logical exception (e.g. the hatchet eventually splits the shield)
-   * without breaking the overall balance of win rates.
+   * Explicit wins: ids of items this one always beats, whatever the chart
+   * and the stats say (e.g. the hatchet eventually splits the shield).
    */
   victoiresExplicites?: string[]
 }
@@ -49,12 +57,14 @@ export interface Joueur {
   id: string
   pseudo: string
   score: number
-  /** Items owned by the player. */
+  /** Items owned by the player (one entry per copy). */
   inventaire: Objet[]
   rang: Rang
   avatarUrl?: string
   nbParties: number
   nbVictoires: number
+  /** ISO date of the end of the first-login tutorial, null until then. */
+  onboardedAt?: string | null
 }
 
 /** One leaderboard row (aggregated player data). */
@@ -98,7 +108,64 @@ export interface ResultatAssemblage {
   objetResultat?: Objet
 }
 
+/**
+ * A crafting recipe: combining the two ingredients (in either order) yields
+ * the item `resultatId`. See `lib/assemblage.ts` and `mocks/recettes.ts`.
+ */
+export interface Recette {
+  resultatId: string
+  ingredients: [string, string]
+}
+
 /** Shared gameplay constants. */
 export const BOOSTERS_MAX = 8
 export const BOOSTER_INTERVALLE_MS = 10 * 60 * 1000 // 10 minutes
 export const OBJETS_PAR_BOOSTER = 5
+
+/* ---------- Battle (battle team) ---------- */
+
+export type BattleKind = 'pvp' | 'bot'
+
+/** A public opponent, as listed in the lobby. */
+export interface Adversaire {
+  id: string
+  pseudo: string
+  avatarUrl?: string
+  score: number
+  rang: Rang
+  enLigne: boolean
+}
+
+export interface Battle {
+  id: string
+  kind: BattleKind
+  /** Which side the signed-in player is on. */
+  mySide: Side
+  me: Adversaire
+  opponent: Adversaire
+  status: 'waiting' | 'active' | 'finished'
+  state: BattleState
+  /** Cards still in my hand (private). */
+  hand: EngineCard[]
+  /** Reward for me, set once finished. */
+  reward?: BattleRewardRow
+  updatedAt: string
+}
+
+export interface BattleRewardRow {
+  result: 'win' | 'draw' | 'loss'
+  points: number
+  boosters: number
+  tier: RewardTier
+  breakdown: { label: string; points: number }[]
+  bonusBooster: boolean
+}
+
+export interface Defi {
+  id: string
+  from: Adversaire
+  to: Adversaire
+  status: 'pending' | 'accepted' | 'declined' | 'expired'
+  battleId?: string | null
+  createdAt: string
+}

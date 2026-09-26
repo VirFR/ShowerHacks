@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { BadgeCategorie } from '@/components/BadgeCategorie'
 import { Bouton } from '@/components/Bouton'
+import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
@@ -27,7 +28,7 @@ export function ObjetDetail() {
         <PageHeader titre="Card not found" />
         <p className="text-texte-2">No card matches the id “{id}”.</p>
         <Link to="/inventory" className="mt-4 inline-block">
-          <Bouton variante="secondaire">← Back to inventory</Bouton>
+          <Bouton variante="secondaire">Back to inventory</Bouton>
         </Link>
       </>
     )
@@ -45,7 +46,7 @@ export function ObjetDetail() {
   return (
     <>
       <Link to="/inventory" className="mb-3 inline-block text-sm text-accent-2 hover:underline">
-        ← Inventory
+        Inventory
       </Link>
 
       <section
@@ -76,11 +77,17 @@ export function ObjetDetail() {
           )}
 
           <div className="mt-5 flex flex-wrap gap-2">
-            <Link to="/battle">
-              <Bouton>⚔️ Use in battle</Bouton>
+            <Link to="/battle/deck">
+              <Bouton>
+                <Icon name="swords" size={16} />
+                Use in battle
+              </Bouton>
             </Link>
             <Link to="/crafting">
-              <Bouton variante="secondaire">🧪 Craft</Bouton>
+              <Bouton variante="secondaire">
+                <Icon name="flask" size={16} />
+                Craft
+              </Bouton>
             </Link>
           </div>
         </div>

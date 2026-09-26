@@ -1,27 +1,35 @@
 import { useState, type DragEvent } from 'react'
 import { Bouton } from '@/components/Bouton'
+import { Icon } from '@/components/Icon'
 import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
+import { trouverRecette } from '@/lib/assemblage'
+import { ORDRE_RARETE } from '@/lib/format'
 import { useSession } from '@/lib/session'
+import { trouverObjet } from '@/mocks'
 import type { Objet, ResultatAssemblage } from '@/types'
 
 type Emplacement = 'a' | 'b'
 
 /**
- * Mock result: no recipe exists yet, so every combination fails.
- * To be replaced by the real crafting logic (recipes, created items).
+ * Little-Alchemy-style resolution: any two owned cards can be tried, no
+ * prior knowledge of the recipe required. A match consumes both ingredients
+ * and produces the result (see `retirerObjets`/`ajouterObjets` in the page
+ * component, which also unlocks the recipe in the recipe book).
  */
-function assemblerMock(a: Objet, b: Objet): ResultatAssemblage {
+function assembler(a: Objet, b: Objet): ResultatAssemblage {
   if (a.id === b.id) {
     return { succes: false, message: 'Can’t combine: you need two different cards.' }
   }
-  return {
-    succes: false,
-    message: `Can’t combine: no known recipe for ${a.nom} + ${b.nom} (crafting coming soon).`,
+  const recette = trouverRecette(a.id, b.id)
+  const resultat = recette ? trouverObjet(recette.resultatId) : undefined
+  if (!recette || !resultat) {
+    return { succes: false, message: `Can’t combine: no known recipe for ${a.nom} + ${b.nom}.` }
   }
+  return { succes: true, message: `You crafted ${resultat.nom}!`, objetResultat: resultat }
 }
 
 interface SlotProps {
@@ -76,8 +84,8 @@ function Slot({ emplacement, objet, survole, onSurvol, onDrop, onRetirer }: Slot
 
 /** /crafting — Combine two items (drag & drop or two-click selection). */
 export function Assemblage() {
-  const { joueur } = useSession()
-  const inventaire = joueur?.inventaire ?? []
+  const { joueur, ajouterObjets, retirerObjets } = useSession()
+  const inventaire = (joueur?.inventaire ?? []).toSorted((a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete])
   const [slotA, setSlotA] = useState<Objet | null>(null)
   const [slotB, setSlotB] = useState<Objet | null>(null)
   const [resultat, setResultat] = useState<ResultatAssemblage | null>(null)
@@ -106,6 +114,19 @@ export function Assemblage() {
     setSlotA(null)
     setSlotB(null)
     setResultat(null)
+  }
+
+  /** Tries the combination: on success, consumes the two ingredients and adds the crafted card. */
+  const combiner = () => {
+    if (!slotA || !slotB) return
+    const issue = assembler(slotA, slotB)
+    setResultat(issue)
+    if (issue.succes && issue.objetResultat) {
+      retirerObjets([slotA.id, slotB.id])
+      ajouterObjets([issue.objetResultat])
+      setSlotA(null)
+      setSlotB(null)
+    }
   }
 
   // Native HTML5 drag & drop: the item id travels through dataTransfer.
@@ -147,12 +168,9 @@ export function Assemblage() {
         </div>
 
         <div className="mt-5 text-center">
-          <Bouton
-            taille="lg"
-            disabled={!slotA || !slotB}
-            onClick={() => slotA && slotB && setResultat(assemblerMock(slotA, slotB))}
-          >
-            🧪 Combine
+          <Bouton taille="lg" disabled={!slotA || !slotB} onClick={combiner}>
+            <Icon name="flask" size={18} />
+            Combine
           </Bouton>
         </div>
 

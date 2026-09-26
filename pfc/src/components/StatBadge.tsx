@@ -1,3 +1,5 @@
+import { Icon } from './Icon'
+
 interface StatBadgeProps {
   type: 'attaque' | 'defense'
   valeur: number
@@ -5,9 +7,9 @@ interface StatBadgeProps {
 }
 
 const CONFIG = {
-  attaque: { icone: '⚔️', label: 'ATK', classe: 'text-attaque' },
-  defense: { icone: '🛡️', label: 'DEF', classe: 'text-defense' },
-}
+  attaque: { icone: 'swords', label: 'ATK', classe: 'text-attaque' },
+  defense: { icone: 'shield', label: 'DEF', classe: 'text-defense' },
+} as const
 
 /** Displays an attack or defense stat with its icon. */
 export function StatBadge({ type, valeur, taille = 'sm' }: StatBadgeProps) {
@@ -21,7 +23,7 @@ export function StatBadge({ type, valeur, taille = 'sm' }: StatBadgeProps) {
       ].join(' ')}
       title={type === 'attaque' ? 'Attack' : 'Defense'}
     >
-      <span aria-hidden>{icone}</span>
+      <Icon name={icone} size={taille === 'sm' ? 12 : 14} />
       <span className="sr-only">{type === 'attaque' ? 'Attack' : 'Defense'} </span>
       <span className="text-texte-2">{label}</span> {valeur}
     </span>
