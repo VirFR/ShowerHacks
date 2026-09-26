@@ -4,7 +4,7 @@ import { Carte } from '@/components/Carte'
 import { ObjetCard } from '@/components/ObjetCard'
 import { PageHeader } from '@/components/PageHeader'
 import { BOOSTERS_MOCK, OBJETS_MOCK } from '@/mocks'
-import { BOOSTER_INTERVALLE_MS, type Objet } from '@/types'
+import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet } from '@/types'
 import { formaterDuree } from '@/lib/format'
 
 type EtatOuverture = 'idle' | 'ouverture' | 'revele'
@@ -25,7 +25,7 @@ export function Boosters() {
   }))
   const [maintenant, setMaintenant] = useState(() => Date.now())
   const [etat, setEtat] = useState<EtatOuverture>('idle')
-  const [objetObtenu, setObjetObtenu] = useState<Objet | null>(null)
+  const [objetsObtenus, setObjetsObtenus] = useState<Objet[]>([])
 
   const { actuel, prochainA } = stack
   const plein = actuel >= MAX
@@ -50,11 +50,14 @@ export function Boosters() {
   const ouvrir = () => {
     if (actuel <= 0 || etat === 'ouverture') return
     setEtat('ouverture')
-    setObjetObtenu(null)
-    // Animation "shake" puis révélation d'un objet aléatoire (mock).
+    setObjetsObtenus([])
+    // Animation "shake" puis révélation de OBJETS_PAR_BOOSTER objets aléatoires (mock).
     window.setTimeout(() => {
-      const tirage = OBJETS_MOCK[Math.floor(Math.random() * OBJETS_MOCK.length)]
-      setObjetObtenu(tirage)
+      const tirage = Array.from(
+        { length: OBJETS_PAR_BOOSTER },
+        () => OBJETS_MOCK[Math.floor(Math.random() * OBJETS_MOCK.length)],
+      )
+      setObjetsObtenus(tirage)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
         // Si le stack était plein, le timer repart de maintenant.
@@ -66,7 +69,10 @@ export function Boosters() {
 
   return (
     <>
-      <PageHeader titre="Boosters" sousTitre="Un nouveau booster toutes les 10 minutes." />
+      <PageHeader
+        titre="Boosters"
+        sousTitre={`Un nouveau booster toutes les 10 minutes, ${OBJETS_PAR_BOOSTER} objets par booster.`}
+      />
 
       <div className="grid gap-4 md:grid-cols-[1fr_320px]">
         {/* Ouverture */}
@@ -81,14 +87,18 @@ export function Boosters() {
             🎁
           </div>
 
-          {etat === 'revele' && objetObtenu ? (
-            <div className="animate-booster-pop w-full max-w-xs">
-              <p className="mb-2 text-sm font-semibold text-accent-2">Tu as obtenu :</p>
-              <ObjetCard objet={objetObtenu} />
+          {etat === 'revele' && objetsObtenus.length > 0 ? (
+            <div className="animate-booster-pop w-full max-w-lg">
+              <p className="mb-2 text-sm font-semibold text-accent-2">Tu as obtenu {objetsObtenus.length} objets :</p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {objetsObtenus.map((objet, i) => (
+                  <ObjetCard key={`${objet.id}-${i}`} objet={objet} compact />
+                ))}
+              </div>
             </div>
           ) : (
             <p className="text-sm text-texte-2">
-              {actuel > 0 ? 'Ouvre un booster pour découvrir un nouvel objet.' : 'Plus de booster disponible, patiente un peu.'}
+              {actuel > 0 ? `Ouvre un booster pour découvrir ${OBJETS_PAR_BOOSTER} nouveaux objets.` : 'Plus de booster disponible, patiente un peu.'}
             </p>
           )}
 

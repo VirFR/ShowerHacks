@@ -88,5 +88,6 @@ export interface ResultatAssemblage {
 }
 
 /** Constantes de gameplay partagées. */
-export const BOOSTERS_MAX = 10
+export const BOOSTERS_MAX = 8
 export const BOOSTER_INTERVALLE_MS = 10 * 60 * 1000 // 10 minutes
+export const OBJETS_PAR_BOOSTER = 5
