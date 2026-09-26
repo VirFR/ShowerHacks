@@ -16,27 +16,28 @@ interface ObjetCardProps {
 
 /**
  * Trading-card style item card, shared by the inventory, battle, crafting
- * and booster-reveal screens: name top-left, category top-right, a framed
- * picture in the middle, and a short description + stats at the bottom.
- * The border, background tint and glow all follow the item's rarity.
+ * and booster-reveal screens: full name + rarity centered up top, a framed
+ * picture in the middle with the category badge overlaid on its top-right
+ * corner, and a short description + stats at the bottom. The border,
+ * background tint and glow all follow the item's rarity.
  */
 export function ObjetCard({ objet, onSelect, selectionne = false, compact = false }: ObjetCardProps) {
   const contenu = (
     <>
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <h3 className="truncate text-sm font-bold leading-tight">{objet.nom}</h3>
-          {!compact && (
-            <p className={`text-[10px] font-semibold uppercase tracking-wide ${CLASSE_RARETE[objet.rarete]}`}>
-              {LIBELLE_RARETE[objet.rarete]}
-            </p>
-          )}
-        </div>
-        <BadgeCategorie categorie={objet.categorie} />
+      <div className="text-center">
+        <h3 className="text-sm font-bold leading-tight">{objet.nom}</h3>
+        {!compact && (
+          <p className={`text-[10px] font-semibold uppercase tracking-wide ${CLASSE_RARETE[objet.rarete]}`}>
+            {LIBELLE_RARETE[objet.rarete]}
+          </p>
+        )}
       </div>
 
-      <div className="my-2 flex flex-1 items-center justify-center overflow-hidden rounded-lg bg-fond/40 ring-1 ring-black/30">
+      <div className="relative my-2 flex flex-1 items-center justify-center overflow-hidden rounded-lg bg-fond/40 ring-1 ring-black/30">
         <ObjetImage objet={objet} className="h-full w-full object-cover" />
+        <div className="absolute right-1.5 top-1.5">
+          <BadgeCategorie categorie={objet.categorie} />
+        </div>
       </div>
 
       {!compact && <p className="mb-1.5 line-clamp-2 text-center text-[11px] italic text-texte-2">{objet.description}</p>}
