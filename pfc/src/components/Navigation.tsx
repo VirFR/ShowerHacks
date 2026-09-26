@@ -6,32 +6,32 @@ interface LienNav {
   icone: string
 }
 
-/** Liens de la barre de navigation commune à toutes les pages. */
+/** Links of the navigation bar shared by every page. */
 const LIENS_NAV: LienNav[] = [
-  { to: '/accueil', label: 'Accueil', icone: '🏠' },
-  { to: '/combat', label: 'Combat', icone: '⚔️' },
-  { to: '/inventaire', label: 'Inventaire', icone: '🎒' },
+  { to: '/home', label: 'Home', icone: '🏠' },
+  { to: '/battle', label: 'Battle', icone: '⚔️' },
+  { to: '/inventory', label: 'Inventory', icone: '🎒' },
   { to: '/boosters', label: 'Boosters', icone: '🎁' },
-  { to: '/assemblage', label: 'Assemblage', icone: '🧪' },
-  { to: '/classement', label: 'Classement', icone: '🏆' },
-  { to: '/profil', label: 'Profil', icone: '👤' },
+  { to: '/crafting', label: 'Crafting', icone: '🧪' },
+  { to: '/leaderboard', label: 'Leaderboard', icone: '🏆' },
+  { to: '/profile', label: 'Profile', icone: '👤' },
 ]
 
 /**
- * Navigation commune : barre en bas sur mobile, colonne latérale à partir
- * du breakpoint `md`. Un seul composant, deux mises en page via Tailwind.
+ * Shared navigation: bottom bar on mobile, side column from the `md`
+ * breakpoint up. One component, two layouts via Tailwind.
  */
 export function Navigation() {
   return (
     <nav
-      aria-label="Navigation principale"
+      aria-label="Main navigation"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-bordure bg-fond-2/95 backdrop-blur md:inset-y-0 md:left-0 md:w-56 md:border-t-0 md:border-r"
     >
       <div className="hidden items-center gap-3 px-5 py-6 md:flex">
         <span className="text-3xl">✊</span>
         <div>
           <p className="text-lg font-bold tracking-tight">PFC</p>
-          <p className="text-xs text-texte-2">Pierre Feuille Ciseaux</p>
+          <p className="text-xs text-texte-2">Rock Paper Scissors</p>
         </div>
       </div>
 

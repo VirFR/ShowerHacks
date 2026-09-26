@@ -9,10 +9,10 @@ import { formaterDuree } from '@/lib/format'
 
 type EtatOuverture = 'idle' | 'ouverture' | 'revele'
 
-/** /boosters — Stack de boosters, ouverture animée, timer avant le prochain. */
+/** /boosters — Booster stack, animated opening, countdown to the next one. */
 interface EtatStack {
   actuel: number
-  /** Timestamp (ms) du prochain booster. */
+  /** Timestamp (ms) of the next booster. */
   prochainA: number
 }
 
@@ -30,7 +30,7 @@ export function Boosters() {
   const { actuel, prochainA } = stack
   const plein = actuel >= MAX
 
-  // Tick du timer (1 s). Quand le compte à rebours atteint 0, +1 booster (mock).
+  // Timer tick (1 s). When the countdown hits 0, +1 booster (mock).
   useEffect(() => {
     const id = window.setInterval(() => {
       const now = Date.now()
@@ -51,13 +51,13 @@ export function Boosters() {
     if (actuel <= 0 || etat === 'ouverture') return
     setEtat('ouverture')
     setObjetObtenu(null)
-    // Animation "shake" puis révélation d'un objet aléatoire (mock).
+    // "Shake" animation, then reveal a random item (mock).
     window.setTimeout(() => {
       const tirage = OBJETS_MOCK[Math.floor(Math.random() * OBJETS_MOCK.length)]
       setObjetObtenu(tirage)
       setStack((s) => ({
         actuel: Math.max(0, s.actuel - 1),
-        // Si le stack était plein, le timer repart de maintenant.
+        // If the stack was full, the timer restarts from now.
         prochainA: s.actuel >= MAX ? Date.now() + BOOSTER_INTERVALLE_MS : s.prochainA,
       }))
       setEtat('revele')
@@ -66,7 +66,7 @@ export function Boosters() {
 
   return (
     <>
-      <PageHeader titre="Boosters" sousTitre="Un nouveau booster toutes les 10 minutes." />
+      <PageHeader titre="Boosters" sousTitre="A new booster every 10 minutes." />
 
       <div className="grid gap-4 md:grid-cols-[1fr_320px]">
         {/* Ouverture */}
@@ -83,17 +83,17 @@ export function Boosters() {
 
           {etat === 'revele' && objetObtenu ? (
             <div className="animate-booster-pop w-full max-w-xs">
-              <p className="mb-2 text-sm font-semibold text-accent-2">Tu as obtenu :</p>
+              <p className="mb-2 text-sm font-semibold text-accent-2">You got:</p>
               <ObjetCard objet={objetObtenu} />
             </div>
           ) : (
             <p className="text-sm text-texte-2">
-              {actuel > 0 ? 'Ouvre un booster pour découvrir un nouvel objet.' : 'Plus de booster disponible, patiente un peu.'}
+              {actuel > 0 ? 'Open a booster to discover a new item.' : 'No boosters left, hang on a bit.'}
             </p>
           )}
 
           <Bouton taille="lg" disabled={actuel <= 0 || etat === 'ouverture'} onClick={ouvrir}>
-            {etat === 'ouverture' ? 'Ouverture…' : etat === 'revele' ? 'Ouvrir un autre' : 'Ouvrir'}
+            {etat === 'ouverture' ? 'Opening…' : etat === 'revele' ? 'Open another' : 'Open'}
           </Bouton>
         </Carte>
 
@@ -107,7 +107,7 @@ export function Boosters() {
                 <span className="text-sm font-semibold text-texte-2"> / {MAX}</span>
               </p>
             </div>
-            <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} boosters sur ${MAX}`}>
+            <div className="mt-3 grid grid-cols-5 gap-2" aria-label={`${actuel} of ${MAX} boosters`}>
               {Array.from({ length: MAX }, (_, i) => (
                 <div
                   key={i}
@@ -126,9 +126,9 @@ export function Boosters() {
           </Carte>
 
           <Carte>
-            <h2 className="font-semibold">Prochain booster</h2>
+            <h2 className="font-semibold">Next booster</h2>
             {plein ? (
-              <p className="mt-2 text-sm text-or">Stack plein ! Ouvre un booster pour relancer le timer.</p>
+              <p className="mt-2 text-sm text-or">Stack full! Open a booster to restart the timer.</p>
             ) : (
               <>
                 <p className="mt-2 text-4xl font-black tabular-nums">{formaterDuree(restant)}</p>

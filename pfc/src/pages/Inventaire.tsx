@@ -7,7 +7,7 @@ import { ICONE_CATEGORIE, LIBELLE_CATEGORIE } from '@/lib/format'
 
 type Filtre = Categorie | 'toutes'
 
-/** /inventaire — Grille des objets possédés, filtrable par catégorie. */
+/** /inventory — Grid of owned items, filterable by category. */
 export function Inventaire() {
   const [filtre, setFiltre] = useState<Filtre>('toutes')
 
@@ -20,18 +20,20 @@ export function Inventaire() {
   )
 
   const filtres: { valeur: Filtre; label: string }[] = [
-    { valeur: 'toutes', label: 'Toutes' },
+    { valeur: 'toutes', label: 'All' },
     ...CATEGORIES.map((c) => ({ valeur: c, label: `${ICONE_CATEGORIE[c]} ${LIBELLE_CATEGORIE[c]}` })),
   ]
+
+  const total = JOUEUR_COURANT.inventaire.length
 
   return (
     <>
       <PageHeader
-        titre="Inventaire"
-        sousTitre={`${JOUEUR_COURANT.inventaire.length} objets possédés`}
+        titre="Inventory"
+        sousTitre={`${total} item${total === 1 ? '' : 's'} owned`}
       />
 
-      <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="Filtrer par catégorie">
+      <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
         {filtres.map((f) => (
           <button
             key={f.valeur}
@@ -52,7 +54,7 @@ export function Inventaire() {
 
       {objets.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-bordure p-8 text-center text-texte-2">
-          Aucun objet dans cette catégorie.
+          No items in this category.
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

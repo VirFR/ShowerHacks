@@ -6,7 +6,7 @@ interface ObjetImageProps {
   className?: string
 }
 
-/** Image d'un objet avec repli sur son emoji si le fichier ne charge pas. */
+/** Item image, falling back to its emoji if the file fails to load. */
 export function ObjetImage({ objet, className = 'h-16 w-16' }: ObjetImageProps) {
   const [erreur, setErreur] = useState(false)
 
