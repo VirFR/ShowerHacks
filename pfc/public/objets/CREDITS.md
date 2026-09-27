@@ -15,6 +15,7 @@ Icon — author:
 - bamboo — delapouite
 - bandage-roll — lorc
 - baobab — delapouite
+- barbed-sun — lorc
 - bat — delapouite
 - battleship — cathelineau
 - bear-head — delapouite
@@ -47,6 +48,7 @@ Icon — author:
 - comet-spark — lorc
 - commercial-airplane — delapouite
 - crab-claw — lorc
+- croc-jaws — lorc
 - crossbow — carl-olsen
 - cruiser — cathelineau
 - crystal-bars — lorc
@@ -72,13 +74,13 @@ Icon — author:
 - fishing-net — lorc
 - flamethrower — delapouite
 - flashlight — delapouite
+- flat-star — lorc
 - flower-pot — lorc
 - flower-star — delapouite
 - flowers — lorc
 - fox — caro-asercion
 - frog — lorc
 - galaxy — delapouite
-- gecko — lorc
 - gem-pendant — lorc
 - gems — lorc
 - gold-bar — willdabeast
@@ -90,6 +92,7 @@ Icon — author:
 - hatchet — delapouite
 - hedgehog — caro-asercion
 - helicopter — delapouite
+- heraldic-sun — caro-asercion
 - hyena-head — caro-asercion
 - ice-cube — lorc
 - ice-shield — lorc
@@ -128,6 +131,7 @@ Icon — author:
 - pistol-gun — john-colburn
 - planet-core — delapouite
 - polar-bear — cathelineau
+- polar-star — delapouite
 - pulse — sbed
 - rabbit — delapouite
 - raccoon-head — delapouite
@@ -177,7 +181,9 @@ Icon — author:
 - submarine — delapouite
 - subway-train — caro-asercion
 - sun — badges
+- sun-radiations — lorc
 - sunflower — delapouite
+- swamp — delapouite
 - t-rex-skull — delapouite
 - tank — lorc
 - tesla-coil — caro-asercion

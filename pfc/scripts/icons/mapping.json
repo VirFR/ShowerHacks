@@ -297,7 +297,7 @@
  },
  "obj-83": {
   "name": "Crocodile",
-  "icon": "gecko"
+  "icon": "croc-jaws"
  },
  "obj-84": {
   "name": "Eagle",
@@ -345,7 +345,7 @@
  },
  "obj-95": {
   "name": "Saltwater Crocodile",
-  "icon": "gecko"
+  "icon": "swamp"
  },
  "obj-96": {
   "name": "Sperm Whale",
@@ -521,7 +521,7 @@
  },
  "obj-155": {
   "name": "White Dwarf",
-  "icon": "sun"
+  "icon": "polar-star"
  },
  "obj-156": {
   "name": "Gas Giant",
@@ -529,7 +529,7 @@
  },
  "obj-157": {
   "name": "Red Giant Star",
-  "icon": "sun"
+  "icon": "barbed-sun"
  },
  "obj-158": {
   "name": "Blue Supergiant Star",
@@ -853,11 +853,11 @@
  },
  "obj-238": {
   "name": "Neutron Star",
-  "icon": "star-prominences"
+  "icon": "flat-star"
  },
  "obj-239": {
   "name": "Yellow Dwarf Star",
-  "icon": "sun"
+  "icon": "heraldic-sun"
  },
  "obj-240": {
   "name": "Protostar",
@@ -869,7 +869,7 @@
  },
  "obj-242": {
   "name": "Hypergiant Star",
-  "icon": "sun"
+  "icon": "sun-radiations"
  },
  "obj-243": {
   "name": "Wormhole",
