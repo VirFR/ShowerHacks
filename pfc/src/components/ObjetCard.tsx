@@ -12,6 +12,8 @@ interface ObjetCardProps {
   selectionne?: boolean
   /** Small card for dense grids: name, picture and ATK / DEF only. */
   compact?: boolean
+  /** Pins a "New" corner badge: first time the player ever gets this card (booster or craft). */
+  nouveau?: boolean
 }
 
 /**
@@ -21,7 +23,17 @@ interface ObjetCardProps {
  * corner, and a short description + stats at the bottom. The border,
  * background tint and glow all follow the item's rarity.
  */
-export function ObjetCard({ objet, onSelect, selectionne = false, compact = false }: ObjetCardProps) {
+export function ObjetCard({ objet, onSelect, selectionne = false, compact = false, nouveau = false }: ObjetCardProps) {
+  const badge = nouveau && (
+    <span
+      className={`pointer-events-none absolute z-10 animate-booster-pop rounded-md border-2 border-ink bg-or font-extrabold uppercase tracking-wide text-ink shadow-hard-sm ${
+        compact ? '-left-1.5 -top-1.5 px-1 text-[8px]' : '-left-2 -top-2 px-1.5 py-0.5 text-[10px]'
+      }`}
+    >
+      New
+    </span>
+  )
+
   const contenu = (
     <>
       <div className="text-center">
@@ -62,7 +74,7 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
   )
 
   const classes = [
-    'flex aspect-[3/4] w-full flex-col rounded-xl border-[3px] shadow-hard transition-all',
+    'relative flex aspect-[3/4] w-full flex-col rounded-xl border-[3px] shadow-hard transition-all',
     compact ? 'p-1.5' : 'p-2.5',
     selectionne ? 'border-ink bg-carte ring-4 ring-or' : CLASSE_CARTE_RARETE[objet.rarete],
   ].join(' ')
@@ -70,6 +82,7 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
   if (onSelect) {
     return (
       <button type="button" onClick={() => onSelect(objet)} aria-pressed={selectionne} className={classes}>
+        {badge}
         {contenu}
       </button>
     )
@@ -77,6 +90,7 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
 
   return (
     <Link to={`/item/${objet.id}`} className={classes}>
+      {badge}
       {contenu}
     </Link>
   )
