@@ -144,6 +144,10 @@ const DEGRADE_PAR_RARETE: Record<Rarete, [string, string]> = {
 
 /** Inline background of the picture area of a card, per rarity. */
 export function styleArtRarete(r: Rarete): { background: string } {
+  if (r === 'secret_rare') {
+    // Chromatic black-to-purple, instead of the flat two-color radial the rest use.
+    return { background: 'radial-gradient(circle at 50% 40%, #c084fc 0%, #6b21a8 40%, #1a0b2e 72%, #030105 100%)' }
+  }
   const [sombre, clair] = DEGRADE_PAR_RARETE[r] ?? DEGRADE_PAR_RARETE.commun
   return { background: `radial-gradient(circle at 50% 40%, ${clair} 0%, ${sombre} 78%)` }
 }
