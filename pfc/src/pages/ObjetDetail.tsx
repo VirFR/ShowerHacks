@@ -11,8 +11,7 @@ import { useSession } from '@/lib/session'
 import { useLivreRecettes } from '@/services/crafting'
 import { estCarteDeBase } from '@/types'
 import {
-  CLASSE_CARTE_RARETE,
-  CLASSE_RARETE,
+  TEINTE_RARETE,
   CLASSE_RESULTAT,
   formaterDate,
   formaterPourcentage,
@@ -59,19 +58,19 @@ export function ObjetDetail() {
       </Link>
 
       <section
-        className={`flex flex-col gap-5 rounded-xl border-[3px] p-4 shadow-hard sm:flex-row md:p-5 ${CLASSE_CARTE_RARETE[objet.rarete]}`}
+        className="flex flex-col gap-5 rounded-2xl border-2 border-ink bg-[#14161f] p-4 text-white shadow-hard sm:flex-row md:p-5"
       >
         <ObjetImage
           objet={objet}
-          className="sticker-bg h-40 w-40 shrink-0 self-center border-2 border-ink/70 p-3 sm:self-start"
+          className="h-40 w-40 shrink-0 self-center rounded-xl sm:self-start"
         />
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold md:text-3xl">{objet.nom}</h1>
             <BadgeCategorie categorie={objet.categorie} />
           </div>
-          <p className={`mt-1 text-sm font-medium ${CLASSE_RARETE[objet.rarete]}`}>{LIBELLE_RARETE[objet.rarete]}</p>
-          <p className="mt-2 text-sm italic text-texte-2">{objet.description}</p>
+          <p className="mt-1.5 inline-block rounded-md px-2 py-0.5 font-display text-xs font-bold" style={{ background: TEINTE_RARETE[objet.rarete].badgeFond, color: TEINTE_RARETE[objet.rarete].badgeTexte }}>{LIBELLE_RARETE[objet.rarete]}</p>
+          <p className="mt-2 text-sm italic text-white/70">{objet.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2">
             <StatBadge type="attaque" valeur={objet.attaque} taille="md" />
@@ -81,14 +80,14 @@ export function ObjetDetail() {
           {victoiresExplicites.length > 0 && (
             <div className="mt-4 text-sm">
               <p className="text-xs uppercase tracking-wider text-succes">Always beats</p>
-              <p className="mt-1 text-texte-2">{victoiresExplicites.map((o) => o.nom).join(', ')}</p>
+              <p className="mt-1 text-white/70">{victoiresExplicites.map((o) => o.nom).join(', ')}</p>
             </div>
           )}
 
           {joueur && (
             <div className="mt-4 text-sm">
               <p className="text-xs uppercase tracking-wider text-accent-2">Recipe</p>
-              <p className="mt-1 text-texte-2">
+              <p className="mt-1 text-white/70">
                 {starter
                   ? 'Base card: infinite, never used up. Everything is crafted from rock, leaf and scissors.'
                   : recettes.length > 0

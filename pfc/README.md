@@ -114,20 +114,22 @@ Environment variables to declare in Vercel (**Settings → Environment Variables
 
 ## Card art
 
-Every item picture in `public/objets/` is a 64×64 pixel-art sprite generated from
-`scripts/pixel-art/items.mjs`. Each item is a tiny drawing function that paints
-shapes (polygons, ellipses, lines, rings, stars) onto a pixel canvas; the
-rasterizer in `scripts/pixel-art/raster.mjs` snaps them to the grid, adds a
-1px outline and a bottom-right shade, and writes a crisp SVG. Edit or add an
-item there, then run:
+Item pictures come from the [game-icons.net](https://game-icons.net) library
+(CC BY 3.0, authors listed in `public/objets/CREDITS.md`). Each item is mapped
+to an icon in `scripts/icons/mapping.json`; the import script copies the icon,
+strips its black background and writes `public/objets/<id>.svg`. The card
+paints it white on a gradient colored by the item's category.
+
+To change or add a picture, pick an icon name on game-icons.net, edit
+`mapping.json`, then:
 
 ```bash
-npm run art            # all items
-npm run art obj-12     # just one
+git clone --depth 1 https://github.com/game-icons/icons.git ../../game-icons   # once, next to the repo
+npm run icons            # all items
+npm run icons obj-12     # one item
 ```
 
-The script fails if an item in the mocks has no drawing. Keep shapes inside
-2..62 so the outline fits.
+The eight brainrot items keep their own hand-made art and are not in the mapping.
 
 ## Code structure
 

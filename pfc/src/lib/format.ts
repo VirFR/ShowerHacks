@@ -89,6 +89,49 @@ export const CLASSE_CARTE_RARETE: Record<Rarete, string> = {
   secret_rare: 'border-ink bg-gradient-to-b from-rose-200 via-amber-100 to-sky-200',
 }
 
+/** One-letter rarity tag shown on the card art. */
+export const LETTRE_RARETE: Record<Rarete, string> = {
+  commun: 'C',
+  peu_commun: 'U',
+  rare: 'R',
+  epique: 'E',
+  legendaire: 'L',
+  secret_rare: 'SR',
+}
+
+/** Rarity tint of a card's info panel, and the colors of its letter badge. */
+export const TEINTE_RARETE: Record<Rarete, { fond: string; badgeFond: string; badgeTexte: string }> = {
+  commun: { fond: '#cbd5e1', badgeFond: '#e2e8f0', badgeTexte: '#334155' },
+  peu_commun: { fond: '#86efac', badgeFond: '#bbf7d0', badgeTexte: '#14532d' },
+  rare: { fond: '#7dd3fc', badgeFond: '#bae6fd', badgeTexte: '#0c4a6e' },
+  epique: { fond: '#f0abfc', badgeFond: '#f5d0fe', badgeTexte: '#701a75' },
+  legendaire: { fond: '#fde047', badgeFond: '#fef08a', badgeTexte: '#713f12' },
+  secret_rare: { fond: '#f9a8d4', badgeFond: '#fbcfe8', badgeTexte: '#831843' },
+}
+
+/** Inline background of a card's rarity panel (tint with a soft sheen). */
+export function stylePanneauRarete(r: Rarete): { background: string } {
+  const { fond } = TEINTE_RARETE[r]
+  return { background: `linear-gradient(160deg, ${fond} 0%, ${fond}cc 55%, ${fond} 100%)` }
+}
+
+/** Dark-to-bright gradient pair behind an item's picture, per category. */
+const DEGRADE_PAR_CATEGORIE: Record<string, [string, string]> = {
+  fight: ['#7f1d1d', '#ef4444'],
+  animaux: ['#7c2d12', '#fb923c'],
+  plantes: ['#14532d', '#22c55e'],
+  vehicules: ['#164e63', '#22d3ee'],
+  ressources: ['#78350f', '#f59e0b'],
+  espace: ['#312e81', '#818cf8'],
+  brainrot: ['#4c1d95', '#a78bfa'],
+}
+
+/** Inline background of the picture area of a card, per category. */
+export function styleArtCategorie(c: Categorie): { background: string } {
+  const [sombre, clair] = DEGRADE_PAR_CATEGORIE[c] ?? ['#3b0764', '#c084fc']
+  return { background: `radial-gradient(circle at 50% 40%, ${clair} 0%, ${sombre} 78%)` }
+}
+
 /** Rank thresholds (score needed to reach each rank). */
 export const SEUILS_RANG: [Rang, number][] = [
   ['Master', 4000],
