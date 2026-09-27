@@ -414,33 +414,34 @@ body {
 }
 
 /* One-shot ring that expands and fades as a legendary/secret rare card
-   lands — plays once, unlike the static rarity-glow it layers over. */
+   lands — plays once, unlike the static rarity-glow it layers over. Its
+   duration tracks --duree-spin so it stretches across the whole (much
+   slower, for these two tiers) turn instead of finishing early. */
 @keyframes reveal-burst {
   0% {
-    transform: scale(0.82);
-    opacity: 0.9;
+    transform: scale(0.78);
+    opacity: 1;
   }
   100% {
-    transform: scale(1.35);
+    transform: scale(1.7);
     opacity: 0;
   }
 }
 
 .reveal-burst {
-  animation: reveal-burst 0.9s cubic-bezier(0.2, 0.8, 0.4, 1) both;
-  animation-delay: 0.15s;
-  border-width: 3px;
+  animation: reveal-burst var(--duree-spin, 0.9s) cubic-bezier(0.15, 0.75, 0.3, 1) both;
+  border-width: 4px;
   border-style: solid;
 }
 
 .reveal-burst-legendary {
   border-color: #d97706;
-  box-shadow: 0 0 26px 6px rgba(217, 119, 6, 0.55);
+  box-shadow: 0 0 40px 10px rgba(217, 119, 6, 0.7);
 }
 
 .reveal-burst-secret {
   border-color: #a855f7;
-  box-shadow: 0 0 26px 6px rgba(168, 85, 247, 0.55);
+  box-shadow: 0 0 40px 10px rgba(168, 85, 247, 0.7);
 }
 
 /* Static halo behind a revealed rare-or-better card: fixed in place, no
@@ -472,4 +473,23 @@ body {
     rgba(2, 132, 199, 0.4) 85%,
     transparent 100%
   );
+}
+
+/* Legendary/secret rare only: the glow flares up brighter and bigger while
+   the card is turning, then eases down to the normal resting glow above by
+   the time the turn finishes — tracks --duree-spin, so it lasts exactly as
+   long as that (much slower) turn. */
+@keyframes glow-unveil {
+  0% {
+    transform: scale(1.45);
+    filter: blur(22px) brightness(2.1) saturate(1.3);
+  }
+  100% {
+    transform: scale(1);
+    filter: blur(18px) brightness(1) saturate(1);
+  }
+}
+
+.rarity-glow-unveil {
+  animation: glow-unveil var(--duree-spin, 1.6s) cubic-bezier(0.15, 0.7, 0.3, 1) both;
 }

@@ -10,11 +10,20 @@ import { useSession } from '@/lib/session'
 import { BOOSTERS_MOCK, OBJETS_BOOSTER_MOCK } from '@/mocks'
 import { BOOSTER_INTERVALLE_MS, OBJETS_PAR_BOOSTER, type Objet, type Rarete } from '@/types'
 
-/** Card spin-in duration (s): each rarity tier turns a bit slower than the one below it. */
-const DUREE_SPIN_BASE = 0.6
-const DUREE_SPIN_PAR_PALIER = 0.2
-const dureeSpin = (rarete: Rarete): CSSProperties =>
-  ({ '--duree-spin': `${DUREE_SPIN_BASE + ORDRE_RARETE[rarete] * DUREE_SPIN_PAR_PALIER}s` }) as CSSProperties
+/**
+ * Card spin-in duration (s): each rarity tier turns a bit slower than the
+ * one below it, with a much bigger jump for the top two tiers so they read
+ * as a genuinely different, more dramatic moment.
+ */
+const DUREE_SPIN: Record<Rarete, number> = {
+  commun: 0.6,
+  peu_commun: 0.8,
+  rare: 1.0,
+  epique: 1.2,
+  legendaire: 2.4,
+  secret_rare: 3,
+}
+const dureeSpin = (rarete: Rarete): CSSProperties => ({ '--duree-spin': `${DUREE_SPIN[rarete]}s` }) as CSSProperties
 
 /** /boosters — Booster stack, interactive tear-open, cards revealed one by one. */
 type EtatOuverture = 'idle' | 'dechirure' | 'ouverture' | 'cartes' | 'revele'
@@ -317,13 +326,16 @@ export function Boosters() {
 
         {etat === 'cartes' && objetActuel && (
           <div className="perspective-dist relative w-52 sm:w-60">
-            {/* Static glow behind rare-and-up cards: fixed in place, highlights
-                the whole card, no sweep or pulse */}
+            {/* Glow behind rare-and-up cards, fixed in place, highlighting the
+                whole card. For legendary/secret rare it also flares up bright
+                during the unveil itself, then settles to the resting glow. */}
             {objetActuel.rarete !== 'commun' && objetActuel.rarete !== 'peu_commun' && (
               <div
+                key={`glow-${indexCarte}`}
                 className={`pointer-events-none absolute -inset-10 rounded-3xl rarity-glow rarity-glow-${
                   objetActuel.rarete === 'secret_rare' ? 'secret' : objetActuel.rarete
-                }`}
+                } ${objetActuel.rarete === 'legendaire' || objetActuel.rarete === 'secret_rare' ? 'rarity-glow-unveil' : ''}`}
+                style={dureeSpin(objetActuel.rarete)}
                 aria-hidden
               />
             )}
@@ -337,9 +349,10 @@ export function Boosters() {
             {(objetActuel.rarete === 'legendaire' || objetActuel.rarete === 'secret_rare') && (
               <div
                 key={`burst-${indexCarte}`}
-                className={`pointer-events-none absolute inset-0 rounded-3xl reveal-burst ${
+                className={`pointer-events-none absolute -inset-4 rounded-3xl reveal-burst ${
                   objetActuel.rarete === 'secret_rare' ? 'reveal-burst-secret' : 'reveal-burst-legendary'
                 }`}
+                style={dureeSpin(objetActuel.rarete)}
                 aria-hidden
               />
             )}
@@ -380,9 +393,16 @@ export function Boosters() {
         </p>
 
         {(etat === 'idle' || etat === 'revele') && (
-          <Bouton taille="lg" disabled={actuel <= 0 || sauvegarde === 'en_cours'} onClick={commencerOuverture}>
-            {etat === 'revele' ? 'Open another' : 'Open'}
-          </Bouton>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Bouton taille="lg" disabled={actuel <= 0 || sauvegarde === 'en_cours'} onClick={commencerOuverture}>
+              {etat === 'revele' ? 'Open another' : 'Open'}
+            </Bouton>
+            {etat === 'revele' && (
+              <Bouton taille="lg" variante="secondaire" onClick={() => setEtat('idle')}>
+                Leave
+              </Bouton>
+            )}
+          </div>
         )}
       </div>
 
