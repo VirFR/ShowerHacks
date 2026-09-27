@@ -9,3 +9,5 @@ npm run dev
 ```
 
 See [`pfc/README.md`](./pfc/README.md) for full instructions, the list of pages and how to split the work.
+
+Demo video for the pitch: [`docs/demo/`](./docs/demo) (MP4, timecodes and voice-over script).
