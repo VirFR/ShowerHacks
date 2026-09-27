@@ -22,6 +22,7 @@ import {
   createBattle,
   fallbackMove,
   isLegal,
+  normalizeRarity,
   publicView,
   resolveTurn,
   type BattleState,
@@ -160,7 +161,7 @@ const toCard = (invId: string, item: ItemRow): EngineCard => ({
   attack: item.attack,
   defense: item.defense,
   imageUrl: item.image_url ?? undefined,
-  rarity: item.rarity,
+  rarity: normalizeRarity(item.rarity),
 })
 
 /** Snapshot of a player's saved deck as engine cards. */
