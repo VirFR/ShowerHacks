@@ -130,14 +130,11 @@ export function resolveTurn(chart: Chart, input: FullState, moves: Record<Side, 
     s.momentum = 0
     eliminated.push(side)
   }
-  if (result.outcome === 'draw') {
-    knockOut('a')
-    knockOut('b')
-  } else {
-    const loser: Side = result.outcome === 'a' ? 'b' : 'a'
-    knockOut(loser)
-    state.sides[result.outcome].momentum += 1
-  }
+  // clash() never ties, so exactly one side is knocked out per turn.
+  const winner = result.outcome
+  const loser: Side = winner === 'a' ? 'b' : 'a'
+  knockOut(loser)
+  state.sides[winner].momentum += 1
 
   const record: TurnRecord = {
     turn: state.turn,
@@ -151,12 +148,10 @@ export function resolveTurn(chart: Chart, input: FullState, moves: Record<Side, 
   state.sides.a.submitted = false
   state.sides.b.submitted = false
 
-  const out = (side: Side) => !state.sides[side].champion && state.hands[side].length === 0
-  const aOut = out('a')
-  const bOut = out('b')
-  if (aOut || bOut) {
+  // Only the loser's champion can be null right after a win, so only it can be "out".
+  if (!state.sides[loser].champion && state.hands[loser].length === 0) {
     state.status = 'finished'
-    state.winner = aOut && bOut ? 'draw' : aOut ? 'b' : 'a'
+    state.winner = winner
   } else {
     state.turn += 1
   }

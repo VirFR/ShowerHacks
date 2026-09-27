@@ -34,12 +34,17 @@ export type Side = 'a' | 'b'
 
 export type Matchup = 'wins' | 'loses' | 'neutral'
 
-export type ClashOutcome = Side | 'draw'
+/** Clashes always pick a side: the scoring cascade in `clash.ts` never ties. */
+export type ClashOutcome = Side
 
 export interface ClashResult {
   outcome: ClashOutcome
-  /** `explicit`: a catalog exception; `chart`: the category table; `breakthrough`: attack vs defense; `standoff`: draw. */
-  reason: 'explicit' | 'chart' | 'breakthrough' | 'standoff'
+  /**
+   * `explicit`: a catalog exception; `points`: fighting points (rarity +
+   * category); `statsum`: attack+defense tiebreak; `attack`: attack alone;
+   * `rarity`: rarity alone; `tiebreak`: last-resort, never actually tied.
+   */
+  reason: 'explicit' | 'points' | 'statsum' | 'attack' | 'rarity' | 'tiebreak'
   text: string
 }
 

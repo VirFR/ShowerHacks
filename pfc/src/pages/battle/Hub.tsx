@@ -6,6 +6,7 @@ import { Carte } from '@/components/Carte'
 import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
 import { BattleCard } from '@/components/battle/BattleCard'
+import { CategoryCircleModal } from '@/components/battle/CategoryCircleModal'
 import { versCarte } from '@/lib/combat'
 import { beatenBy, categoryLabel, chartCategories, matchup } from '@/lib/engine'
 import { useSession } from '@/lib/session'
@@ -26,6 +27,7 @@ function HubConnecte() {
   const lobby = useLobby()
   const { demarrer, enCours, erreur } = useDemarrerBot()
   const [deck, setDeck] = useState<Objet[] | null | undefined>(undefined)
+  const [circleOuvert, setCircleOuvert] = useState(false)
 
   useEffect(() => {
     if (!joueur) return
@@ -48,14 +50,21 @@ function HubConnecte() {
     <>
       <PageHeader
         titre="Battle"
-        sousTitre="Gauntlet · 5 cards · the chart decides first, then attack against defense."
+        sousTitre="Gauntlet · 5 cards · fighting points decide first, then attack, defense and rarity."
         action={
-          <span className="inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-carte px-3 py-2 text-xs font-bold text-texte-2 shadow-hard-sm">
-            <span className={`h-2 w-2 rounded-full ${lobby.enLigne ? 'bg-succes' : 'bg-texte-2'}`} />
-            {lobby.enLigne ? `${enLigne} player${enLigne === 1 ? '' : 's'} online` : 'Offline mode'}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <Bouton taille="sm" variante="secondaire" onClick={() => setCircleOuvert(true)}>
+              <Icon name="grid" size={14} />
+              Category circle
+            </Bouton>
+            <span className="inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-carte px-3 py-2 text-xs font-bold text-texte-2 shadow-hard-sm">
+              <span className={`h-2 w-2 rounded-full ${lobby.enLigne ? 'bg-succes' : 'bg-texte-2'}`} />
+              {lobby.enLigne ? `${enLigne} player${enLigne === 1 ? '' : 's'} online` : 'Offline mode'}
+            </span>
+          </div>
         }
       />
+      {circleOuvert && <CategoryCircleModal chart={chart} onClose={() => setCircleOuvert(false)} />}
 
       {lobby.defisRecus.length > 0 && (
         <Carte className="mb-4 flex items-center gap-4 bg-sky-100">
@@ -145,10 +154,10 @@ function HubConnecte() {
           <h2 className="font-display font-bold">How a battle works</h2>
           <ol className="mt-3 space-y-2.5 text-sm text-texte-2">
             <Regle n={1}>Both players send a card face down. They flip at the same time.</Regle>
-            <Regle n={2}>The chart decides. Neutral matchup? Attack must beat defense to break through.</Regle>
+            <Regle n={2}>Fighting points (rarity + category) decide first. Tied? Attack, defense and rarity break it — never a draw.</Regle>
             <Regle n={3}>The loser's card is out. The winner stays on the field, visible, and gains momentum.</Regle>
             <Regle n={4}>Once per battle you may retreat your champion for a hidden card. Bluff wisely.</Regle>
-            <Regle n={5}>Out of cards? You lose. A stand-off takes both cards down.</Regle>
+            <Regle n={5}>Out of cards? You lose.</Regle>
           </ol>
         </Carte>
       </div>

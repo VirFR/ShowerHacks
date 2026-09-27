@@ -20,8 +20,9 @@ export const CATEGORIES: Categorie[] = ['fight', 'plantes', 'ressources', 'espac
 export type Rarete = 'commun' | 'peu_commun' | 'rare' | 'epique' | 'legendaire' | 'secret_rare'
 
 /**
- * An item. In a clash the explicit wins decide first, then the category
- * chart, then attack against defense (see `lib/engine/clash.ts`).
+ * An item. In a clash, explicit wins decide first, then fighting points
+ * (rarity + category), then attack, defense and rarity as tiebreaks — never
+ * a draw (see `lib/engine/clash.ts`).
  */
 export interface Objet {
   /** Catalog id (shared by every copy of the item). */

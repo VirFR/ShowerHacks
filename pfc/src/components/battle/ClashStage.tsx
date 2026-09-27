@@ -22,9 +22,15 @@ export function ClashStage({ state, chart, mySide, reveal, adversairePret, moiPr
     const theirs = reveal.champions[theirSide]
     const iLost = reveal.eliminated.includes(mySide)
     const theyLost = reveal.eliminated.includes(theirSide)
-    const verdict =
-      reveal.clash.outcome === 'draw' ? 'Stand-off · both cards are out' : reveal.clash.outcome === mySide ? 'You win the clash' : 'They win the clash'
-    const teinte = reveal.clash.outcome === 'draw' ? 'bg-or/15 text-or' : reveal.clash.outcome === mySide ? 'bg-succes/15 text-succes' : 'bg-echec/15 text-echec'
+    const verdict = reveal.clash.outcome === mySide ? 'You win the clash' : 'They win the clash'
+    const teinte = reveal.clash.outcome === mySide ? 'bg-succes/15 text-succes' : 'bg-echec/15 text-echec'
+    const REASON_LABEL: Partial<Record<TurnRecord['clash']['reason'], string>> = {
+      explicit: 'Explicit win · ',
+      points: 'Fighting points · ',
+      statsum: 'Stats · ',
+      attack: 'Attack · ',
+      rarity: 'Rarity · ',
+    }
     return (
       <div className="flex flex-col items-center gap-6 md:flex-row md:gap-14">
         <Champion label="Their champion" side="left" perdu={theyLost}>
@@ -36,7 +42,7 @@ export function ClashStage({ state, chart, mySide, reveal, adversairePret, moiPr
           </p>
           <p className="animate-rise-late text-sm leading-relaxed text-violet-100">{reveal.clash.text}</p>
           <span className={`animate-rise-late rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] ${teinte}`}>
-            {reveal.clash.reason === 'chart' ? 'Chart · ' : reveal.clash.reason === 'breakthrough' ? 'Breakthrough · ' : ''}
+            {REASON_LABEL[reveal.clash.reason] ?? ''}
             {verdict}
           </span>
         </div>

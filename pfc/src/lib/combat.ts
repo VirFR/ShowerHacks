@@ -39,12 +39,9 @@ export function versCarte(objet: Objet): EngineCard {
   }
 }
 
-/** Resolves a single clash between two items (chart first, then stats). */
+/** Resolves a single clash between two items (fighting points first, then stats — never a draw). */
 export function resoudreCombat(mien: Objet, adverse: Objet): ResultatCombat {
-  const r = clash(DEFAULT_CHART, versCarte(mien), versCarte(adverse))
-  if (r.outcome === 'a') return 'victoire'
-  if (r.outcome === 'b') return 'defaite'
-  return 'egalite'
+  return clash(DEFAULT_CHART, versCarte(mien), versCarte(adverse)).outcome === 'a' ? 'victoire' : 'defaite'
 }
 
 /** One-line explanation of the outcome ("Katana (Fight) smashes Oak Leaf (Plants)."). */
