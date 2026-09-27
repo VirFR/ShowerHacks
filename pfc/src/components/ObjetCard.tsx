@@ -1,30 +1,37 @@
 import { Link } from 'react-router-dom'
 import type { Objet } from '@/types'
-import { CLASSE_CARTE_RARETE, CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
-import { BadgeCategorie } from './BadgeCategorie'
+import {
+  LETTRE_RARETE,
+  LIBELLE_RARETE,
+  libelleCategorie,
+  styleArtCategorie,
+  stylePanneauRarete,
+  TEINTE_RARETE,
+} from '@/lib/format'
 import { Icon } from './Icon'
 import { ObjetImage } from './ObjetImage'
-import { StatBadge } from './StatBadge'
 
 interface ObjetCardProps {
   objet: Objet
   /** If provided, the card becomes a selectable button. Otherwise it links to /item/:id. */
   onSelect?: (objet: Objet) => void
   selectionne?: boolean
-  /** Small card for dense grids: name, picture and ATK / DEF only. */
+  /** Small card for dense grids: picture, name and ATK / DEF only. */
   compact?: boolean
   /** Pins a "New" corner badge: first time the player ever gets this card (booster or craft). */
   nouveau?: boolean
 }
 
 /**
- * Trading-card style item card, shared by the inventory, battle, crafting
- * and booster-reveal screens: full name + rarity centered up top, a framed
- * picture in the middle with the category badge overlaid on its top-right
- * corner, and a short description + stats at the bottom. The border,
- * background tint and glow all follow the item's rarity.
+ * Trading card shared by the inventory, crafting, profile and booster
+ * screens. Dark body; full-bleed art on the category gradient with the
+ * rarity letter in the corner; an info panel tinted by rarity with the
+ * name, flavor text and the attack / defense row; a footer with category
+ * and rarity.
  */
 export function ObjetCard({ objet, onSelect, selectionne = false, compact = false, nouveau = false }: ObjetCardProps) {
+  const teinte = TEINTE_RARETE[objet.rarete]
+
   const badge = nouveau && (
     <span
       className={`pointer-events-none absolute z-10 inline-flex -rotate-6 items-center gap-0.5 animate-booster-pop rounded-md border-2 border-ink bg-or font-extrabold uppercase tracking-wide text-ink shadow-hard ${
@@ -38,47 +45,55 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
 
   const contenu = (
     <>
-      <div className="text-center">
-        <h3 className={`font-bold leading-tight ${compact ? 'line-clamp-2 text-[11px]' : 'text-sm'}`}>{objet.nom}</h3>
-        {!compact && (
-          <p className={`text-[10px] font-semibold uppercase tracking-wide ${CLASSE_RARETE[objet.rarete]}`}>
-            {LIBELLE_RARETE[objet.rarete]}
-          </p>
-        )}
-      </div>
-
       <div
-        className={`sticker-bg relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg border-2 border-ink/70 ${compact ? 'my-1' : 'my-2'}`}
+        className={`relative flex items-center justify-center overflow-hidden rounded-t-xl ${compact ? 'h-[54%]' : 'h-[50%]'}`}
+        style={styleArtCategorie(objet.categorie)}
       >
-        <ObjetImage objet={objet} className={`h-full w-full ${compact ? 'p-1' : 'p-2'}`} />
-        {!compact && (
-          <div className="absolute right-1.5 top-1.5">
-            <BadgeCategorie categorie={objet.categorie} />
-          </div>
-        )}
+        <ObjetImage objet={objet} variante="nu" className="h-full w-full" />
+        <span
+          className={`absolute left-2 top-2 rounded-md font-display font-bold leading-none ${compact ? 'px-1.5 py-1 text-[10px]' : 'px-2 py-1 text-xs'}`}
+          style={{ background: teinte.badgeFond, color: teinte.badgeTexte }}
+        >
+          {LETTRE_RARETE[objet.rarete]}
+        </span>
       </div>
 
-      {!compact && <p className="mb-1.5 line-clamp-2 text-center text-[11px] italic text-texte-2">{objet.description}</p>}
+      <div className={`flex min-h-0 flex-1 flex-col rounded-b-xl text-ink ${compact ? 'px-2 pb-1.5 pt-1.5' : 'px-3 pb-2.5 pt-3'}`} style={stylePanneauRarete(objet.rarete)}>
+        <h3 className={`font-display font-bold leading-tight ${compact ? 'line-clamp-2 text-[11px]' : 'text-base'}`}>{objet.nom}</h3>
+        {!compact && <p className="mt-1 line-clamp-2 min-h-[2.4em] text-[11.5px] font-semibold leading-snug opacity-80">{objet.description}</p>}
+        <div className={`mt-auto border-t border-ink/25 ${compact ? 'pt-1' : 'pt-2'}`}>
+          <div className={`flex items-center justify-between font-extrabold tabular-nums ${compact ? 'text-[11px]' : 'text-base'}`}>
+            <span className="inline-flex items-center gap-1" title="Attack">
+              <Icon name="swords" size={compact ? 11 : 15} strokeWidth={2.6} className="text-attaque" />
+              {objet.attaque}
+            </span>
+            <span className="inline-flex items-center gap-1" title="Defense">
+              <Icon name="shield" size={compact ? 11 : 15} strokeWidth={2.6} className="text-defense" />
+              {objet.defense}
+            </span>
+          </div>
+        </div>
+      </div>
 
-      {compact ? (
-        <p className="text-center text-[10px] font-extrabold tabular-nums">
-          <span className="text-attaque">{objet.attaque}</span>
-          <span className="text-texte-2"> / </span>
-          <span className="text-defense">{objet.defense}</span>
-        </p>
-      ) : (
-        <div className="flex flex-wrap items-center justify-center gap-1.5">
-          <StatBadge type="attaque" valeur={objet.attaque} />
-          <StatBadge type="defense" valeur={objet.defense} />
+      {!compact && (
+        <div className="flex items-end justify-between px-1.5 pb-0.5 pt-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#8a93ab]">
+          <div>
+            Category
+            <b className="mt-0.5 block text-sm normal-case tracking-normal text-white">{libelleCategorie(objet.categorie)}</b>
+          </div>
+          <div className="text-right">
+            Rarity
+            <b className="mt-0.5 block text-sm normal-case tracking-normal text-white">{LIBELLE_RARETE[objet.rarete]}</b>
+          </div>
         </div>
       )}
     </>
   )
 
   const classes = [
-    'relative flex aspect-[3/4] w-full flex-col rounded-xl border-[3px] shadow-hard transition-all',
-    compact ? 'p-1.5' : 'p-2.5',
-    selectionne ? 'border-ink bg-carte ring-4 ring-or' : CLASSE_CARTE_RARETE[objet.rarete],
+    'relative flex w-full flex-col rounded-2xl border-2 border-ink bg-[#14161f] text-left shadow-hard transition-all',
+    compact ? 'aspect-[3/4] p-1.5' : 'aspect-[5/8] p-2',
+    selectionne ? 'ring-4 ring-or -translate-y-1' : onSelect ? 'hover:-translate-y-1' : 'hover:-translate-y-0.5',
   ].join(' ')
 
   if (onSelect) {

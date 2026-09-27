@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "art": "node scripts/pixel-art/generate.mjs"
+    "icons": "node scripts/icons/import.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

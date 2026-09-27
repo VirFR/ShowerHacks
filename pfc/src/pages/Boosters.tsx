@@ -336,6 +336,17 @@ export function Boosters() {
             <div key={indexCarte} className="animate-card-spin-in" style={dureeSpin(objetActuel.rarete)}>
               <ObjetCard objet={objetActuel} onSelect={onTapCarte} nouveau={nouveauxIds.has(objetActuel.id)} />
             </div>
+
+            {/* One-shot burst ring for the top two tiers only, plays once as the card lands */}
+            {(objetActuel.rarete === 'legendaire' || objetActuel.rarete === 'secret_rare') && (
+              <div
+                key={`burst-${indexCarte}`}
+                className={`pointer-events-none absolute inset-0 rounded-3xl reveal-burst ${
+                  objetActuel.rarete === 'secret_rare' ? 'reveal-burst-secret' : 'reveal-burst-legendary'
+                }`}
+                aria-hidden
+              />
+            )}
           </div>
         )}
 

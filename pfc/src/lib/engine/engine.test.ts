@@ -35,22 +35,23 @@ describe('chart', () => {
     expect(matchup(DEFAULT_CHART, 'plantes', 'ressources')).toBe('wins')
     expect(matchup(DEFAULT_CHART, 'ressources', 'plantes')).toBe('loses')
   })
-  it('is neutral for same category, unknown pairs and unknown categories', () => {
+  it('is neutral for same category, the opposite category, and unknown categories; graded for the rest', () => {
     expect(matchup(DEFAULT_CHART, 'ressources', 'ressources')).toBe('neutral')
-    expect(matchup(DEFAULT_CHART, 'ressources', 'espace')).toBe('neutral')
-    expect(matchup(DEFAULT_CHART, 'plasma', 'ressources')).toBe('neutral')
-    expect(beatenBy(DEFAULT_CHART, 'ressources')).toEqual(['plantes'])
+    expect(matchup(DEFAULT_CHART, 'ressources', 'fight')).toBe('neutral') // opposite on the 6-cycle
+    expect(matchup(DEFAULT_CHART, 'plasma', 'ressources')).toBe('neutral') // unknown category
+    expect(matchup(DEFAULT_CHART, 'ressources', 'espace')).toBe('wins') // 2 steps away: still a real edge
+    expect(beatenBy(DEFAULT_CHART, 'ressources').sort()).toEqual(['animaux', 'plantes'])
   })
 })
 
 describe('clash', () => {
-  it('lets the chart decide first, whatever the stats', () => {
+  it('lets fighting points decide first, whatever the stats', () => {
     const r = clash(DEFAULT_CHART, card('p', 'plantes', 1, 1), card('r', 'ressources', 99, 99))
     expect(r.outcome).toBe('a')
-    expect(r.reason).toBe('chart')
-    expect(r.text).toBe('p (Plants) overgrows r (Resources).')
+    expect(r.reason).toBe('points')
+    expect(r.text).toBe('p (Plants) outfights r (Resources) on fighting points.')
   })
-  it('lets explicit wins override the chart and the stats', () => {
+  it('lets explicit wins override fighting points and the stats', () => {
     const hatchet = { ...card('h1', 'plantes', 1, 1), itemId: 'hatchet', explicitWins: ['shield'] }
     const shield = { ...card('s1', 'ressources', 99, 99), itemId: 'shield' }
     const r = clash(DEFAULT_CHART, hatchet, shield)
@@ -58,13 +59,21 @@ describe('clash', () => {
     expect(r.reason).toBe('explicit')
     expect(r.text).toBe('h1 always gets the better of s1.')
   })
-  it('uses breakthrough on neutral matchups', () => {
+  it('falls through the tiebreak cascade and never draws, even on identical cards', () => {
+    // same category (fighting points tie): stat sum breaks it
     expect(clash(DEFAULT_CHART, card('x', 'ressources', 6, 5), card('y', 'ressources', 5, 5)).outcome).toBe('a')
-    expect(clash(DEFAULT_CHART, card('x', 'ressources', 5, 5), card('y', 'ressources', 5, 5)).outcome).toBe('draw')
-    expect(clash(DEFAULT_CHART, card('x', 'ressources', 9, 1), card('y', 'ressources', 9, 1)).outcome).toBe('draw')
+    // fully identical cards: falls all the way to the id-based tiebreak
+    const tied = clash(DEFAULT_CHART, card('x', 'ressources', 5, 5), card('y', 'ressources', 5, 5))
+    expect(tied.outcome).toBe('a')
+    expect(tied.reason).toBe('tiebreak')
+    const tied2 = clash(DEFAULT_CHART, card('x', 'ressources', 9, 1), card('y', 'ressources', 9, 1))
+    expect(tied2.outcome).toBe('a')
+    expect(tied2.reason).toBe('tiebreak')
   })
-  it('adds momentum to attack', () => {
-    expect(clash(DEFAULT_CHART, card('x', 'ressources', 5, 5), card('y', 'ressources', 5, 5), 1, 0).outcome).toBe('a')
+  it('adds momentum to fighting points', () => {
+    const r = clash(DEFAULT_CHART, card('x', 'ressources', 5, 5), card('y', 'ressources', 5, 5), 1, 0)
+    expect(r.outcome).toBe('a')
+    expect(r.reason).toBe('points')
   })
 })
 
@@ -97,15 +106,15 @@ describe('gauntlet', () => {
     expect(() => resolveTurn(DEFAULT_CHART, s, { a: { type: 'retreat', cardId: 'a0' }, b: { type: 'hold' } })).toThrow()
   })
 
-  it('eliminates both champions on a draw and can end in a battle draw', () => {
+  it('never draws, even with fully identical decks (the id tiebreak always resolves it)', () => {
     let s = createBattle(deck('a', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']), deck('b', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']))
-    for (let i = 0; i < 5; i++) {
-      s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: `a${i}` }, b: { type: 'send', cardId: `b${i}` } })
-      expect(s.sides.a.champion).toBeNull()
-      expect(s.sides.b.champion).toBeNull()
+    s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: 'a0' }, b: { type: 'send', cardId: 'b0' } })
+    for (let i = 1; i < 5; i++) {
+      s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'hold' }, b: { type: 'send', cardId: `b${i}` } })
     }
     expect(s.status).toBe('finished')
-    expect(s.winner).toBe('draw')
+    expect(s.winner).toBe('a')
+    expect(s.sides.a.momentum).toBe(5)
     expect(s.turns).toHaveLength(5)
   })
 

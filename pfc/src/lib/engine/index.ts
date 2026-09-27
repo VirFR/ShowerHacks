@@ -1,5 +1,6 @@
 export * from './types'
 export * from './chart'
+export * from './rarity'
 export * from './clash'
 export * from './gauntlet'
 export * from './bot'

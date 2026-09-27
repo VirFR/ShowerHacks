@@ -407,6 +407,42 @@ body {
   transform-style: preserve-3d;
 }
 
+/* Without this, the rotateY above has no vanishing point and renders as a
+   flat horizontal squash instead of a real turn. */
+.perspective-dist {
+  perspective: 1000px;
+}
+
+/* One-shot ring that expands and fades as a legendary/secret rare card
+   lands — plays once, unlike the static rarity-glow it layers over. */
+@keyframes reveal-burst {
+  0% {
+    transform: scale(0.82);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.reveal-burst {
+  animation: reveal-burst 0.9s cubic-bezier(0.2, 0.8, 0.4, 1) both;
+  animation-delay: 0.15s;
+  border-width: 3px;
+  border-style: solid;
+}
+
+.reveal-burst-legendary {
+  border-color: #d97706;
+  box-shadow: 0 0 26px 6px rgba(217, 119, 6, 0.55);
+}
+
+.reveal-burst-secret {
+  border-color: #a855f7;
+  box-shadow: 0 0 26px 6px rgba(168, 85, 247, 0.55);
+}
+
 /* Static halo behind a revealed rare-or-better card: fixed in place, no
    sweep or pulse, just highlights the whole card at a rarity-tinted color. */
 .rarity-glow {
