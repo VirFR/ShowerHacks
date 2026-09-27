@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import type { Objet } from '@/types'
 import { CLASSE_CARTE_RARETE, CLASSE_RARETE, LIBELLE_RARETE } from '@/lib/format'
 import { BadgeCategorie } from './BadgeCategorie'
+import { Icon } from './Icon'
 import { ObjetImage } from './ObjetImage'
 import { StatBadge } from './StatBadge'
 
@@ -26,10 +27,11 @@ interface ObjetCardProps {
 export function ObjetCard({ objet, onSelect, selectionne = false, compact = false, nouveau = false }: ObjetCardProps) {
   const badge = nouveau && (
     <span
-      className={`pointer-events-none absolute z-10 animate-booster-pop rounded-md border-2 border-ink bg-or font-extrabold uppercase tracking-wide text-ink shadow-hard-sm ${
-        compact ? '-left-1.5 -top-1.5 px-1 text-[8px]' : '-left-2 -top-2 px-1.5 py-0.5 text-[10px]'
+      className={`pointer-events-none absolute z-10 inline-flex -rotate-6 items-center gap-0.5 animate-booster-pop rounded-md border-2 border-ink bg-or font-extrabold uppercase tracking-wide text-ink shadow-hard ${
+        compact ? '-left-2 -top-2 px-1 py-0.5 text-[9px]' : '-left-3 -top-3 px-2 py-1 text-xs'
       }`}
     >
+      <Icon name="sparkles" size={compact ? 9 : 12} strokeWidth={3} />
       New
     </span>
   )
