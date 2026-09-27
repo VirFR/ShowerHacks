@@ -92,8 +92,8 @@ function Landing() {
         <div className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-accent/20 blur-3xl" />
         <h2 className="max-w-xl font-display text-3xl font-bold tracking-tight md:text-4xl">Collect odd objects. Fight with five of them.</h2>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-texte-2">
-          Every object has a category and two numbers. The category chart decides most clashes, attack against defense settles the rest.
-          Open boosters, craft, build a deck, and duel live. Nobody ever loses a card.
+          Every object has a rarity and a category. Fighting points settle most clashes, attack, defense and rarity break the rest —
+          and it's never a draw. Open boosters, craft, build a deck, and duel live. Nobody ever loses a card.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <BoutonConnexion />
