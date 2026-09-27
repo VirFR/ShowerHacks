@@ -1,6 +1,6 @@
 # Demo video
 
-[`rps-demo.mp4`](./rps-demo.mp4): a scripted play-through of the app, 1920×1080, about 100 seconds,
+[`rps-demo.mp4`](./rps-demo.mp4): a scripted play-through of the app, 1920×1080, about 2 minutes 30,
 with an original chiptune soundtrack and 8-bit sound effects. It is recorded from the real app in
 offline mode (no Supabase), so it signs in with a test account and fights the Coach instead of a
 live opponent. The booster draw and the battle are seeded so the demo always lands the same way:
@@ -11,15 +11,15 @@ common, rare, epic, epic, **secret rare (Railgun)** in the pack, then a practice
 | Time | Scene | Caption |
 | --- | --- | --- |
 | 0:00 | Title card | RPS, Objects at war |
-| 0:05 | Landing | Everyone knows rock-paper-scissors. We turned it into a collectible card game. |
-| 0:09 | Sign in, warm-up | A classic best of three against the Coach. Win, and your first booster is yours. |
-| 0:25 | Booster | Tear it open. Five cards, sorted by rarity. The last one is a Secret Rare. |
-| 0:44 | Collection | 240 objects in six categories. Zoom on a card. |
-| 0:50 | Crafting | Rock + Rock = Brick. Brick + Rock = Ancient Menhir. Recipe book unlocks. |
-| 1:08 | Deck | Build your deck of five. |
-| 1:15 | Battle | Face-down reveal, category chart, momentum, victory. |
-| 1:35 | Rewards | Points become boosters. Leaderboard. |
-| 1:40 | Outro | Logo, tags, site URL. |
+| 0:04 | Landing | Everyone knows rock-paper-scissors. We turned it into a collectible card game. |
+| 0:11 | Sign in, warm-up | A classic best of three against the Coach. Win, and your first booster is yours. |
+| 0:28 | Booster | Tear it open. Five cards, sorted by rarity. The last one is a Secret Rare. |
+| 0:46 | Collection | 240 objects in six categories. Zoom on a card. |
+| 0:52 | Crafting | Rock + Rock = Brick. Brick + Rock = Ancient Menhir. Recipe book unlocks. |
+| 1:13 | Deck | Build your deck of five. |
+| 1:27 | Battle | Face-down reveal, category chart, momentum, victory in six turns. |
+| 2:19 | Rewards | Points become boosters. Leaderboard. |
+| 2:25 | Outro | Logo, tags, site URL. |
 
 ## Regenerating it
 

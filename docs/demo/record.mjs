@@ -111,6 +111,7 @@ const frames = []
 const events = []
 let cdp
 let t0 = 0
+let firstWall = 0
 if (!DRY) {
   fs.rmSync(OUT, { recursive: true, force: true })
   fs.mkdirSync(OUT, { recursive: true })
@@ -118,6 +119,7 @@ if (!DRY) {
   cdp.on('Page.screencastFrame', async ({ data, metadata, sessionId }) => {
     const f = path.join(OUT, `f${String(frames.length).padStart(6, '0')}.jpg`)
     fs.writeFileSync(f, Buffer.from(data, 'base64'))
+    if (!frames.length) firstWall = Date.now()
     frames.push({ f, t: metadata.timestamp })
     try { await cdp.send('Page.screencastFrameAck', { sessionId }) } catch {}
   })
@@ -193,14 +195,14 @@ await page.waitForTimeout(200)
 await startCapture()
 scene('title', 'title')
 await wait(300); cue('impact')
-await wait(3600)
+await wait(3200)
 await title(null)
 await wait(500)
 
 // 1. Landing + sign in
 scene('landing', 'calm')
 await caption('Everyone knows rock-paper-scissors.<small>We turned it into a collectible card game.</small>')
-await wait(2600)
+await wait(2300)
 await caption(null)
 await goto('Profile')
 await caption('Sign in and pick your player')
@@ -212,11 +214,11 @@ await wait(500)
 // 2. Warm-up vs the Coach
 scene('warmup', 'calm')
 await caption('First login: a classic <b>best of three</b> against the Coach.<small>Zero rules to learn before you start.</small>', 'top')
-await wait(2000)
+await wait(1500)
 const throws = ['Rock', 'Paper', 'Scissors', 'Rock', 'Paper']
 for (let i = 0; !(await btn('See my reward').isVisible()); i++) {
   await click(page.getByRole('button', { name: throws[i % throws.length], exact: true }), { sfx: 'blip' })
-  await wait(1900)
+  await wait(1500)
   if (await btn('See my reward').isVisible()) break
   await click(btn('Next'), { sfx: null })
   await wait(500)
@@ -224,11 +226,11 @@ for (let i = 0; !(await btn('See my reward').isVisible()); i++) {
 await shot('welcome')
 await caption('Win, and your <b>first booster</b> is yours', 'top')
 cue('win')
-await wait(1400)
+await wait(1100)
 await click(btn('See my reward'))
-await wait(1300)
+await wait(1000)
 await click(btn('Claim it'), { sfx: 'coin' })
-await wait(1300)
+await wait(1000)
 await click(btn('Open my booster'))
 await page.waitForURL('**/boosters')
 await caption(null)
@@ -262,7 +264,7 @@ for (let i = 0; i < 5; i++) {
   const txt = (await card.innerText().catch(() => '')).split('\n')[0]
   rareTxt.push(txt)
   if (i === 4) await caption('…and the last one is a <b>Secret Rare</b>')
-  await wait(i === 4 ? 3000 : 1600)
+  await wait(i === 4 ? 2600 : 1250)
   await shot('card' + i)
   await click(card, { pause: 150, sfx: null })
   await wait(250)
@@ -270,7 +272,7 @@ for (let i = 0; i < 5; i++) {
 console.log('booster cards:', rareTxt.join(' | '))
 await wait(900)
 await caption('Straight into your collection')
-await wait(1600)
+await wait(1200)
 await caption(null)
 
 // 4. Collection
@@ -281,16 +283,16 @@ await wait(1400)
 const firstCard = page.locator('a[href^="/item/"], button[aria-pressed]').filter({ hasText: /\d/ }).first()
 await zoomOn(firstCard, 1.9)
 cue('click')
-await wait(2200)
+await wait(1800)
 await zoom(1, 0, 0)
-await wait(900)
+await wait(700)
 await caption(null)
 
 // 5. Crafting
 scene('crafting', 'calm')
 await goto('Crafting')
 await caption('<b>Crafting</b>: combine two cards.<small>Rock, leaf and scissors are infinite.</small>')
-await wait(1800)
+await wait(1400)
 const inv = (name) => page.locator('button, [role="button"], [draggable="true"]').filter({ hasText: name }).last()
 await click(inv('Mossy Rock'), { sfx: 'clunk' })
 await wait(350)
@@ -300,11 +302,11 @@ await caption('Rock + Rock = <b>?</b>')
 await click(btn('Combine'), { sfx: 'chime' })
 await wait(700)
 await page.mouse.wheel(0, 260)
-await wait(1500)
+await wait(1200)
 await shot('craft1')
 await caption('Rock + Rock = <b>Brick</b>. Add another rock…')
 await page.mouse.wheel(0, 300)
-await wait(1100)
+await wait(800)
 await click(inv('Brick'), { sfx: 'clunk' })
 await wait(350)
 await click(inv('Mossy Rock'), { sfx: 'clunk' })
@@ -316,24 +318,24 @@ await wait(700)
 await page.mouse.wheel(0, 260)
 await wait(300)
 await caption('Brick + Rock = <b>Ancient Menhir</b><small>266 recipes, all the way back to rock, leaf and scissors.</small>')
-await wait(2800)
+await wait(2300)
 await shot('craft2')
 await caption(null)
 await goto('Recipes')
 await caption('Every discovery unlocks its <b>recipe</b><small>Online, recipes stay on the server. No cheating.</small>')
-await wait(2600)
+await wait(2200)
 await caption(null)
 
 // 6. Deck + battle vs Coach
 scene('deck', 'calm')
 await goto('Battle')
 await caption('Battle time: the <b>Gauntlet</b>. Five cards against five.')
-await wait(2000)
+await wait(1600)
 await click(btn('Start practice'))
 await page.waitForURL('**/battle/deck**')
 await wait(700)
 await caption('Build your <b>deck of five</b><small>The chart shows what you beat and what beats you.</small>')
-await wait(1200)
+await wait(900)
 const invCards = page.locator('[data-section="inventory"] button[data-role="card"]')
 const names = await invCards.allInnerTexts()
 const want = ['Ancient Menhir', 'Railgun', 'Submarine', 'Chaos Die', 'Magnetar']
@@ -345,7 +347,7 @@ for (const i of picks) {
   await wait(280)
 }
 await page.mouse.wheel(0, -800)
-await wait(1400)
+await wait(1000)
 await shot('deck')
 await page.evaluate((v) => { window.__fixNow = v; window.__fixCount = 2 }, BATTLE)
 await click(btn('Fight the Coach'), { sfx: 'impact' })
@@ -354,7 +356,7 @@ await caption(null)
 scene('battle', 'battle')
 await wait(1000)
 await caption('Both players send a card <b>face down</b>. They flip at the same time.', 'top')
-await wait(1800)
+await wait(1400)
 
 async function playBattle() {
   let turn = 0
@@ -377,7 +379,7 @@ async function playBattle() {
         narratedHold = true
         await caption('The winner <b>stays on the field</b> and gains momentum.<small>Keep it, or retreat once per battle. The bluff of the game.</small>', 'top')
       }
-      await wait(700)
+      await wait(500)
       await click(hold.first(), { sfx: 'whoosh' })
     }
     turn++
@@ -385,12 +387,12 @@ async function playBattle() {
     await cont.first().waitFor({ state: 'visible', timeout: 20000 })
     cue('hit')
     if (turn === 1) await caption('The <b>category chart</b> decides first. Neutral matchup? Attack against defense.', 'top')
-    await wait(turn <= 2 ? 3000 : 2200)
+    await wait(turn <= 2 ? 2400 : 1500)
     await caption(null)
     await shot('turn' + turn)
     if (await btn('See the result').isVisible()) break
     await click(cont.first(), { sfx: null })
-    await wait(600)
+    await wait(400)
   }
   cue('fanfare')
   await click(btn('See the result'))
@@ -403,13 +405,13 @@ console.log('battle result', JSON.stringify(res))
 scene('result', 'calm')
 await caption('Every battle pays <b>points</b>. Points become <b>boosters</b>.<small>Online: live duels against other players, and a leaderboard.</small>')
 cue('coin')
-await wait(3600)
+await wait(3000)
 await shot('result')
 await caption(null)
 await page.goto(BASE + '/leaderboard')
 await wait(500)
 await caption('Climb the <b>leaderboard</b>: six ranks, from Bronze to Master.')
-await wait(2400)
+await wait(2000)
 await caption(null)
 await wait(300)
 
@@ -420,16 +422,20 @@ await title(`${logoHtml()}<h2>Understood in three seconds. Strategic in five min
   <div class="tags"><span>240 objects</span><span>266 recipes</span><span>Live duels</span><span>Boosters every 10 min</span></div>
   <div class="url">${SITE}</div>`)
 cue('impact')
-await wait(5500)
+await wait(5000)
 scene('end', 'end')
 
-fs.writeFileSync(path.join(path.dirname(OUT), 'events.json'), JSON.stringify({ duration: now(), events }, null, 1))
+// Cue times are wall-clock since capture start; video time starts at the first captured frame.
+const shift = DRY ? 0 : (firstWall - t0) / 1000
+const wallEnd = now()
+fs.writeFileSync(path.join(path.dirname(OUT), 'events.json'), JSON.stringify({ duration: wallEnd - shift, events: events.map((e) => ({ ...e, t: Math.max(0, e.t - shift) })) }, null, 1))
 if (!DRY) {
   await cdp.send('Page.stopScreencast')
   await page.waitForTimeout(300)
   const lines = []
   for (let i = 0; i < frames.length; i++) {
-    const d = i + 1 < frames.length ? frames[i + 1].t - frames[i].t : 0.5
+    // A static screen emits no frames: the last one must last until the scenario ended.
+    const d = i + 1 < frames.length ? frames[i + 1].t - frames[i].t : Math.max(0.5, wallEnd - shift - (frames[i].t - frames[0].t))
     lines.push(`file '${path.resolve(frames[i].f)}'`, `duration ${Math.max(0.001, d).toFixed(4)}`)
   }
   lines.push(`file '${path.resolve(frames[frames.length - 1].f)}'`)
