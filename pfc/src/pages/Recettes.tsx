@@ -1,6 +1,8 @@
+import { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { Icon } from '@/components/Icon'
+import { ObjetCard } from '@/components/ObjetCard'
 import { ObjetImage } from '@/components/ObjetImage'
 import { PageHeader } from '@/components/PageHeader'
 import { useSession } from '@/lib/session'
@@ -22,10 +24,12 @@ function Ingredient({ objet }: { objet: Objet }) {
 /**
  * /recipes — Pokédex-style recipe book. Only the recipes of cards the player
  * has owned at least once reach the client; the rest are locked tiles.
+ * Compact card grid (as in Crafting); clicking a card expands its recipes.
  */
 export function Recettes() {
   const { joueur } = useSession()
   const livre = useLivreRecettes()
+  const [ouvert, setOuvert] = useState<string | null>(null)
 
   if (!joueur) return <ConnexionRequise />
 
@@ -43,58 +47,77 @@ export function Recettes() {
         sousTitre={livre ? `${connues.length} / ${total} craftable cards discovered` : 'Loading…'}
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-flow-row-dense grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
         {connues.map(([resultatId, recettes]) => {
           const resultat = trouverObjet(resultatId)
           if (!resultat) return null
+          const estOuvert = ouvert === resultatId
 
           return (
-            <Link
-              key={resultatId}
-              to={`/item/${resultat.id}`}
-              className={`rounded-xl border-[3px] bg-carte p-4 shadow-hard transition-transform hover:-translate-y-0.5 ${CLASSE_CARTE_RARETE[resultat.rarete]}`}
-            >
-              <div className="flex items-center gap-3">
-                <ObjetImage objet={resultat} className="h-16 w-16" />
-                <div className="min-w-0">
-                  <h3 className="truncate font-semibold">{resultat.nom}</h3>
-                  <p className={`text-xs ${CLASSE_RARETE[resultat.rarete]}`}>{LIBELLE_RARETE[resultat.rarete]}</p>
-                </div>
-              </div>
-
-              {recettes.map((recette) => {
-                const [ingredientA, ingredientB] = recette.ingredients.map((id) => trouverObjet(id))
-                if (!ingredientA || !ingredientB) return null
-                return (
-                  <div
-                    key={recette.ingredients.join('+')}
-                    className="mt-3 flex items-center justify-center gap-3 border-t border-bordure pt-3"
-                  >
-                    <Ingredient objet={ingredientA} />
-                    <span className="text-lg font-black text-accent-2" aria-hidden>
-                      +
-                    </span>
-                    <Ingredient objet={ingredientB} />
+            <Fragment key={resultatId}>
+              <ObjetCard
+                objet={resultat}
+                compact
+                selectionne={estOuvert}
+                onSelect={() => setOuvert(estOuvert ? null : resultatId)}
+              />
+              {estOuvert && (
+                <div
+                  className={`animate-booster-pop col-span-full rounded-xl border-[3px] bg-carte p-4 shadow-hard ${CLASSE_CARTE_RARETE[resultat.rarete]}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <ObjetImage objet={resultat} className="h-12 w-12" />
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate font-semibold">{resultat.nom}</h3>
+                      <p className={`text-xs ${CLASSE_RARETE[resultat.rarete]}`}>{LIBELLE_RARETE[resultat.rarete]}</p>
+                    </div>
+                    <Link to={`/item/${resultat.id}`} className="shrink-0 text-xs font-semibold text-accent-2 hover:underline">
+                      View card
+                    </Link>
                   </div>
-                )
-              })}
-            </Link>
+
+                  {recettes.map((recette) => {
+                    const [ingredientA, ingredientB] = recette.ingredients.map((id) => trouverObjet(id))
+                    if (!ingredientA || !ingredientB) return null
+                    return (
+                      <div
+                        key={recette.ingredients.join('+')}
+                        className="mt-3 flex items-center justify-center gap-3 border-t border-bordure pt-3"
+                      >
+                        <Ingredient objet={ingredientA} />
+                        <span className="text-lg font-black text-accent-2" aria-hidden>
+                          +
+                        </span>
+                        <Ingredient objet={ingredientB} />
+                        <span className="text-lg font-black text-accent-2" aria-hidden>
+                          =
+                        </span>
+                        <Ingredient objet={resultat} />
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </Fragment>
           )
         })}
 
         {Array.from({ length: verrouillees }, (_, i) => (
           <div
             key={`verrou-${i}`}
-            className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-bordure bg-carte/60 p-4 text-center"
+            title="Pull this card from a booster, or discover the combo by experimenting in Crafting."
+            className="flex aspect-[3/4] flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-bordure bg-carte/60 text-center"
           >
-            <Icon name="lock" size={28} className="text-texte-2" />
-            <p className="text-sm font-semibold text-texte-2">???</p>
-            <p className="text-xs text-texte-2">
-              Pull this card from a booster, or discover the combo by experimenting in Crafting.
-            </p>
+            <Icon name="lock" size={22} className="text-texte-2" />
+            <p className="text-xs font-semibold text-texte-2">???</p>
           </div>
         ))}
       </div>
+      {verrouillees > 0 && (
+        <p className="mt-3 text-xs text-texte-2">
+          Locked cards: pull them from a booster, or discover the combo by experimenting in Crafting.
+        </p>
+      )}
     </>
   )
 }
