@@ -13,6 +13,7 @@ import { chargerDeck } from '@/services/deck'
 import { useLobby } from '@/services/lobby'
 import type { Objet } from '@/types'
 import { useDemarrerBot } from './useDemarrerBot'
+import { useDemarrerMouche } from './useDemarrerMouche'
 
 /** /battle — Entry point: ranked duel, practice, your deck. */
 export function Hub() {
@@ -25,6 +26,7 @@ function HubConnecte() {
   const { joueur, chart } = useSession()
   const lobby = useLobby()
   const { demarrer, enCours, erreur } = useDemarrerBot()
+  const { demarrer: demarrerMouche, enCours: moucheEnCours, erreur: moucheErreur } = useDemarrerMouche()
   const [deck, setDeck] = useState<Objet[] | null | undefined>(undefined)
 
   useEffect(() => {
@@ -105,6 +107,29 @@ function HubConnecte() {
           </Bouton>
           {erreur && <p className="text-xs text-echec">{erreur}</p>}
         </Carte>
+      </div>
+
+      <div className="theme-dark mt-4 overflow-hidden rounded-xl border-2 border-ink bg-gradient-to-br from-[#241a3d] via-fond-2 to-fond p-6 shadow-hard md:p-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-accent-2">
+              <Icon name="flask" size={16} />
+              Boss fight
+            </p>
+            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight text-texte md:text-3xl">La Mouche</h2>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-texte-2">
+              Its five cards are wired on the fly brain connectome — the first animal brain ever fully mapped. It remembers what you open
+              with, win or lose, across every attempt: the tenth fight is not the first.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-start gap-2 md:items-end">
+            <Bouton onClick={demarrerMouche} disabled={moucheEnCours}>
+              {moucheEnCours ? 'Starting…' : 'Fight La Mouche'}
+              <Icon name="arrowRight" size={16} strokeWidth={2.5} />
+            </Bouton>
+            {moucheErreur && <p className="text-xs text-echec">{moucheErreur}</p>}
+          </div>
+        </div>
       </div>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">

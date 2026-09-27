@@ -1,6 +1,7 @@
 import type { Objet } from '@/types'
 import { OBJETS_BOOSTER_MOCK } from './objetsBooster'
 import { OBJETS_BRAINROT_MIS_DE_COTE } from './objetsBrainrot'
+import { OBJETS_MOUCHE } from './objetsMouche'
 
 /**
  * The three starting items. Every player starts with exactly these; the
@@ -52,10 +53,15 @@ export const INVENTAIRE_DEPART: Objet[] = [...OBJETS_MOCK]
 
 /**
  * Looks an item up across the catalog, including the set-aside brainrot
- * cards so a copy a player already owns still shows up.
+ * cards and the La Mouche boss deck, so a copy that appeared in a battle
+ * still resolves.
  */
 export function trouverObjet(id: string | undefined): Objet | undefined {
-  return CATALOGUE_MOCK.find((o) => o.id === id) ?? OBJETS_BRAINROT_MIS_DE_COTE.find((o) => o.id === id)
+  return (
+    CATALOGUE_MOCK.find((o) => o.id === id) ??
+    OBJETS_BRAINROT_MIS_DE_COTE.find((o) => o.id === id) ??
+    OBJETS_MOUCHE.find((o) => o.id === id)
+  )
 }
 
 /**

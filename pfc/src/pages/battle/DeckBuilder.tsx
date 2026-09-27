@@ -12,6 +12,7 @@ import { couleurCategorie, libelleCategorie } from '@/lib/format'
 import { trierInventaire } from '@/lib/inventaire'
 import { useSession } from '@/lib/session'
 import { battleService } from '@/services/battle'
+import { mucheBattleService } from '@/services/battle/mouche'
 import { chargerDeckIds, sauverDeckIds } from '@/services/deck'
 import type { Objet } from '@/types'
 
@@ -62,8 +63,12 @@ function Builder() {
     setErreur(null)
     try {
       await sauverDeckIds(joueur!.id, ids)
-      if (params.get('next') === 'bot') {
+      const next = params.get('next')
+      if (next === 'bot') {
         const id = await battleService.creerContreBot(joueur!, deck, chart)
+        navigate(`/battle/${id}`)
+      } else if (next === 'mouche') {
+        const id = await mucheBattleService.creerCombat(joueur!, deck, chart)
         navigate(`/battle/${id}`)
       } else {
         navigate('/battle/opponent')
@@ -89,7 +94,13 @@ function Builder() {
         sousTitre={`Pick ${DECK_SIZE} cards. The chart decides first, then attack against defense.`}
         action={
           <Bouton onClick={sauver} disabled={!complet || sauvegarde}>
-            {sauvegarde ? 'Saving…' : params.get('next') === 'bot' ? 'Save · Fight the Coach' : 'Save · Choose opponent'}
+            {sauvegarde
+              ? 'Saving…'
+              : params.get('next') === 'bot'
+                ? 'Save · Fight the Coach'
+                : params.get('next') === 'mouche'
+                  ? 'Save · Fight La Mouche'
+                  : 'Save · Choose opponent'}
             <Icon name="arrowRight" size={16} strokeWidth={2.5} />
           </Bouton>
         }

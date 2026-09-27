@@ -10,8 +10,10 @@ import { TurnTimer } from '@/components/battle/TurnTimer'
 import { MAX_TURNS, type Move, type Side, type TurnRecord } from '@/lib/engine'
 import { useSession } from '@/lib/session'
 import { battleService } from '@/services/battle'
+import { PREFIXE_MOUCHE, mucheBattleService } from '@/services/battle/mouche'
 import type { Battle } from '@/types'
 import { useDemarrerBot } from './useDemarrerBot'
+import { useDemarrerMouche } from './useDemarrerMouche'
 
 const DUREE_TOUR_S = 20
 /** How long a clash stays on screen before moving on (the player can skip with Continue). */
@@ -22,6 +24,8 @@ export function Arena() {
   const { id } = useParams<{ id: string }>()
   const { joueur, chart, chargement } = useSession()
   const { demarrer } = useDemarrerBot()
+  const { demarrer: demarrerMouche } = useDemarrerMouche()
+  const service = id?.startsWith(PREFIXE_MOUCHE) ? mucheBattleService : battleService
 
   const [battle, setBattle] = useState<Battle | null>(null)
   const [erreur, setErreur] = useState<string | null>(null)
@@ -36,16 +40,16 @@ export function Arena() {
   useEffect(() => {
     if (!id || chargement) return
     let actif = true
-    battleService
+    service
       .charger(id)
       .then((b) => actif && setBattle(b))
       .catch((e) => actif && setErreur(e instanceof Error ? e.message : 'Battle not found.'))
-    const stop = battleService.souscrire(id, (b) => actif && setBattle(b))
+    const stop = service.souscrire(id, (b) => actif && setBattle(b))
     return () => {
       actif = false
       stop()
     }
-  }, [id, chargement])
+  }, [id, chargement, service])
 
   const finie = battle?.status === 'finished'
   const fermerReveal = useCallback(() => {
@@ -96,15 +100,15 @@ export function Arena() {
       setVerrouille(true)
       setErreur(null)
       try {
-        await battleService.jouer(battle.id, m)
+        await service.jouer(battle.id, m)
         // Realtime can lag or miss an event: refresh once after the move.
-        battleService.charger(battle.id).then(setBattle).catch(() => {})
+        service.charger(battle.id).then(setBattle).catch(() => {})
       } catch (e) {
         setVerrouille(false)
         setErreur(e instanceof Error ? e.message : 'Move refused.')
       }
     },
-    [battle, verrouille],
+    [battle, verrouille, service],
   )
 
   const expirer = useCallback(() => {
@@ -115,7 +119,7 @@ export function Arena() {
 
   const abandonner = async () => {
     if (!battle || !window.confirm('Forfeit this battle?')) return
-    await battleService.abandonner(battle.id)
+    await service.abandonner(battle.id)
   }
 
   if (erreur && !battle) {
@@ -198,7 +202,7 @@ export function Arena() {
             </Bouton>
           )}
           {battle.kind === 'pvp' && battle.status === 'active' && !reveal && (verrouille || moi.submitted) && !eux.submitted && (
-            <ForceTimeout depuis={battle.updatedAt} onForce={() => battleService.timeout(battle.id).then(() => battleService.charger(battle.id).then(setBattle)).catch((e) => setErreur(e instanceof Error ? e.message : 'Not yet.'))} />
+            <ForceTimeout depuis={battle.updatedAt} onForce={() => service.timeout(battle.id).then(() => service.charger(battle.id).then(setBattle)).catch((e) => setErreur(e instanceof Error ? e.message : 'Not yet.'))} />
           )}
         </div>
       </main>
@@ -261,12 +265,17 @@ export function Arena() {
         <ResultOverlay
           battle={battle}
           onRematch={
-            battle.kind === 'bot'
+            battle.kind === 'boss'
               ? () => {
                   setResultatVisible(false)
-                  demarrer()
+                  demarrerMouche()
                 }
-              : undefined
+              : battle.kind === 'bot'
+                ? () => {
+                    setResultatVisible(false)
+                    demarrer()
+                  }
+                : undefined
           }
         />
       )}

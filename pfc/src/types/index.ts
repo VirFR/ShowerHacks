@@ -136,7 +136,7 @@ export const OBJETS_PAR_BOOSTER = 5
 
 /* ---------- Battle (battle team) ---------- */
 
-export type BattleKind = 'pvp' | 'bot'
+export type BattleKind = 'pvp' | 'bot' | 'boss'
 
 /** A public opponent, as listed in the lobby. */
 export interface Adversaire {

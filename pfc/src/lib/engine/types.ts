@@ -90,7 +90,7 @@ export interface FullState extends BattleState {
 export type RewardTier = 'bronze' | 'silver' | 'gold'
 
 export interface RewardContext {
-  kind: 'pvp' | 'bot'
+  kind: 'pvp' | 'bot' | 'boss'
   /** Consecutive PvP wins before this battle. */
   winStreak: number
   firstWinToday: boolean

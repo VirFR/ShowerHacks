@@ -34,7 +34,8 @@ export function ResultOverlay({ battle, onRematch }: ResultOverlayProps) {
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <p className={`text-[11px] font-bold uppercase tracking-[0.2em] ${result === 'win' ? 'text-succes' : result === 'draw' ? 'text-or' : 'text-echec'}`}>
-              {battle.kind === 'bot' ? 'Practice battle' : 'Ranked duel'} · {battle.state.turns.length} turn{battle.state.turns.length === 1 ? '' : 's'}
+              {battle.kind === 'boss' ? 'Boss fight' : battle.kind === 'bot' ? 'Practice battle' : 'Ranked duel'} ·{' '}
+              {battle.state.turns.length} turn{battle.state.turns.length === 1 ? '' : 's'}
             </p>
             <h2 id="result-title" className={`mt-2 font-pixel text-3xl leading-none md:text-5xl ${COULEURS[result]}`}>
               {TITRES[result]}

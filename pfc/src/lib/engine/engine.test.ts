@@ -7,12 +7,15 @@ import {
   clash,
   computeReward,
   createBattle,
+  createMoucheModel,
   fallbackMove,
   legalMoves,
   matchup,
+  moucheMove,
   publicView,
   resolveTurn,
   seededRandom,
+  updateMoucheModel,
   type EngineCard,
   type FullState,
 } from './index'
@@ -220,5 +223,50 @@ describe('reward', () => {
     expect(r.points).toBe(Math.round(195 * 0.5))
     expect(r.bonusBooster).toBe(false)
     expect(r.boosters).toBe(1)
+  })
+
+  it('does not halve a boss win, unlike a practice win', () => {
+    const r = computeReward(sweep(), 'a', { kind: 'boss', winStreak: 0, firstWinToday: false })
+    expect(r.points).toBe(195)
+  })
+})
+
+describe('mouche', () => {
+  it('reinforces the seen category and decays the rest', () => {
+    let model = createMoucheModel()
+    model = updateMoucheModel(model, 'fight')
+    expect(model.fight).toBe(1)
+    model = updateMoucheModel(model, 'fight')
+    expect(model.fight).toBeCloseTo(1.85)
+    model = updateMoucheModel(model, 'animaux')
+    expect(model.animaux).toBe(1)
+    expect(model.fight).toBeCloseTo(1.85 * 0.85)
+  })
+
+  it('with no memory yet, sends a legal card blindly (same as the practice bot)', () => {
+    const s = createBattle(deck('a', ['ressources', 'plantes', 'fight', 'animaux', 'espace']), deck('b', ['ressources', 'plantes', 'fight', 'animaux', 'espace']))
+    const move = moucheMove(DEFAULT_CHART, s, 'b', createMoucheModel(), seededRandom(1))
+    expect(move.type).toBe('send')
+  })
+
+  it('on a blind opening, leans on memory to counter the opponent\'s most common category', () => {
+    const s = createBattle(deck('a', ['ressources', 'plantes', 'fight', 'animaux', 'espace']), deck('b', ['plantes', 'ressources', 'espace', 'vehicules', 'fight']))
+    // The opponent has almost always opened with "fight"; "espace" beats "fight".
+    let model = createMoucheModel()
+    for (let i = 0; i < 5; i++) model = updateMoucheModel(model, 'fight')
+    model = updateMoucheModel(model, 'plantes')
+    const move = moucheMove(DEFAULT_CHART, s, 'b', model, seededRandom(3)) as { type: 'send'; cardId: string }
+    expect(move.type).toBe('send')
+    const chosen = s.hands.b.find((c) => c.id === move.cardId)!
+    expect(chosen.category).toBe('espace')
+  })
+
+  it('once a champion is visible on either side, plays exactly like the practice bot', () => {
+    let s = createBattle(deck('a', ['ressources', 'ressources', 'ressources', 'ressources', 'ressources']), deck('b', ['vehicules', 'plantes', 'animaux', 'espace', 'ressources']))
+    s = resolveTurn(DEFAULT_CHART, s, { a: { type: 'send', cardId: 'a0' }, b: { type: 'send', cardId: 'b0' } })
+    const model = updateMoucheModel(createMoucheModel(), 'ressources')
+    const fromMouche = moucheMove(DEFAULT_CHART, s, 'b', model, seededRandom(7))
+    const fromBot = botMove(DEFAULT_CHART, s, 'b', seededRandom(7))
+    expect(fromMouche).toEqual(fromBot)
   })
 })
