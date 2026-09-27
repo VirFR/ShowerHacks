@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '@/components/Icon'
-import { categoryLabel, type Chart, type EngineCard } from '@/lib/engine'
+import { categoryLabel, normalizeRarity, type Chart, type EngineCard } from '@/lib/engine'
 import { LETTRE_RARETE, styleArtCategorie, stylePanneauRarete, TEINTE_RARETE } from '@/lib/format'
 import type { Rarete } from '@/types'
 
@@ -45,7 +45,7 @@ export function BattleCard({
 }: BattleCardProps) {
   const [imageKo, setImageKo] = useState(false)
   const petite = taille === 'xs'
-  const rarete = (card.rarity as Rarete | undefined) ?? 'commun'
+  const rarete = normalizeRarity(card.rarity) as Rarete
   const teinte = TEINTE_RARETE[rarete]
   const grande = taille === 'lg'
 
