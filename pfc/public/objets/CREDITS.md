@@ -4,6 +4,7 @@ Item pictures come from [game-icons.net](https://game-icons.net), licensed CC BY
 Icon — author:
 
 - air-balloon — delapouite
+- airplane — skoll
 - ak47 — skoll
 - amber-mosquito — delapouite
 - ambulance — delapouite
@@ -12,6 +13,7 @@ Icon — author:
 - atom — skoll
 - badger — caro-asercion
 - bamboo — delapouite
+- bandage-roll — lorc
 - baobab — delapouite
 - bat — delapouite
 - battleship — cathelineau
@@ -107,7 +109,6 @@ Icon — author:
 - lynx-head — delapouite
 - magnet — lorc
 - mars-curiosity — delapouite
-- measure-tape — delapouite
 - metal-bar — lorc
 - meteor-impact — lorc
 - moon — badges
@@ -159,7 +160,6 @@ Icon — author:
 - snowboard — delapouite
 - solar-system — delapouite
 - space-shuttle — delapouite
-- spade — badges
 - sparkles — delapouite
 - sparrow — lorc
 - sperm-whale — delapouite
@@ -189,6 +189,7 @@ Icon — author:
 - tornado — lorc
 - tree-branch — lorc
 - tree-roots — delapouite
+- trench-spade — skoll
 - truck — delapouite
 - umbrella — lorc
 - vine-flower — lorc

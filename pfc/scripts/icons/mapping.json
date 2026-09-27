@@ -85,7 +85,7 @@
  },
  "obj-22": {
   "name": "Shovel",
-  "icon": "spade"
+  "icon": "trench-spade"
  },
  "obj-23": {
   "name": "Umbrella",
@@ -101,7 +101,7 @@
  },
  "obj-26": {
   "name": "Duct Tape",
-  "icon": "measure-tape"
+  "icon": "bandage-roll"
  },
  "obj-27": {
   "name": "Flashlight",
@@ -417,7 +417,7 @@
  },
  "obj-113": {
   "name": "Propeller Airplane",
-  "icon": "commercial-airplane"
+  "icon": "airplane"
  },
  "obj-114": {
   "name": "Tank",
@@ -949,7 +949,7 @@
  },
  "obj-263": {
   "name": "Supersonic Concorde Jet",
-  "icon": "jet-fighter"
+  "icon": "commercial-airplane"
  },
  "obj-264": {
   "name": "International Space Station",
