@@ -1,0 +1,12 @@
+node_modules/
+profile*/
+frames/
+clips/
+segs/
+motion/assets/
+catalog.json
+cuts.json
+music.wav
+video_noaudio.mp4
+ff_badge.png
+package*.json

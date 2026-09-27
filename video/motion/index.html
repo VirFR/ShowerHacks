@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>RPS motion</title>
+<style>
+@font-face{font-family:Fredoka;src:url(assets/fredoka.woff2) format('woff2');font-weight:300 700}
+@font-face{font-family:Nunito;src:url(assets/nunito.woff2) format('woff2');font-weight:200 1000}
+@font-face{font-family:Pixel;src:url(assets/press-start-2p.woff2) format('woff2')}
+:root{--ink:#0b0d22;--navy:#15193a;--blue:#2f7de1;--yellow:#ffd23f;--red:#e5484d;--green:#22c55e;--paper:#f4f6fb}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1280px;height:720px;overflow:hidden;background:#0f1733;font-family:Fredoka,Nunito,sans-serif;color:#fff}
+.stage{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#23407f 0%,#142250 45%,#0c1330 100%);overflow:hidden}
+.stage.light{background:radial-gradient(ellipse at 50% 30%,#e9eef9 0%,#cfd9ec 100%);color:var(--navy)}
+.dots{position:absolute;inset:-40px;background-image:radial-gradient(rgba(255,255,255,.08) 1.5px,transparent 1.5px);background-size:22px 22px;animation:drift 12s linear infinite}
+.light .dots{background-image:radial-gradient(rgba(21,25,58,.10) 1.5px,transparent 1.5px)}
+@keyframes drift{to{transform:translate(22px,22px)}}
+.scene{position:absolute;inset:0;display:none}
+.scene.on{display:block}
+.a{opacity:0;animation-fill-mode:both;animation-timing-function:cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{opacity:0;transform:scale(.3) rotate(-8deg)}100%{opacity:1;transform:none}}
+@keyframes up{0%{opacity:0;transform:translateY(60px)}100%{opacity:1;transform:none}}
+@keyframes left{0%{opacity:0;transform:translateX(-120px)}100%{opacity:1;transform:none}}
+@keyframes right{0%{opacity:0;transform:translateX(120px)}100%{opacity:1;transform:none}}
+@keyframes fade{0%{opacity:0}100%{opacity:1}}
+@keyframes out{to{opacity:0;transform:scale(.85)}}
+@keyframes spinin{0%{opacity:0;transform:scale(0) rotate(-200deg)}70%{opacity:1;transform:scale(1.15) rotate(10deg)}100%{opacity:1;transform:none}}
+@keyframes wobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-10px) rotate(-2deg)}40%{transform:translateX(10px) rotate(2deg)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes rays{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.pixel{font-family:Pixel,monospace}
+.pill{display:inline-block;background:var(--navy);border:3px solid var(--ink);box-shadow:0 6px 0 var(--ink);border-radius:16px;padding:10px 22px;font-weight:700}
+.yel{color:var(--yellow)}
+.card{position:absolute;width:190px;height:270px;border-radius:18px;border:4px solid var(--ink);box-shadow:6px 7px 0 var(--ink);background:#fff;overflow:hidden;color:var(--navy)}
+.card .art{height:160px;display:grid;place-items:center}
+.card .art img{width:108px;height:108px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.25))}
+.card .nm{font-weight:700;font-size:19px;padding:8px 12px 0}
+.card .st{position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;font-weight:700;font-size:20px}
+.card .rb{position:absolute;top:9px;left:9px;background:#fff;border-radius:7px;font-size:13px;font-weight:700;padding:1px 7px;color:var(--navy)}
+.cat-fight{background:radial-gradient(circle at 50% 40%,#ef4444 0%,#7f1d1d 78%)}
+.cat-animaux{background:radial-gradient(circle at 50% 40%,#fb923c 0%,#7c2d12 78%)}
+.cat-plantes{background:radial-gradient(circle at 50% 40%,#22c55e 0%,#14532d 78%)}
+.cat-vehicules{background:radial-gradient(circle at 50% 40%,#22d3ee 0%,#164e63 78%)}
+.cat-ressources{background:radial-gradient(circle at 50% 40%,#f59e0b 0%,#78350f 78%)}
+.cat-espace{background:radial-gradient(circle at 50% 40%,#818cf8 0%,#312e81 78%)}
+.r-commun{background:linear-gradient(#e2e8f0,#fff)} .r-rare{background:linear-gradient(#bae6fd,#fff)} .r-epique{background:linear-gradient(#f5d0fe,#fff)} .r-legendaire{background:linear-gradient(#fde68a,#fff)} .r-peu_commun{background:linear-gradient(#a7f3d0,#fff)} .r-secret_rare{background:linear-gradient(90deg,#fecdd3,#fef3c7,#bae6fd)}
+.tag{position:absolute;right:26px;top:22px;display:flex;align-items:center;gap:10px;background:var(--blue);color:#fff;border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);border-radius:14px;padding:6px 16px 6px 8px;font-weight:700;font-size:21px;letter-spacing:1px;text-transform:uppercase}
+.tag span{background:var(--yellow);color:var(--navy);border-radius:9px;min-width:34px;height:34px;display:grid;place-items:center;font-size:20px}
+.title{position:absolute;left:0;right:0;text-align:center;font-family:Pixel,monospace;font-size:34px;line-height:1.3;text-shadow:0 5px 0 var(--ink)}
+</style>
+</head>
+<body>
+<div class="stage" id="stage"><div class="dots"></div>
+
+<!-- ============ INTRO ============ -->
+<div class="scene" id="intro">
+  <div class="center a" style="animation:fade .3s .0s both;width:1400px;height:1400px;background:repeating-conic-gradient(rgba(255,210,63,.10) 0 10deg,transparent 10deg 20deg);border-radius:50%;animation:rays 20s linear infinite, fade .6s both"></div>
+  <img src="assets/rps-burst.svg" class="a" style="position:absolute;left:50%;top:210px;width:330px;margin-left:-165px;margin-top:-165px;animation:spinin 1s .15s both">
+  <div class="a" style="position:absolute;left:0;right:0;top:395px;text-align:center;animation:pop .5s 1s both">
+    <span class="pill" style="background:var(--blue);font-size:26px;letter-spacing:8px;padding:12px 34px">OBJECTS AT WAR</span>
+  </div>
+  <div class="title a" style="top:485px;font-size:30px;animation:up .5s 1.5s both">Pierre · Feuille · Ciseaux</div>
+  <div class="a" style="position:absolute;left:0;right:0;top:545px;text-align:center;font-size:40px;font-weight:700;animation:pop .5s 2.1s both">…mais avec <span class="yel">237 objets</span> qui se battent !</div>
+  <!-- flying cards -->
+  <div id="flyers"></div>
+</div>
+
+<!-- ============ GOAL ============ -->
+<div class="scene" id="goal">
+  <div class="title a" style="top:70px;animation:up .45s .05s both">Le jeu en 3 mots</div>
+  <div id="goalrow" style="position:absolute;left:0;right:0;top:170px;display:flex;justify-content:center;gap:46px"></div>
+  <div class="a" style="position:absolute;left:0;right:0;top:590px;text-align:center;animation:pop .5s 2.1s both">
+    <span class="pill" style="background:var(--yellow);color:var(--navy);font-size:30px">Et personne ne <span style="color:var(--red)">perd</span> jamais ses cartes</span>
+  </div>
+</div>
+
+<!-- ============ CIRCLE ============ -->
+<div class="scene" id="circle">
+  <div class="tag a" style="animation:right .4s both"><span>3</span>Tes cartes</div>
+  <div class="title a" style="top:40px;font-size:28px;animation:up .45s .05s both">Le cercle des catégories</div>
+  <svg id="circsvg" width="1280" height="720" style="position:absolute;inset:0"></svg>
+  <div id="nodes"></div>
+  <div id="bonus" class="a" style="position:absolute;right:26px;top:230px;width:330px;animation:right .5s 3.3s both">
+    <div class="pill" style="display:block;font-size:24px;line-height:1.55;padding:18px 22px">
+      <div style="color:var(--yellow);font-size:20px;letter-spacing:1px;margin-bottom:6px">BONUS DE CATÉGORIE</div>
+      Voisin direct <span style="float:right;color:#4ade80">+22</span><br>
+      À 2 cases <span style="float:right;color:#4ade80">+17</span><br>
+      En face <span style="float:right;color:#cbd5e1">0</span><br>
+      Dans l'autre sens <span style="float:right;color:#f87171">−17 / −22</span>
+    </div>
+  </div>
+  <div class="a" style="position:absolute;left:40px;top:560px;width:300px;font-size:26px;font-weight:700;line-height:1.3;animation:left .5s 3.6s both">
+    Chaque catégorie en <span class="yel">domine</span> d'autres… et se fait <span style="color:#f87171">dominer</span>.
+  </div>
+</div>
+
+<!-- ============ POINTS ============ -->
+<div class="scene" id="points">
+  <div class="tag a" style="animation:right .4s both"><span>5</span>Le combat</div>
+  <div class="title a" style="top:40px;font-size:28px;animation:up .45s .05s both">Qui gagne le duel ?</div>
+  <div id="formula" style="position:absolute;left:0;right:0;top:120px;display:flex;justify-content:center;align-items:center;gap:18px"></div>
+  <div id="example" style="position:absolute;left:0;right:0;top:300px;height:330px"></div>
+  <div id="tiebreak" class="a" style="position:absolute;left:0;right:0;top:640px;text-align:center;animation:up .45s 7.6s both">
+    <span class="pill" style="font-size:24px">Égalité ? <span class="yel">Attaque + Défense</span> › <span class="yel">Attaque</span> › <span class="yel">Rareté</span> — jamais de match nul</span>
+  </div>
+</div>
+
+<!-- ============ GAUNTLET ============ -->
+<div class="scene" id="gauntlet">
+  <div class="tag a" style="animation:right .4s both"><span>5</span>Le combat</div>
+  <div class="title a" style="top:44px;font-size:28px;animation:up .45s .05s both">Le Gauntlet : 5 contre 5</div>
+  <div id="steps" style="position:absolute;left:120px;right:120px;top:130px;display:flex;flex-direction:column;gap:16px"></div>
+</div>
+
+<!-- ============ REWARDS ============ -->
+<div class="scene" id="rewards">
+  <div class="tag a" style="animation:right .4s both"><span>5</span>Récompenses</div>
+  <div class="title a" style="top:40px;font-size:28px;animation:up .45s .05s both">Points = boosters</div>
+  <div id="rtable" style="position:absolute;left:90px;top:120px;width:560px;display:flex;flex-direction:column;gap:9px"></div>
+  <div id="rside" style="position:absolute;right:80px;top:130px;width:520px"></div>
+</div>
+
+<!-- ============ OUTRO ============ -->
+<div class="scene" id="outro">
+  <div class="center" style="width:1500px;height:1500px;background:repeating-conic-gradient(rgba(255,210,63,.10) 0 10deg,transparent 10deg 20deg);border-radius:50%;animation:rays 20s linear infinite"></div>
+  <img src="assets/rps-burst.svg" class="a" style="position:absolute;left:50%;top:190px;width:280px;margin-left:-140px;margin-top:-140px;animation:spinin .9s .05s both">
+  <div id="outrow" style="position:absolute;left:0;right:0;top:350px;display:flex;justify-content:center;gap:26px"></div>
+  <div class="a" style="position:absolute;left:0;right:0;top:470px;text-align:center;animation:pop .5s 1.5s both">
+    <span class="pill" style="background:var(--blue);font-size:30px;letter-spacing:6px;padding:14px 36px">OBJECTS AT WAR</span>
+  </div>
+  <div class="title a" style="top:580px;font-size:30px;color:var(--yellow);animation:up .5s 2s both">À toi de jouer !</div>
+</div>
+
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+const el = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; };
+const RB = { commun: 'C', peu_commun: 'U', rare: 'R', epique: 'E', legendaire: 'L', secret_rare: 'S' };
+function card({ img, name, cat, rar, atk, def }, style = '', cls = '') {
+  return `<div class="card ${cls} r-${rar}" style="${style}"><div class="art cat-${cat}"><img src="assets/${img}.svg"></div><span class="rb">${RB[rar]}</span><div class="nm">${name}</div><div class="st"><span style="color:#e11d48;display:flex;align-items:center;gap:4px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4"/></svg>${atk}</span><span style="color:#2563eb;display:flex;align-items:center;gap:4px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>${def}</span></div></div>`;
+}
+const C = {
+  rex: { img: 'obj-97', name: 'Tyrannosaurus Rex', cat: 'animaux', rar: 'legendaire', atk: 18, def: 9 },
+  sci: { img: 'obj-07', name: 'Rusty Scissors', cat: 'fight', rar: 'commun', atk: 5, def: 3 },
+  galaxy: { img: 'obj-162', name: 'Galaxy', cat: 'espace', rar: 'secret_rare', atk: 21, def: 11 },
+  jet: { img: 'obj-116', name: 'Fighter Jet', cat: 'vehicules', rar: 'rare', atk: 15, def: 6 },
+  oak: { img: 'obj-46', name: 'Ancient Oak', cat: 'plantes', rar: 'rare', atk: 7, def: 13 },
+  emerald: { img: 'obj-178', name: 'Emerald', cat: 'ressources', rar: 'epique', atk: 10, def: 11 },
+  chainsaw: { img: 'obj-34', name: 'Chainsaw', cat: 'fight', rar: 'rare', atk: 13, def: 5 },
+  kraken: { img: 'obj-99', name: 'Kraken', cat: 'animaux', rar: 'secret_rare', atk: 17, def: 13 },
+  rock: { img: 'obj-01', name: 'Mossy Rock', cat: 'ressources', rar: 'commun', atk: 4, def: 7 },
+  leaf: { img: 'obj-04', name: 'Oak Leaf', cat: 'plantes', rar: 'commun', atk: 3, def: 5 },
+};
+
+const builders = {
+  intro() {
+    const f = $('#flyers');
+    const list = [C.jet, C.oak, C.galaxy, C.rex, C.emerald, C.chainsaw, C.kraken];
+    list.forEach((c, i) => {
+      const x = 90 + i * 162, rot = (i - 3) * 5;
+      const node = el(card(c, `left:${x}px;top:760px;transform:rotate(${rot}deg) scale(.78);transition:top .7s cubic-bezier(.34,1.56,.64,1) ${2.6 + i * 0.07}s`));
+      f.appendChild(node);
+      requestAnimationFrame(() => requestAnimationFrame(() => { node.style.top = (i % 2 ? 610 : 590) + 'px'; }));
+    });
+  },
+  goal() {
+    const items = [
+      ['Collectionne', 'Ouvre des boosters', `<svg viewBox="0 0 24 24" width="92" height="92" fill="none" stroke="#15193a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M7.5 8a2.5 2.5 0 1 1 4.5-1.5A2.5 2.5 0 1 1 16.5 8"/></svg>`, '#ffd23f'],
+      ['Combats', 'Deck de 5 cartes', `<svg viewBox="0 0 24 24" width="92" height="92" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></svg>`, '#e5484d'],
+      ['Fusionne', 'Crafte de nouvelles cartes', `<svg viewBox="0 0 24 24" width="92" height="92" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3M7 15h10"/></svg>`, '#22c55e'],
+    ];
+    items.forEach(([t, s, svg, bg], i) => {
+      $('#goalrow').appendChild(el(`<div class="a" style="width:320px;text-align:center;animation:pop .55s ${0.35 + i * 0.45}s both">
+        <div style="margin:0 auto;width:190px;height:190px;border-radius:40px;background:${bg};border:5px solid #0b0d22;box-shadow:0 9px 0 #0b0d22;display:grid;place-items:center;animation:wobble 1.6s ${i * .3}s ease-in-out infinite">${svg}</div>
+        <div style="font-size:44px;font-weight:700;margin-top:28px">${t}</div>
+        <div style="font-size:24px;opacity:.8;margin-top:4px">${s}</div></div>`));
+    });
+  },
+  circle() {
+    const cats = [
+      ['fight', 'Combat', 'chasse', C.chainsaw], ['animaux', 'Animaux', 'dévore', C.rex], ['plantes', 'Plantes', 'envahit', C.oak],
+      ['ressources', 'Ressources', 'corrode', C.emerald], ['vehicules', 'Véhicules', 'conquiert', C.jet], ['espace', 'Espace', 'éclipse', C.galaxy],
+    ];
+    const cx = 600, cy = 395, R = 230;
+    const pos = cats.map((_, i) => { const a = -Math.PI / 2 + i * Math.PI / 3; return [cx + R * Math.cos(a), cy + R * Math.sin(a)]; });
+    const svg = $('#circsvg');
+    let defs = `<defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffd23f"/></marker></defs>`;
+    cats.forEach((c, i) => {
+      const [x1, y1] = pos[i], [x2, y2] = pos[(i + 1) % 6];
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dx = mx - cx, dy = my - cy, k = 1.18;
+      const qx = cx + dx * k, qy = cy + dy * k;
+      const sh = 0.33;
+      const sx = x1 + (x2 - x1) * sh * 0.55, sy = y1 + (y2 - y1) * sh * 0.55;
+      const ex = x2 - (x2 - x1) * sh * 0.55, ey = y2 - (y2 - y1) * sh * 0.55;
+      const d = `M${sx} ${sy} Q${qx} ${qy} ${ex} ${ey}`;
+      const delay = 1.0 + i * 0.35;
+      defs += `<path d="${d}" fill="none" stroke="#ffd23f" stroke-width="7" stroke-linecap="round" marker-end="url(#ah)" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" style="animation:dash .35s ${delay}s forwards"/>`;
+      const lx = cx + dx * 1.36, ly = cy + dy * 1.36;
+      defs += `<text x="${lx}" y="${ly + 8}" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="22" fill="#fff" stroke="#0b0d22" stroke-width="5" paint-order="stroke" style="opacity:0;animation:fade .3s ${delay + 0.2}s forwards">${c[2]}</text>`;
+    });
+    svg.innerHTML = defs + `<style>@keyframes dash{to{stroke-dashoffset:0}}</style>`;
+    cats.forEach((c, i) => {
+      const [x, y] = pos[i];
+      $('#nodes').appendChild(el(`<div class="a" style="position:absolute;left:${x - 62}px;top:${y - 62}px;width:124px;text-align:center;animation:pop .45s ${0.15 + i * 0.1}s both">
+        <div class="cat-${c[0]}" style="width:124px;height:124px;border-radius:50%;border:5px solid #0b0d22;box-shadow:0 7px 0 #0b0d22;display:grid;place-items:center"><img src="assets/${c[3].img}.svg" style="width:70px;height:70px"></div>
+        <div style="margin-top:-14px"><span class="pill" style="font-size:18px;padding:3px 12px;border-radius:10px">${c[1]}</span></div></div>`));
+    });
+  },
+  points() {
+    const box = (t, s, bg, fg, d) => `<div class="a" style="animation:pop .45s ${d}s both;text-align:center"><div class="pill" style="background:${bg};color:${fg};font-size:30px;padding:14px 22px">${t}</div><div style="font-size:19px;margin-top:10px;opacity:.85">${s}</div></div>`;
+    const op = (t, d) => `<div class="a" style="animation:pop .35s ${d}s both;font-size:50px;font-weight:700;margin-top:-30px">${t}</div>`;
+    $('#formula').innerHTML = box('Rareté', 'Commune 10 → Secret Rare 60', '#fff', '#15193a', .35) + op('+', .6) + box('Catégorie', 'de −22 à +22', '#ffd23f', '#15193a', .75) + op('+', 1.0) + box('Élan', '+1 par victoire d\'affilée', '#e5484d', '#fff', 1.15) + op('=', 1.4) + box('Points de combat', 'le plus haut gagne', '#2f7de1', '#fff', 1.55);
+    const ex = $('#example');
+    ex.appendChild(el(`<div class="a" style="position:absolute;left:0;right:0;top:-6px;text-align:center;font-size:24px;font-weight:700;animation:fade .3s 2.4s both">Exemple vu en vrai :</div>`));
+    ex.appendChild(el(card(C.sci, 'left:290px;top:40px;animation:left .5s 2.6s both', 'a')));
+    ex.appendChild(el(card(C.rex, 'left:800px;top:40px;animation:right .5s 2.6s both', 'a')));
+    ex.appendChild(el(`<div class="a" style="position:absolute;left:560px;width:160px;top:120px;text-align:center;font-family:Pixel;font-size:48px;text-shadow:0 5px 0 #0b0d22;animation:pop .4s 3s both">VS</div>`));
+    const calc = (x, lines, total, d, win) => `<div class="a" style="position:absolute;left:${x}px;top:52px;width:250px;font-size:22px;line-height:1.6;animation:up .4s ${d}s both">${lines}<div style="border-top:3px solid #fff;margin-top:6px;padding-top:4px;font-size:40px;font-weight:700;color:${win ? '#4ade80' : '#f87171'}">= ${total}</div></div>`;
+    ex.appendChild(el(calc(20, `<div>Commune <b style="float:right">10</b></div><div>Combat › Animaux <b style="float:right;color:#4ade80">+22</b></div>`, 32, 3.5, true)));
+    ex.appendChild(el(calc(1010, `<div>Légendaire <b style="float:right">50</b></div><div>Animaux ‹ Combat <b style="float:right;color:#f87171">−22</b></div>`, 28, 4.3, false)));
+    ex.appendChild(el(`<div class="a" style="position:absolute;left:0;right:0;top:205px;text-align:center;animation:pop .5s 5.4s both"><span class="pill" style="background:#22c55e;font-size:27px;padding:8px 16px;animation:pulse 1s 6s ease-in-out infinite;display:inline-block">Les ciseaux gagnent !</span></div>`));
+    ex.appendChild(el(`<div class="a" style="position:absolute;left:790px;top:30px;width:210px;height:290px;animation:fade .2s 5.3s both"><div style="position:absolute;inset:0;background:rgba(229,72,77,.35);border-radius:18px"></div><svg viewBox="0 0 100 100" style="position:absolute;inset:0"><path d="M15 15L85 85M85 15L15 85" stroke="#e5484d" stroke-width="10" stroke-linecap="round"/></svg></div>`));
+  },
+  gauntlet() {
+    const steps = [
+      ['1', 'Chacun pose une carte <b class="yel">face cachée</b>, révélées ensemble'],
+      ['2', 'Le perdant est éliminé, le gagnant <b class="yel">reste</b> et gagne <b class="yel">+1 élan</b>'],
+      ['3', 'Le perdant renvoie une carte… en <b class="yel">voyant</b> le champion adverse'],
+      ['4', 'Le champion peut <b class="yel">tenir</b>, ou <b class="yel">battre en retraite</b> une fois par partie'],
+      ['5', 'Plus de cartes ? <b style="color:#f87171">Perdu.</b> · 9 tours max · 20 s par choix'],
+    ];
+    steps.forEach(([n, t], i) => $('#steps').appendChild(el(`<div class="a" style="display:flex;align-items:center;gap:22px;animation:left .45s ${0.3 + i * 0.75}s both">
+      <div style="flex:none;width:70px;height:70px;border-radius:18px;background:var(--yellow);color:var(--navy);border:4px solid #0b0d22;box-shadow:0 6px 0 #0b0d22;display:grid;place-items:center;font-family:Pixel;font-size:26px">${n}</div>
+      <div class="pill" style="flex:1;font-size:29px;padding:14px 24px">${t}</div></div>`)));
+  },
+  rewards() {
+    const rows = [
+      ['Victoire', '+100', '#4ade80'], ['Défaite', '+20', '#cbd5e1'], ['Chaque carte encore debout', '+15', '#4ade80'],
+      ['Comeback avec ta dernière carte', '+30', '#4ade80'], ['Série de 3 victoires d\'un champion', '+20', '#4ade80'],
+      ['Série de victoires en ligne', '+10 % / victoire', '#ffd23f'], ['1ʳᵉ victoire en ligne du jour', '+1 booster', '#ffd23f'], ['Entraînement vs Coach', '× 0,5', '#f87171'],
+    ];
+    rows.forEach(([l, v, c], i) => $('#rtable').appendChild(el(`<div class="a pill" style="display:flex;justify-content:space-between;font-size:23px;padding:9px 18px;animation:left .4s ${0.3 + i * 0.28}s both"><span>${l}</span><span style="color:${c}">${v}</span></div>`)));
+    const side = $('#rside');
+    side.appendChild(el(`<div class="a" style="text-align:center;animation:pop .5s 2.8s both"><div class="pill" style="background:#2f7de1;font-size:40px;padding:16px 30px">50 points = <span class="yel">1 booster</span></div></div>`));
+    const tiers = [['Bronze', '< 100 pts', 'linear-gradient(135deg,#d97706,#92400e)'], ['Argent', '100 – 149', 'linear-gradient(135deg,#e2e8f0,#94a3b8)'], ['Or', '150+', 'linear-gradient(135deg,#fde047,#f59e0b)']];
+    const tr = el(`<div style="display:flex;justify-content:center;gap:20px;margin-top:44px"></div>`);
+    tiers.forEach(([n, s, g], i) => tr.appendChild(el(`<div class="a" style="text-align:center;animation:up .45s ${3.4 + i * 0.3}s both"><div style="width:130px;height:170px;border-radius:16px;background:${g};border:4px solid #0b0d22;box-shadow:5px 6px 0 #0b0d22;display:grid;place-items:center;font-family:Pixel;font-size:15px;color:#15193a">RPS</div><div style="font-size:26px;font-weight:700;margin-top:12px">${n}</div><div style="font-size:18px;opacity:.8">${s}</div></div>`)));
+    side.appendChild(tr);
+    side.appendChild(el(`<div class="a" style="text-align:center;margin-top:30px;font-size:24px;font-weight:700;animation:fade .4s 4.6s both">Plus de points = <span class="yel">meilleur palier</span> de booster</div>`));
+  },
+  outro() {
+    const w = ['Collectionne.', 'Combats.', 'Fusionne.'];
+    w.forEach((t, i) => $('#outrow').appendChild(el(`<div class="a" style="font-size:52px;font-weight:700;animation:pop .45s ${0.5 + i * 0.3}s both;${i === 1 ? 'color:#ffd23f' : ''}">${t}</div>`)));
+  },
+};
+
+const scene = new URLSearchParams(location.search).get('s') || 'intro';
+window.play = () => { builders[scene](); document.getElementById(scene).classList.add('on'); };
+if (scene === 'rewards' || scene === 'goal' || scene === 'outro' || scene === 'intro') {}
+</script>
+</body>
+</html>
