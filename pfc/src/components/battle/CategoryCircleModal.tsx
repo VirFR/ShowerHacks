@@ -9,19 +9,28 @@ interface CategoryCircleModalProps {
 
 const SIZE = 340
 const CENTER = SIZE / 2
-const NODE_RADIUS = 108
-const LABEL_RADIUS = 148
-const NODE_SIZE = 9
+const NODE_RADIUS = 106
+const LABEL_RADIUS = 150
+const NODE_SIZE = 22
+
+const EMOJI: Record<string, string> = {
+  fight: '⚔️',
+  animaux: '🐾',
+  plantes: '🌿',
+  ressources: '💎',
+  vehicules: '🚗',
+  espace: '🚀',
+}
 
 function pointOn(angle: number, radius: number) {
   return { x: CENTER + radius * Math.cos(angle), y: CENTER + radius * Math.sin(angle) }
 }
 
 /**
- * Full category circle: every category's advantage over every other one,
- * not just its single closest counter — the closest neighbor is a strong
- * (+22 fighting points) edge, the next one out a weaker (+17) edge, and the
- * category directly opposite is neutral (both sides' small edges cancel).
+ * Full category circle, for players: every category's edge over every
+ * other, not just its one closest counter. No numbers on purpose — those
+ * are for balancing the game, not for players to min-max around. Just:
+ * strong edge, slight edge, or a neutral opposite.
  */
 export function CategoryCircleModal({ chart, onClose }: CategoryCircleModalProps) {
   const cats = categoryCycle(chart)
@@ -42,15 +51,15 @@ export function CategoryCircleModal({ chart, onClose }: CategoryCircleModalProps
       onClick={onClose}
     >
       <div
-        className="animate-rise w-full max-w-lg rounded-2xl border-4 border-ink bg-fond-2 p-6 shadow-hard"
+        className="animate-rise w-full max-w-lg rounded-2xl border-4 border-ink bg-gradient-to-br from-violet-100 via-fond-2 to-sky-100 p-6 shadow-hard"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 id="category-circle-title" className="font-display text-xl font-bold">
-              The full category circle
+              🎡 The category wheel
             </h2>
-            <p className="mt-1 text-sm text-texte-2">Every category's edge over every other — not just who it's "stronger against."</p>
+            <p className="mt-1 text-sm text-texte-2">Who's got the edge on who — the whole picture, not just one matchup.</p>
           </div>
           <button
             type="button"
@@ -62,17 +71,39 @@ export function CategoryCircleModal({ chart, onClose }: CategoryCircleModalProps
           </button>
         </div>
 
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="mx-auto mt-2 h-80 w-80" role="img" aria-label="Category advantage circle">
+        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="mx-auto mt-2 h-80 w-80" role="img" aria-label="Category advantage wheel">
           <defs>
-            <marker id="circle-arrow-strong" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="var(--color-ink)" />
-            </marker>
-            <marker id="circle-arrow-weak" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#9aa3bd" />
-            </marker>
+            {nodes.map((p) => (
+              <marker
+                key={`marker-strong-${p.cat}`}
+                id={`arrow-strong-${p.cat}`}
+                viewBox="0 0 10 10"
+                refX="8.5"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0 L10,5 L0,10 z" fill={couleurCategorie(p.cat)} />
+              </marker>
+            ))}
+            {nodes.map((p) => (
+              <marker
+                key={`marker-weak-${p.cat}`}
+                id={`arrow-weak-${p.cat}`}
+                viewBox="0 0 10 10"
+                refX="8.5"
+                refY="5"
+                markerWidth="5.5"
+                markerHeight="5.5"
+                orient="auto-start-reverse"
+              >
+                <path d="M0,0 L10,5 L0,10 z" fill={couleurCategorie(p.cat)} opacity={0.6} />
+              </marker>
+            ))}
           </defs>
 
-          {/* second-closest advantage (+17): curved, thin, dashed */}
+          {/* slight edge: curved, thin, in the source category's color */}
           {nodes.map((p, i) => {
             const q = nodes[(i + 2) % n]
             const pull = pointOn((angleFor(i) + angleFor((i + 2) % n)) / 2, NODE_RADIUS * 0.4)
@@ -81,15 +112,17 @@ export function CategoryCircleModal({ chart, onClose }: CategoryCircleModalProps
                 key={`weak-${p.cat}`}
                 d={`M ${p.x} ${p.y} Q ${pull.x} ${pull.y} ${q.x} ${q.y}`}
                 fill="none"
-                stroke="#9aa3bd"
-                strokeWidth={1.5}
-                strokeDasharray="4 3"
-                markerEnd="url(#circle-arrow-weak)"
+                stroke={couleurCategorie(p.cat)}
+                strokeOpacity={0.55}
+                strokeWidth={2}
+                strokeDasharray="1 5"
+                strokeLinecap="round"
+                markerEnd={`url(#arrow-weak-${p.cat})`}
               />
             )
           })}
 
-          {/* closest advantage (+22): straight hexagon edges, on top */}
+          {/* strong edge: bold hexagon rim, in the source category's color, on top */}
           {nodes.map((p, i) => {
             const q = nodes[(i + 1) % n]
             return (
@@ -99,9 +132,10 @@ export function CategoryCircleModal({ chart, onClose }: CategoryCircleModalProps
                 y1={p.y}
                 x2={q.x}
                 y2={q.y}
-                stroke="var(--color-ink)"
-                strokeWidth={2.5}
-                markerEnd="url(#circle-arrow-strong)"
+                stroke={couleurCategorie(p.cat)}
+                strokeWidth={3.5}
+                strokeLinecap="round"
+                markerEnd={`url(#arrow-strong-${p.cat})`}
               />
             )
           })}
@@ -109,13 +143,16 @@ export function CategoryCircleModal({ chart, onClose }: CategoryCircleModalProps
           {/* category nodes + labels */}
           {nodes.map((p) => (
             <g key={p.cat}>
-              <circle cx={p.x} cy={p.y} r={NODE_SIZE} fill={couleurCategorie(p.cat)} stroke="var(--color-ink)" strokeWidth={2} />
+              <circle cx={p.x} cy={p.y} r={NODE_SIZE} fill={couleurCategorie(p.cat)} stroke="var(--color-ink)" strokeWidth={2.5} />
+              <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="middle" fontSize={18}>
+                {EMOJI[p.cat] ?? '❔'}
+              </text>
               <text
                 x={p.label.x}
                 y={p.label.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize={12.5}
+                fontSize={13}
                 fontWeight={800}
                 fill="var(--color-ink)"
                 className="font-display"
@@ -128,15 +165,14 @@ export function CategoryCircleModal({ chart, onClose }: CategoryCircleModalProps
 
         <div className="mt-2 space-y-1.5 text-xs text-texte-2">
           <p className="flex items-center gap-2">
-            <span className="h-0.5 w-6 shrink-0 rounded bg-ink" aria-hidden />
-            Closest advantage — +22 fighting points
+            <span className="h-1 w-6 shrink-0 rounded-full bg-accent" aria-hidden />
+            Strong advantage
           </p>
           <p className="flex items-center gap-2">
-            <span className="h-0 w-6 shrink-0 border-t-2 border-dashed border-[#9aa3bd]" aria-hidden />
-            Second-closest advantage — +17 fighting points
+            <span className="h-0 w-6 shrink-0 border-t-2 border-dotted border-accent/60" aria-hidden />
+            Slight advantage
           </p>
-          <p>The category directly opposite is neutral: both sides' small edges cancel out.</p>
-          <p>Fighting points (rarity + this bonus) decide most clashes; attack, defense and rarity break the rest.</p>
+          <p>The category straight across the wheel is a wash — neither side has the edge.</p>
         </div>
       </div>
     </div>
