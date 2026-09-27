@@ -39,7 +39,7 @@ const CHANCES_RARETE = (Object.entries(RARETE_PONDERATION) as [Rarete, number][]
 const PAS_CLAVIER = 0.34
 
 export function Boosters() {
-  const { joueur, ajouterObjets } = useSession()
+  const { joueur, ajouterObjets, decouvertes } = useSession()
   const [stack, setStack] = useState<EtatStack>(() => ({
     actuel: BOOSTERS_MOCK.actuel,
     prochainA: new Date(BOOSTERS_MOCK.prochainA).getTime(),
@@ -48,6 +48,8 @@ export function Boosters() {
   const [etat, setEtat] = useState<EtatOuverture>('idle')
   const [objetsObtenus, setObjetsObtenus] = useState<Objet[]>([])
   const [indexCarte, setIndexCarte] = useState(0)
+  /** Catalog ids from this draw the player never owned before (snapshotted pre-draw, since saving updates `decouvertes`). */
+  const [nouveauxIds, setNouveauxIds] = useState<Set<string>>(new Set())
   /** Save state of the last draw: the cards only count once they're in the inventory. */
   const [sauvegarde, setSauvegarde] = useState<'ok' | 'en_cours' | 'echec'>('ok')
   /** Pack flipped over to inspect its back (only while idle, before arming the tear). */
@@ -107,6 +109,8 @@ export function Boosters() {
       const tirage = Array.from({ length: OBJETS_PAR_BOOSTER }, () => tirerObjetPondere(OBJETS_BOOSTER_MOCK)).sort(
         (a, b) => ORDRE_RARETE[a.rarete] - ORDRE_RARETE[b.rarete],
       )
+      const dejaConnus = new Set(decouvertes)
+      setNouveauxIds(new Set(tirage.filter((o) => !dejaConnus.has(o.id)).map((o) => o.id)))
       setObjetsObtenus(tirage)
       setIndexCarte(0)
       sauvegarder(tirage)
@@ -330,8 +334,19 @@ export function Boosters() {
 
             {/* The card spins into view; the rarer it is, the slower it turns */}
             <div key={indexCarte} className="animate-card-spin-in" style={dureeSpin(objetActuel.rarete)}>
-              <ObjetCard objet={objetActuel} onSelect={onTapCarte} />
+              <ObjetCard objet={objetActuel} onSelect={onTapCarte} nouveau={nouveauxIds.has(objetActuel.id)} />
             </div>
+
+            {/* One-shot burst ring for the top two tiers only, plays once as the card lands */}
+            {(objetActuel.rarete === 'legendaire' || objetActuel.rarete === 'secret_rare') && (
+              <div
+                key={`burst-${indexCarte}`}
+                className={`pointer-events-none absolute inset-0 rounded-3xl reveal-burst ${
+                  objetActuel.rarete === 'secret_rare' ? 'reveal-burst-secret' : 'reveal-burst-legendary'
+                }`}
+                aria-hidden
+              />
+            )}
           </div>
         )}
 
@@ -349,7 +364,7 @@ export function Boosters() {
             {sauvegarde === 'en_cours' && <p className="mb-2 text-xs text-texte-2">Saving to your inventory…</p>}
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {objetsObtenus.map((objet, i) => (
-                <ObjetCard key={`${objet.id}-${i}`} objet={objet} />
+                <ObjetCard key={`${objet.id}-${i}`} objet={objet} nouveau={nouveauxIds.has(objet.id)} />
               ))}
             </div>
           </div>

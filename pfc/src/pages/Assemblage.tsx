@@ -189,7 +189,7 @@ export function Assemblage() {
             )}
             {resultat.objetResultat && (
               <div className="mx-auto mt-3 max-w-xs">
-                <ObjetCard objet={resultat.objetResultat} />
+                <ObjetCard objet={resultat.objetResultat} nouveau={resultat.nouvelleDecouverte} />
               </div>
             )}
           </div>

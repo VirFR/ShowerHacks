@@ -6,6 +6,7 @@ import { ConnexionRequise } from '@/components/ConnexionRequise'
 import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
 import { BattleCard } from '@/components/battle/BattleCard'
+import { CategoryCircleModal } from '@/components/battle/CategoryCircleModal'
 import { versCarte } from '@/lib/combat'
 import { DECK_SIZE, beatenBy, categoryLabel, chartCategories, matchup } from '@/lib/engine'
 import { couleurCategorie, libelleCategorie } from '@/lib/format'
@@ -31,6 +32,7 @@ function Builder() {
   const [filtre, setFiltre] = useState<string>('toutes')
   const [sauvegarde, setSauvegarde] = useState(false)
   const [erreur, setErreur] = useState<string | null>(null)
+  const [circleOuvert, setCircleOuvert] = useState(false)
 
   const inventaire = joueur!.inventaire
   const cleDe = (o: Objet) => o.inventaireId ?? o.id
@@ -91,7 +93,7 @@ function Builder() {
       </Link>
       <PageHeader
         titre="Build your deck"
-        sousTitre={`Pick ${DECK_SIZE} cards. The chart decides first, then attack against defense.`}
+        sousTitre={`Pick ${DECK_SIZE} cards. Fighting points decide first, then attack, defense and rarity.`}
         action={
           <Bouton onClick={sauver} disabled={!complet || sauvegarde}>
             {sauvegarde
@@ -123,7 +125,13 @@ function Builder() {
           })}
         </div>
         <Carte>
-          <h2 className="font-display text-sm font-bold">Coverage</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-sm font-bold">Coverage</h2>
+            <Bouton taille="sm" variante="secondaire" onClick={() => setCircleOuvert(true)}>
+              <Icon name="grid" size={14} />
+              Category circle
+            </Bouton>
+          </div>
           <dl className="mt-3 flex flex-col gap-2 text-sm md:flex-row md:gap-8">
             <div className="flex flex-wrap items-center gap-2">
               <dt className="w-16 text-texte-2">Beats</dt>
@@ -185,6 +193,7 @@ function Builder() {
           )
         })}
       </div>
+      {circleOuvert && <CategoryCircleModal chart={chart} onClose={() => setCircleOuvert(false)} />}
     </>
   )
 }
