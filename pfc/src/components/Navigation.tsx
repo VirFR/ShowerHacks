@@ -73,6 +73,13 @@ export function Navigation() {
         ) : (
           'Not signed in'
         )}
+        <p className="mt-2 text-[10px] font-medium text-texte-2/80">
+          Icons by{' '}
+          <a href="https://game-icons.net" target="_blank" rel="noreferrer" className="underline hover:text-texte">
+            game-icons.net
+          </a>{' '}
+          (CC BY 3.0)
+        </p>
       </div>
     </nav>
   )

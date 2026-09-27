@@ -1,0 +1,962 @@
+{
+ "obj-01": {
+  "name": "Mossy Rock",
+  "icon": "stone-block"
+ },
+ "obj-04": {
+  "name": "Oak Leaf",
+  "icon": "oak-leaf"
+ },
+ "obj-07": {
+  "name": "Rusty Scissors",
+  "icon": "shears"
+ },
+ "obj-02": {
+  "name": "Ancient Menhir",
+  "icon": "stone-tablet"
+ },
+ "obj-03": {
+  "name": "Meteorite",
+  "icon": "meteor-impact"
+ },
+ "obj-05": {
+  "name": "Cursed Scroll",
+  "icon": "scroll-unfurled"
+ },
+ "obj-06": {
+  "name": "Armored Paper",
+  "icon": "papers"
+ },
+ "obj-08": {
+  "name": "Sharpened Katana",
+  "icon": "katana"
+ },
+ "obj-09": {
+  "name": "Crab Claw",
+  "icon": "crab-claw"
+ },
+ "obj-10": {
+  "name": "Storm Lightning",
+  "icon": "lightning-storm"
+ },
+ "obj-11": {
+  "name": "Ice Shield",
+  "icon": "ice-shield"
+ },
+ "obj-12": {
+  "name": "Chaos Die",
+  "icon": "perspective-dice-six-faces-random"
+ },
+ "obj-13": {
+  "name": "Hatchet",
+  "icon": "hatchet"
+ },
+ "obj-14": {
+  "name": "Shield",
+  "icon": "round-shield"
+ },
+ "obj-15": {
+  "name": "Net",
+  "icon": "fishing-net"
+ },
+ "obj-16": {
+  "name": "Torch",
+  "icon": "torch"
+ },
+ "obj-17": {
+  "name": "Hammer",
+  "icon": "claw-hammer"
+ },
+ "obj-18": {
+  "name": "Rope",
+  "icon": "rope-coil"
+ },
+ "obj-19": {
+  "name": "Magnet",
+  "icon": "magnet"
+ },
+ "obj-20": {
+  "name": "Water Bucket",
+  "icon": "empty-metal-bucket-handle"
+ },
+ "obj-21": {
+  "name": "Kitchen Knife",
+  "icon": "kitchen-knives"
+ },
+ "obj-22": {
+  "name": "Shovel",
+  "icon": "trench-spade"
+ },
+ "obj-23": {
+  "name": "Umbrella",
+  "icon": "umbrella"
+ },
+ "obj-24": {
+  "name": "Fire Extinguisher",
+  "icon": "fire-extinguisher"
+ },
+ "obj-25": {
+  "name": "Brick",
+  "icon": "brick-wall"
+ },
+ "obj-26": {
+  "name": "Duct Tape",
+  "icon": "bandage-roll"
+ },
+ "obj-27": {
+  "name": "Flashlight",
+  "icon": "flashlight"
+ },
+ "obj-28": {
+  "name": "Power Drill",
+  "icon": "drill"
+ },
+ "obj-29": {
+  "name": "Crossbow",
+  "icon": "crossbow"
+ },
+ "obj-30": {
+  "name": "Grappling Hook",
+  "icon": "grapple"
+ },
+ "obj-31": {
+  "name": "Slingshot",
+  "icon": "slingshot"
+ },
+ "obj-32": {
+  "name": "Boxing Glove",
+  "icon": "boxing-glove"
+ },
+ "obj-33": {
+  "name": "Circular Saw",
+  "icon": "circular-saw"
+ },
+ "obj-34": {
+  "name": "Chainsaw",
+  "icon": "chainsaw"
+ },
+ "obj-35": {
+  "name": "Flamethrower",
+  "icon": "flamethrower"
+ },
+ "obj-36": {
+  "name": "Heavy Armor",
+  "icon": "breastplate"
+ },
+ "obj-37": {
+  "name": "Industrial Drill",
+  "icon": "drill"
+ },
+ "obj-38": {
+  "name": "Cannon",
+  "icon": "cannon"
+ },
+ "obj-39": {
+  "name": "Tesla Generator",
+  "icon": "tesla-coil"
+ },
+ "obj-40": {
+  "name": "Bottled Tornado",
+  "icon": "tornado"
+ },
+ "obj-41": {
+  "name": "Iron Ore",
+  "icon": "ore"
+ },
+ "obj-42": {
+  "name": "Wood Log",
+  "icon": "log"
+ },
+ "obj-43": {
+  "name": "Coal",
+  "icon": "coal-pile"
+ },
+ "obj-44": {
+  "name": "Gold Ingot",
+  "icon": "gold-bar"
+ },
+ "obj-45": {
+  "name": "Raw Diamond",
+  "icon": "diamond-hard"
+ },
+ "obj-46": {
+  "name": "Ancient Oak",
+  "icon": "oak"
+ },
+ "obj-47": {
+  "name": "Thorny Bramble",
+  "icon": "thorny-vine"
+ },
+ "obj-48": {
+  "name": "Poison Mushroom",
+  "icon": "mushroom"
+ },
+ "obj-49": {
+  "name": "Desert Cactus",
+  "icon": "cactus"
+ },
+ "obj-50": {
+  "name": "Climbing Vine",
+  "icon": "vine-leaf"
+ },
+ "obj-51": {
+  "name": "Asteroid",
+  "icon": "asteroid"
+ },
+ "obj-52": {
+  "name": "Icy Comet",
+  "icon": "comet-spark"
+ },
+ "obj-53": {
+  "name": "Moon",
+  "icon": "moon"
+ },
+ "obj-54": {
+  "name": "Sun",
+  "icon": "sun"
+ },
+ "obj-55": {
+  "name": "Shooting Star",
+  "icon": "falling-star"
+ },
+ "obj-56": {
+  "name": "Miniature Black Hole",
+  "icon": "black-hole-bolas"
+ },
+ "obj-57": {
+  "name": "Nebula",
+  "icon": "galaxy"
+ },
+ "obj-66": {
+  "name": "Ant",
+  "icon": "ant"
+ },
+ "obj-67": {
+  "name": "Mouse",
+  "icon": "mouse"
+ },
+ "obj-68": {
+  "name": "Rabbit",
+  "icon": "rabbit"
+ },
+ "obj-69": {
+  "name": "Sparrow",
+  "icon": "sparrow"
+ },
+ "obj-70": {
+  "name": "Squirrel",
+  "icon": "squirrel"
+ },
+ "obj-71": {
+  "name": "Frog",
+  "icon": "frog"
+ },
+ "obj-72": {
+  "name": "Fox",
+  "icon": "fox"
+ },
+ "obj-73": {
+  "name": "Raccoon",
+  "icon": "raccoon-head"
+ },
+ "obj-74": {
+  "name": "Owl",
+  "icon": "owl"
+ },
+ "obj-75": {
+  "name": "Wild Boar",
+  "icon": "boar"
+ },
+ "obj-76": {
+  "name": "Elephant",
+  "icon": "elephant"
+ },
+ "obj-77": {
+  "name": "Giraffe",
+  "icon": "camel"
+ },
+ "obj-78": {
+  "name": "Deer",
+  "icon": "deer"
+ },
+ "obj-79": {
+  "name": "Bat",
+  "icon": "bat"
+ },
+ "obj-80": {
+  "name": "Wolf",
+  "icon": "wolf-head"
+ },
+ "obj-81": {
+  "name": "Hyena",
+  "icon": "hyena-head"
+ },
+ "obj-82": {
+  "name": "Leopard",
+  "icon": "saber-toothed-cat-head"
+ },
+ "obj-83": {
+  "name": "Crocodile",
+  "icon": "croc-jaws"
+ },
+ "obj-84": {
+  "name": "Eagle",
+  "icon": "eagle-head"
+ },
+ "obj-85": {
+  "name": "Cheetah",
+  "icon": "lynx-head"
+ },
+ "obj-86": {
+  "name": "Komodo Dragon",
+  "icon": "lizardman"
+ },
+ "obj-87": {
+  "name": "Anaconda",
+  "icon": "snake"
+ },
+ "obj-88": {
+  "name": "Lion",
+  "icon": "lion"
+ },
+ "obj-89": {
+  "name": "Tiger",
+  "icon": "tiger"
+ },
+ "obj-90": {
+  "name": "Grizzly Bear",
+  "icon": "bear-head"
+ },
+ "obj-91": {
+  "name": "Great White Shark",
+  "icon": "shark-jaws"
+ },
+ "obj-92": {
+  "name": "Orca",
+  "icon": "dolphin"
+ },
+ "obj-93": {
+  "name": "Polar Bear",
+  "icon": "polar-bear"
+ },
+ "obj-94": {
+  "name": "Jaguar",
+  "icon": "tiger-head"
+ },
+ "obj-95": {
+  "name": "Saltwater Crocodile",
+  "icon": "swamp"
+ },
+ "obj-96": {
+  "name": "Sperm Whale",
+  "icon": "sperm-whale"
+ },
+ "obj-97": {
+  "name": "Tyrannosaurus Rex",
+  "icon": "t-rex-skull"
+ },
+ "obj-98": {
+  "name": "Megalodon",
+  "icon": "shark-bite"
+ },
+ "obj-99": {
+  "name": "Kraken",
+  "icon": "kraken-tentacle"
+ },
+ "obj-100": {
+  "name": "Wooden Cart",
+  "icon": "old-wagon"
+ },
+ "obj-101": {
+  "name": "Bicycle",
+  "icon": "cycle"
+ },
+ "obj-102": {
+  "name": "Rowboat",
+  "icon": "wood-canoe"
+ },
+ "obj-103": {
+  "name": "Skateboard",
+  "icon": "skateboard"
+ },
+ "obj-104": {
+  "name": "Steam Locomotive",
+  "icon": "steam-locomotive"
+ },
+ "obj-105": {
+  "name": "Hot Air Balloon",
+  "icon": "air-balloon"
+ },
+ "obj-106": {
+  "name": "Motorcycle",
+  "icon": "scooter"
+ },
+ "obj-107": {
+  "name": "Sailing Ship",
+  "icon": "sailboat"
+ },
+ "obj-108": {
+  "name": "Zeppelin",
+  "icon": "zeppelin"
+ },
+ "obj-109": {
+  "name": "Snowmobile",
+  "icon": "snowboard"
+ },
+ "obj-110": {
+  "name": "Automobile",
+  "icon": "city-car"
+ },
+ "obj-111": {
+  "name": "Pickup Truck",
+  "icon": "truck"
+ },
+ "obj-112": {
+  "name": "Cargo Ship",
+  "icon": "cargo-ship"
+ },
+ "obj-113": {
+  "name": "Propeller Airplane",
+  "icon": "airplane"
+ },
+ "obj-114": {
+  "name": "Tank",
+  "icon": "tank"
+ },
+ "obj-115": {
+  "name": "Container Ship",
+  "icon": "cargo-ship"
+ },
+ "obj-116": {
+  "name": "Fighter Jet",
+  "icon": "jet-fighter"
+ },
+ "obj-117": {
+  "name": "Attack Helicopter",
+  "icon": "helicopter"
+ },
+ "obj-118": {
+  "name": "Submarine",
+  "icon": "submarine"
+ },
+ "obj-119": {
+  "name": "Bullet Train",
+  "icon": "subway-train"
+ },
+ "obj-120": {
+  "name": "Space Shuttle",
+  "icon": "space-shuttle"
+ },
+ "obj-121": {
+  "name": "Hypercar",
+  "icon": "race-car"
+ },
+ "obj-122": {
+  "name": "Stealth Bomber",
+  "icon": "stealth-bomber"
+ },
+ "obj-123": {
+  "name": "Aircraft Carrier",
+  "icon": "battleship"
+ },
+ "obj-124": {
+  "name": "Formula 1 Car",
+  "icon": "f1-car"
+ },
+ "obj-125": {
+  "name": "Mars Rover",
+  "icon": "mars-curiosity"
+ },
+ "obj-126": {
+  "name": "Reusable Orbital Rocket",
+  "icon": "rocket"
+ },
+ "obj-139": {
+  "name": "Pistol",
+  "icon": "pistol-gun"
+ },
+ "obj-141": {
+  "name": "Sniper Rifle",
+  "icon": "winchester-rifle"
+ },
+ "obj-142": {
+  "name": "Grenade",
+  "icon": "grenade"
+ },
+ "obj-143": {
+  "name": "AK-47",
+  "icon": "ak47"
+ },
+ "obj-146": {
+  "name": "Railgun",
+  "icon": "ray-gun"
+ },
+ "obj-148": {
+  "name": "Space Dust",
+  "icon": "sparkles"
+ },
+ "obj-149": {
+  "name": "Ice Chunk",
+  "icon": "ice-cube"
+ },
+ "obj-150": {
+  "name": "Small Moon",
+  "icon": "moon-orbit"
+ },
+ "obj-151": {
+  "name": "Meteor Shower",
+  "icon": "meteor-impact"
+ },
+ "obj-152": {
+  "name": "Asteroid Belt",
+  "icon": "asteroid"
+ },
+ "obj-153": {
+  "name": "Dwarf Planet",
+  "icon": "ringed-planet"
+ },
+ "obj-154": {
+  "name": "Satellite",
+  "icon": "satellite"
+ },
+ "obj-155": {
+  "name": "White Dwarf",
+  "icon": "polar-star"
+ },
+ "obj-156": {
+  "name": "Gas Giant",
+  "icon": "jupiter"
+ },
+ "obj-157": {
+  "name": "Red Giant Star",
+  "icon": "barbed-sun"
+ },
+ "obj-158": {
+  "name": "Blue Supergiant Star",
+  "icon": "star-prominences"
+ },
+ "obj-159": {
+  "name": "Supernova",
+  "icon": "bright-explosion"
+ },
+ "obj-160": {
+  "name": "Pulsar",
+  "icon": "pulse"
+ },
+ "obj-161": {
+  "name": "Quasar",
+  "icon": "star-swirl"
+ },
+ "obj-162": {
+  "name": "Galaxy",
+  "icon": "galaxy"
+ },
+ "obj-163": {
+  "name": "Sand",
+  "icon": "sand-castle"
+ },
+ "obj-164": {
+  "name": "Clay",
+  "icon": "clay-brick"
+ },
+ "obj-165": {
+  "name": "Limestone",
+  "icon": "stone-pile"
+ },
+ "obj-166": {
+  "name": "Copper Ore",
+  "icon": "ore"
+ },
+ "obj-167": {
+  "name": "Salt Crystal",
+  "icon": "crystal-growth"
+ },
+ "obj-168": {
+  "name": "Cobalt Ore",
+  "icon": "ore"
+ },
+ "obj-169": {
+  "name": "Silver Ingot",
+  "icon": "metal-bar"
+ },
+ "obj-170": {
+  "name": "Quartz Crystal",
+  "icon": "crystal-shine"
+ },
+ "obj-171": {
+  "name": "Obsidian Shard",
+  "icon": "shard-sword"
+ },
+ "obj-172": {
+  "name": "Pearl",
+  "icon": "pearl-necklace"
+ },
+ "obj-173": {
+  "name": "Amber",
+  "icon": "amber-mosquito"
+ },
+ "obj-174": {
+  "name": "Platinum Ingot",
+  "icon": "metal-bar"
+ },
+ "obj-175": {
+  "name": "Ruby",
+  "icon": "cut-diamond"
+ },
+ "obj-176": {
+  "name": "Sapphire",
+  "icon": "saphir"
+ },
+ "obj-177": {
+  "name": "Titanium Ingot",
+  "icon": "metal-bar"
+ },
+ "obj-178": {
+  "name": "Emerald",
+  "icon": "emerald"
+ },
+ "obj-179": {
+  "name": "Uranium Ore",
+  "icon": "radioactive"
+ },
+ "obj-180": {
+  "name": "Meteorite Fragment",
+  "icon": "rock"
+ },
+ "obj-181": {
+  "name": "Antimatter Sample",
+  "icon": "atom"
+ },
+ "obj-182": {
+  "name": "Dandelion",
+  "icon": "dandelion-flower"
+ },
+ "obj-183": {
+  "name": "Clover",
+  "icon": "clover"
+ },
+ "obj-184": {
+  "name": "Grass Tuft",
+  "icon": "grass"
+ },
+ "obj-185": {
+  "name": "Poison Ivy",
+  "icon": "three-leaves"
+ },
+ "obj-186": {
+  "name": "Fern",
+  "icon": "fern"
+ },
+ "obj-187": {
+  "name": "Bamboo Stalk",
+  "icon": "bamboo"
+ },
+ "obj-188": {
+  "name": "Cherry Blossom",
+  "icon": "cherry"
+ },
+ "obj-189": {
+  "name": "Mistletoe",
+  "icon": "berries-bowl"
+ },
+ "obj-190": {
+  "name": "Rose",
+  "icon": "rose"
+ },
+ "obj-191": {
+  "name": "Sunflower",
+  "icon": "sunflower"
+ },
+ "obj-192": {
+  "name": "Venus Flytrap",
+  "icon": "carnivorous-plant"
+ },
+ "obj-193": {
+  "name": "Baobab Tree",
+  "icon": "baobab"
+ },
+ "obj-194": {
+  "name": "Orchid",
+  "icon": "butterfly-flower"
+ },
+ "obj-195": {
+  "name": "Giant Sequoia",
+  "icon": "pine-tree"
+ },
+ "obj-196": {
+  "name": "Lotus Flower",
+  "icon": "lotus-flower"
+ },
+ "obj-197": {
+  "name": "Redwood",
+  "icon": "pine-tree"
+ },
+ "obj-198": {
+  "name": "Corpse Flower",
+  "icon": "flower-pot"
+ },
+ "obj-199": {
+  "name": "Ghost Orchid",
+  "icon": "flowers"
+ },
+ "obj-200": {
+  "name": "Jade Vine",
+  "icon": "vine-flower"
+ },
+ "obj-201": {
+  "name": "Wollemi Pine",
+  "icon": "pine-tree"
+ },
+ "obj-202": {
+  "name": "Tulip",
+  "icon": "flower-pot"
+ },
+ "obj-203": {
+  "name": "Wheat Stalk",
+  "icon": "wheat"
+ },
+ "obj-204": {
+  "name": "Moss",
+  "icon": "grass-mushroom"
+ },
+ "obj-205": {
+  "name": "Maple Tree",
+  "icon": "tree-branch"
+ },
+ "obj-206": {
+  "name": "Palm Tree",
+  "icon": "palm-tree"
+ },
+ "obj-207": {
+  "name": "Water Lily",
+  "icon": "lotus"
+ },
+ "obj-208": {
+  "name": "Pitcher Plant",
+  "icon": "carnivorous-plant"
+ },
+ "obj-209": {
+  "name": "Bird of Paradise",
+  "icon": "flowers"
+ },
+ "obj-210": {
+  "name": "Passion Flower",
+  "icon": "flower-star"
+ },
+ "obj-211": {
+  "name": "Silver Birch",
+  "icon": "birch-trees"
+ },
+ "obj-212": {
+  "name": "Dragon Blood Tree",
+  "icon": "tree-roots"
+ },
+ "obj-213": {
+  "name": "Banyan Tree",
+  "icon": "tree-roots"
+ },
+ "obj-214": {
+  "name": "Rafflesia",
+  "icon": "spoted-flower"
+ },
+ "obj-215": {
+  "name": "Middlemist Red",
+  "icon": "rose"
+ },
+ "obj-216": {
+  "name": "Gravel",
+  "icon": "stone-pile"
+ },
+ "obj-217": {
+  "name": "Gypsum",
+  "icon": "crystal-cluster"
+ },
+ "obj-218": {
+  "name": "Tin Ore",
+  "icon": "ore"
+ },
+ "obj-219": {
+  "name": "Zinc Ore",
+  "icon": "ore"
+ },
+ "obj-220": {
+  "name": "Granite Block",
+  "icon": "stone-block"
+ },
+ "obj-221": {
+  "name": "Nickel Ingot",
+  "icon": "metal-bar"
+ },
+ "obj-222": {
+  "name": "Opal",
+  "icon": "gem-pendant"
+ },
+ "obj-223": {
+  "name": "Garnet",
+  "icon": "gems"
+ },
+ "obj-224": {
+  "name": "Palladium",
+  "icon": "metal-bar"
+ },
+ "obj-225": {
+  "name": "Topaz",
+  "icon": "cut-diamond"
+ },
+ "obj-226": {
+  "name": "Painite",
+  "icon": "crystal-bars"
+ },
+ "obj-227": {
+  "name": "Rhodium",
+  "icon": "metal-bar"
+ },
+ "obj-228": {
+  "name": "Musgravite",
+  "icon": "gems"
+ },
+ "obj-229": {
+  "name": "Cosmic Ray",
+  "icon": "laser-burst"
+ },
+ "obj-230": {
+  "name": "Solar Wind",
+  "icon": "solar-system"
+ },
+ "obj-231": {
+  "name": "Interstellar Gas Cloud",
+  "icon": "galaxy"
+ },
+ "obj-232": {
+  "name": "Comet Tail",
+  "icon": "comet-spark"
+ },
+ "obj-233": {
+  "name": "Binary Star System",
+  "icon": "star-satellites"
+ },
+ "obj-234": {
+  "name": "Ring System",
+  "icon": "ringed-planet"
+ },
+ "obj-235": {
+  "name": "Exoplanet",
+  "icon": "world"
+ },
+ "obj-236": {
+  "name": "Brown Dwarf",
+  "icon": "planet-core"
+ },
+ "obj-237": {
+  "name": "Ice Giant",
+  "icon": "ringed-planet"
+ },
+ "obj-238": {
+  "name": "Neutron Star",
+  "icon": "flat-star"
+ },
+ "obj-239": {
+  "name": "Yellow Dwarf Star",
+  "icon": "heraldic-sun"
+ },
+ "obj-240": {
+  "name": "Protostar",
+  "icon": "star-formation"
+ },
+ "obj-241": {
+  "name": "Magnetar",
+  "icon": "magnet"
+ },
+ "obj-242": {
+  "name": "Hypergiant Star",
+  "icon": "sun-radiations"
+ },
+ "obj-243": {
+  "name": "Wormhole",
+  "icon": "vortex"
+ },
+ "obj-244": {
+  "name": "The Big Bang",
+  "icon": "explosion-rays"
+ },
+ "obj-245": {
+  "name": "Observable Universe",
+  "icon": "galaxy"
+ },
+ "obj-246": {
+  "name": "Hedgehog",
+  "icon": "hedgehog"
+ },
+ "obj-247": {
+  "name": "Otter",
+  "icon": "beaver"
+ },
+ "obj-248": {
+  "name": "Honey Badger",
+  "icon": "badger"
+ },
+ "obj-249": {
+  "name": "Vulture",
+  "icon": "vulture"
+ },
+ "obj-250": {
+  "name": "Hippopotamus",
+  "icon": "rhinoceros-horn"
+ },
+ "obj-251": {
+  "name": "Silverback Gorilla",
+  "icon": "gorilla"
+ },
+ "obj-252": {
+  "name": "Canoe",
+  "icon": "canoe"
+ },
+ "obj-253": {
+  "name": "Skis",
+  "icon": "skis"
+ },
+ "obj-254": {
+  "name": "Trolley Car",
+  "icon": "subway-train"
+ },
+ "obj-255": {
+  "name": "Biplane",
+  "icon": "biplane"
+ },
+ "obj-257": {
+  "name": "School Bus",
+  "icon": "bus"
+ },
+ "obj-258": {
+  "name": "Ambulance",
+  "icon": "ambulance"
+ },
+ "obj-259": {
+  "name": "Freight Train",
+  "icon": "steam-locomotive"
+ },
+ "obj-260": {
+  "name": "Cruise Ship",
+  "icon": "cruiser"
+ },
+ "obj-261": {
+  "name": "High-Speed Ferry",
+  "icon": "ship-bow"
+ },
+ "obj-262": {
+  "name": "Semi-Truck",
+  "icon": "truck"
+ },
+ "obj-263": {
+  "name": "Supersonic Concorde Jet",
+  "icon": "commercial-airplane"
+ },
+ "obj-264": {
+  "name": "International Space Station",
+  "icon": "satellite"
+ },
+ "obj-256": {
+  "name": "Cable Car",
+  "icon": "lift"
+ }
+}

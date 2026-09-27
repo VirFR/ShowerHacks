@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@/components/Icon'
 import { categoryLabel, type Chart, type EngineCard } from '@/lib/engine'
-import { CLASSE_RARETE, LIBELLE_RARETE, couleurCategorie } from '@/lib/format'
+import { LETTRE_RARETE, styleArtCategorie, stylePanneauRarete, TEINTE_RARETE } from '@/lib/format'
 import type { Rarete } from '@/types'
 
 type Taille = 'xs' | 'sm' | 'md' | 'lg'
@@ -21,15 +21,16 @@ interface BattleCardProps {
 }
 
 const DIMENSIONS: Record<Taille, string> = {
-  xs: 'w-10 h-14 rounded-md',
-  sm: 'w-28 h-44 rounded-xl',
-  md: 'w-36 h-52 rounded-2xl',
-  lg: 'w-48 h-[17rem] rounded-2xl md:w-56 md:h-[19.5rem]',
+  xs: 'w-10 h-14 rounded-lg p-0.5',
+  sm: 'w-28 h-44 rounded-xl p-1',
+  md: 'w-36 h-52 rounded-2xl p-1.5',
+  lg: 'w-48 h-[17rem] rounded-2xl p-2 md:w-56 md:h-[19.5rem]',
 }
 
 /**
- * A card in the arena, the hand or the deck builder. Never renders the
- * emoji fallback: a broken image becomes a category-coloured monogram.
+ * A card in the arena, the hand or the deck builder: the same dark body,
+ * category art and rarity panel as the collection card, in fixed sizes.
+ * A broken image becomes the card's initial.
  */
 export function BattleCard({
   card,
@@ -43,54 +44,58 @@ export function BattleCard({
   badge,
 }: BattleCardProps) {
   const [imageKo, setImageKo] = useState(false)
-  const couleur = couleurCategorie(card.category)
   const petite = taille === 'xs'
-  const rarete = card.rarity as Rarete | undefined
+  const rarete = (card.rarity as Rarete | undefined) ?? 'commun'
+  const teinte = TEINTE_RARETE[rarete]
+  const grande = taille === 'lg'
 
   const contenu = (
     <>
       <div
-        className="absolute inset-0"
-        style={{ background: `linear-gradient(165deg, ${couleur}${selectionne ? '99' : '66'} 0%, var(--color-carte) 62%)` }}
-      />
-      {!petite && (
-        <div className="relative flex items-center justify-between gap-1 px-3 pt-2.5 text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: couleur }}>
-          <span className="truncate">{categoryLabel(chart, card.category)}</span>
-          {momentum > 0 ? (
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-or px-1.5 py-0.5 text-[10px] font-black text-ink">
-              <Icon name="bolt" size={10} strokeWidth={3} />+{momentum}
-            </span>
-          ) : badge ? (
-            <span className="shrink-0 whitespace-nowrap rounded-full border border-ink bg-or px-1.5 py-0.5 text-[9px] font-bold tracking-normal text-ink">{badge}</span>
-          ) : rarete && rarete !== 'commun' ? (
-            <span className={`text-[10px] font-semibold ${CLASSE_RARETE[rarete]}`}>{LIBELLE_RARETE[rarete]}</span>
-          ) : null}
-        </div>
-      )}
-      <div className={`relative flex flex-1 items-center justify-center ${petite ? 'p-1' : 'p-3'}`}>
+        className={`relative flex items-center justify-center overflow-hidden ${petite ? 'h-full rounded-md' : 'h-[52%] rounded-t-lg'}`}
+        style={styleArtCategorie(card.category)}
+      >
         {card.imageUrl && !imageKo ? (
           <img
             src={card.imageUrl}
             alt=""
             draggable={false}
             onError={() => setImageKo(true)}
-            className={`object-contain drop-shadow-lg ${petite ? 'h-8 w-8 rounded' : taille === 'sm' ? 'h-14 w-14 rounded-lg' : taille === 'md' ? 'h-24 w-24 rounded-xl' : 'h-32 w-32 rounded-2xl md:h-36 md:w-36'}`}
+            className="h-[64%] w-[64%] object-contain drop-shadow-[0_3px_0_rgba(0,0,0,0.3)]"
           />
         ) : (
-          <div
-            className={`flex items-center justify-center rounded-xl font-display font-black text-ink ${petite ? 'h-7 w-7 text-sm' : 'h-20 w-20 text-4xl'}`}
-            style={{ backgroundColor: couleur }}
+          <span className={`font-display font-bold text-white ${petite ? 'text-sm' : 'text-3xl'}`}>{card.name.charAt(0).toUpperCase()}</span>
+        )}
+        {!petite && (
+          <span
+            className="absolute left-1.5 top-1.5 rounded px-1.5 py-0.5 font-display text-[10px] font-bold leading-none"
+            style={{ background: teinte.badgeFond, color: teinte.badgeTexte }}
           >
-            {card.name.charAt(0).toUpperCase()}
-          </div>
+            {LETTRE_RARETE[rarete]}
+          </span>
+        )}
+        {!petite && momentum > 0 && (
+          <span className="absolute right-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full border border-ink bg-or px-1.5 py-0.5 text-[10px] font-black text-ink">
+            <Icon name="bolt" size={10} strokeWidth={3} />+{momentum}
+          </span>
+        )}
+        {!petite && momentum <= 0 && badge && (
+          <span className="absolute right-1.5 top-1.5 rounded-full border border-ink bg-or px-1.5 py-0.5 text-[9px] font-bold text-ink">{badge}</span>
         )}
       </div>
       {!petite && (
-        <div className="relative px-3 pb-3">
-          <p className={`truncate font-display font-bold ${taille === 'lg' ? 'text-lg' : taille === 'md' ? 'text-sm' : 'text-xs'}`}>{card.name}</p>
-          <div className="mt-1.5 flex gap-1.5 text-[11px] font-bold">
-            <span className="whitespace-nowrap rounded-md border border-ink/40 bg-carte px-1.5 py-0.5 text-attaque">ATK {card.attack}</span>
-            <span className="whitespace-nowrap rounded-md border border-ink/40 bg-carte px-1.5 py-0.5 text-defense">DEF {card.defense}</span>
+        <div className={`flex min-h-0 flex-1 flex-col rounded-b-lg text-ink ${grande ? 'px-3 pb-2.5 pt-2.5' : 'px-2 pb-1.5 pt-1.5'}`} style={stylePanneauRarete(rarete)}>
+          <p className={`font-display font-bold leading-tight ${grande ? 'text-base' : 'line-clamp-2 text-[11px]'}`}>{card.name}</p>
+          {grande && <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">{categoryLabel(chart, card.category)}</p>}
+          <div className={`mt-auto flex items-center justify-between border-t border-ink/25 font-extrabold tabular-nums ${grande ? 'pt-2 text-base' : 'pt-1 text-[11px]'}`}>
+            <span className="inline-flex items-center gap-1">
+              <Icon name="swords" size={grande ? 15 : 11} strokeWidth={2.6} className="text-attaque" />
+              {card.attack}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Icon name="shield" size={grande ? 15 : 11} strokeWidth={2.6} className="text-defense" />
+              {card.defense}
+            </span>
           </div>
         </div>
       )}
@@ -98,9 +103,9 @@ export function BattleCard({
   )
 
   const classes = [
-    'relative flex flex-col overflow-hidden border-2 text-left shadow-hard-sm transition-all',
+    'relative flex flex-col overflow-hidden border-2 border-ink bg-[#14161f] text-left shadow-hard-sm transition-all',
     DIMENSIONS[taille],
-    selectionne ? 'border-ink ring-4 ring-or -translate-y-2' : 'border-ink',
+    selectionne ? 'ring-4 ring-or -translate-y-2' : '',
     estompe ? 'opacity-40 grayscale' : '',
     onClick && !estompe ? 'cursor-pointer hover:-translate-y-1' : '',
     className,
@@ -113,19 +118,17 @@ export function BattleCard({
       </button>
     )
   }
-  return (
-    <div className={classes}>
-      {contenu}
-    </div>
-  )
+  return <div className={classes}>{contenu}</div>
 }
 
 /** The back of a card (opponent's hidden hand). */
 export function CardBack({ taille = 'xs', className = '' }: { taille?: Taille; className?: string }) {
   return (
     <div
-      className={`${DIMENSIONS[taille]} border-2 border-ink bg-[repeating-linear-gradient(135deg,var(--color-carte-2)_0_6px,var(--color-carte)_6px_12px)] shadow-hard-sm ${className}`}
+      className={`${DIMENSIONS[taille]} border-2 border-ink bg-[#14161f] shadow-hard-sm ${className}`}
       aria-hidden
-    />
+    >
+      <div className="h-full w-full rounded-md bg-[repeating-linear-gradient(135deg,#2a2d3f_0_6px,#1c1f2d_6px_12px)]" />
+    </div>
   )
 }
