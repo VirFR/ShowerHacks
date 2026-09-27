@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
 import type { Objet } from '@/types'
 import {
+  couleurCategorie,
   LETTRE_RARETE,
   LIBELLE_RARETE,
   libelleCategorie,
-  styleArtCategorie,
+  styleArtRarete,
   stylePanneauRarete,
   TEINTE_RARETE,
 } from '@/lib/format'
@@ -34,7 +35,7 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
     <>
       <div
         className={`relative flex items-center justify-center overflow-hidden rounded-t-xl ${compact ? 'h-[54%]' : 'h-[50%]'}`}
-        style={styleArtCategorie(objet.categorie)}
+        style={styleArtRarete(objet.rarete)}
       >
         <ObjetImage objet={objet} variante="nu" className="h-full w-full" />
         <span
@@ -66,7 +67,9 @@ export function ObjetCard({ objet, onSelect, selectionne = false, compact = fals
         <div className="flex items-end justify-between px-1.5 pb-0.5 pt-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#8a93ab]">
           <div>
             Category
-            <b className="mt-0.5 block text-sm normal-case tracking-normal text-white">{libelleCategorie(objet.categorie)}</b>
+            <b className="mt-0.5 block text-sm normal-case tracking-normal" style={{ color: couleurCategorie(objet.categorie) }}>
+              {libelleCategorie(objet.categorie)}
+            </b>
           </div>
           <div className="text-right">
             Rarity

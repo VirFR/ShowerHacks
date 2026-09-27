@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@/components/Icon'
 import { categoryLabel, type Chart, type EngineCard } from '@/lib/engine'
-import { LETTRE_RARETE, styleArtCategorie, stylePanneauRarete, TEINTE_RARETE } from '@/lib/format'
+import { couleurCategorie, LETTRE_RARETE, styleArtRarete, stylePanneauRarete, TEINTE_RARETE } from '@/lib/format'
 import type { Rarete } from '@/types'
 
 type Taille = 'xs' | 'sm' | 'md' | 'lg'
@@ -53,7 +53,7 @@ export function BattleCard({
     <>
       <div
         className={`relative flex items-center justify-center overflow-hidden ${petite ? 'h-full rounded-md' : 'h-[52%] rounded-t-lg'}`}
-        style={styleArtCategorie(card.category)}
+        style={styleArtRarete(rarete)}
       >
         {card.imageUrl && !imageKo ? (
           <img
@@ -86,7 +86,11 @@ export function BattleCard({
       {!petite && (
         <div className={`flex min-h-0 flex-1 flex-col rounded-b-lg text-ink ${grande ? 'px-3 pb-2.5 pt-2.5' : 'px-2 pb-1.5 pt-1.5'}`} style={stylePanneauRarete(rarete)}>
           <p className={`font-display font-bold leading-tight ${grande ? 'text-base' : 'line-clamp-2 text-[11px]'}`}>{card.name}</p>
-          {grande && <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">{categoryLabel(chart, card.category)}</p>}
+          {grande && (
+            <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: couleurCategorie(card.category) }}>
+              {categoryLabel(chart, card.category)}
+            </p>
+          )}
           <div className={`mt-auto flex items-center justify-between border-t border-ink/25 font-extrabold tabular-nums ${grande ? 'pt-2 text-base' : 'pt-1 text-[11px]'}`}>
             <span className="inline-flex items-center gap-1">
               <Icon name="swords" size={grande ? 15 : 11} strokeWidth={2.6} className="text-attaque" />

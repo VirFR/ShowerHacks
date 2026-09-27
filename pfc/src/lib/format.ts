@@ -132,6 +132,22 @@ export function styleArtCategorie(c: Categorie): { background: string } {
   return { background: `radial-gradient(circle at 50% 40%, ${clair} 0%, ${sombre} 78%)` }
 }
 
+/** Dark-to-bright gradient pair behind an item's picture, per rarity (same palette as TEINTE_RARETE). */
+const DEGRADE_PAR_RARETE: Record<Rarete, [string, string]> = {
+  commun: ['#334155', '#cbd5e1'],
+  peu_commun: ['#14532d', '#86efac'],
+  rare: ['#0c4a6e', '#7dd3fc'],
+  epique: ['#701a75', '#f0abfc'],
+  legendaire: ['#713f12', '#fde047'],
+  secret_rare: ['#831843', '#f9a8d4'],
+}
+
+/** Inline background of the picture area of a card, per rarity. */
+export function styleArtRarete(r: Rarete): { background: string } {
+  const [sombre, clair] = DEGRADE_PAR_RARETE[r] ?? DEGRADE_PAR_RARETE.commun
+  return { background: `radial-gradient(circle at 50% 40%, ${clair} 0%, ${sombre} 78%)` }
+}
+
 /** Rank thresholds (score needed to reach each rank). */
 export const SEUILS_RANG: [Rang, number][] = [
   ['Master', 4000],
