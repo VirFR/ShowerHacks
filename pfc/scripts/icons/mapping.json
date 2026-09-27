@@ -17,7 +17,7 @@
  },
  "obj-03": {
   "name": "Meteorite",
-  "icon": "meteor-impact"
+  "icon": "burning-meteor"
  },
  "obj-05": {
   "name": "Cursed Scroll",
@@ -225,7 +225,7 @@
  },
  "obj-57": {
   "name": "Nebula",
-  "icon": "galaxy"
+  "icon": "dust-cloud"
  },
  "obj-66": {
   "name": "Ant",
@@ -233,7 +233,7 @@
  },
  "obj-67": {
   "name": "Mouse",
-  "icon": "mouse"
+  "icon": "seated-mouse"
  },
  "obj-68": {
   "name": "Rabbit",
@@ -309,7 +309,7 @@
  },
  "obj-86": {
   "name": "Komodo Dragon",
-  "icon": "lizardman"
+  "icon": "gecko"
  },
  "obj-87": {
   "name": "Anaconda",
@@ -369,7 +369,7 @@
  },
  "obj-101": {
   "name": "Bicycle",
-  "icon": "cycle"
+  "icon": "dutch-bike"
  },
  "obj-102": {
   "name": "Rowboat",
@@ -509,11 +509,11 @@
  },
  "obj-152": {
   "name": "Asteroid Belt",
-  "icon": "asteroid"
+  "icon": "falling-rocks"
  },
  "obj-153": {
   "name": "Dwarf Planet",
-  "icon": "ringed-planet"
+  "icon": "stone-sphere"
  },
  "obj-154": {
   "name": "Satellite",
@@ -541,7 +541,7 @@
  },
  "obj-160": {
   "name": "Pulsar",
-  "icon": "pulse"
+  "icon": "radar-sweep"
  },
  "obj-161": {
   "name": "Quasar",
@@ -561,11 +561,11 @@
  },
  "obj-165": {
   "name": "Limestone",
-  "icon": "stone-pile"
+  "icon": "stone-stack"
  },
  "obj-166": {
   "name": "Copper Ore",
-  "icon": "ore"
+  "icon": "minerals"
  },
  "obj-167": {
   "name": "Salt Crystal",
@@ -573,7 +573,7 @@
  },
  "obj-168": {
   "name": "Cobalt Ore",
-  "icon": "ore"
+  "icon": "stone-crafting"
  },
  "obj-169": {
   "name": "Silver Ingot",
@@ -597,7 +597,7 @@
  },
  "obj-174": {
   "name": "Platinum Ingot",
-  "icon": "metal-bar"
+  "icon": "metal-plate"
  },
  "obj-175": {
   "name": "Ruby",
@@ -609,7 +609,7 @@
  },
  "obj-177": {
   "name": "Titanium Ingot",
-  "icon": "metal-bar"
+  "icon": "metal-disc"
  },
  "obj-178": {
   "name": "Emerald",
@@ -621,7 +621,7 @@
  },
  "obj-180": {
   "name": "Meteorite Fragment",
-  "icon": "rock"
+  "icon": "fragmented-meteor"
  },
  "obj-181": {
   "name": "Antimatter Sample",
@@ -681,7 +681,7 @@
  },
  "obj-195": {
   "name": "Giant Sequoia",
-  "icon": "pine-tree"
+  "icon": "forest"
  },
  "obj-196": {
   "name": "Lotus Flower",
@@ -689,15 +689,15 @@
  },
  "obj-197": {
   "name": "Redwood",
-  "icon": "pine-tree"
+  "icon": "circle-forest"
  },
  "obj-198": {
   "name": "Corpse Flower",
-  "icon": "flower-pot"
+  "icon": "fire-flower"
  },
  "obj-199": {
   "name": "Ghost Orchid",
-  "icon": "flowers"
+  "icon": "vanilla-flower"
  },
  "obj-200": {
   "name": "Jade Vine",
@@ -721,7 +721,7 @@
  },
  "obj-205": {
   "name": "Maple Tree",
-  "icon": "tree-branch"
+  "icon": "maple-leaf"
  },
  "obj-206": {
   "name": "Palm Tree",
@@ -733,7 +733,7 @@
  },
  "obj-208": {
   "name": "Pitcher Plant",
-  "icon": "carnivorous-plant"
+  "icon": "spiral-bottle"
  },
  "obj-209": {
   "name": "Bird of Paradise",
@@ -749,7 +749,7 @@
  },
  "obj-212": {
   "name": "Dragon Blood Tree",
-  "icon": "tree-roots"
+  "icon": "fruit-tree"
  },
  "obj-213": {
   "name": "Banyan Tree",
@@ -761,7 +761,7 @@
  },
  "obj-215": {
   "name": "Middlemist Red",
-  "icon": "rose"
+  "icon": "spiral-bloom"
  },
  "obj-216": {
   "name": "Gravel",
@@ -773,7 +773,7 @@
  },
  "obj-218": {
   "name": "Tin Ore",
-  "icon": "ore"
+  "icon": "gold-nuggets"
  },
  "obj-219": {
   "name": "Zinc Ore",
@@ -785,7 +785,7 @@
  },
  "obj-221": {
   "name": "Nickel Ingot",
-  "icon": "metal-bar"
+  "icon": "black-bar"
  },
  "obj-222": {
   "name": "Opal",
@@ -797,7 +797,7 @@
  },
  "obj-224": {
   "name": "Palladium",
-  "icon": "metal-bar"
+  "icon": "melting-metal"
  },
  "obj-225": {
   "name": "Topaz",
@@ -825,7 +825,7 @@
  },
  "obj-231": {
   "name": "Interstellar Gas Cloud",
-  "icon": "galaxy"
+  "icon": "fog"
  },
  "obj-232": {
   "name": "Comet Tail",
@@ -849,7 +849,7 @@
  },
  "obj-237": {
   "name": "Ice Giant",
-  "icon": "ringed-planet"
+  "icon": "frozen-orb"
  },
  "obj-238": {
   "name": "Neutron Star",
@@ -865,7 +865,7 @@
  },
  "obj-241": {
   "name": "Magnetar",
-  "icon": "magnet"
+  "icon": "magnet-blast"
  },
  "obj-242": {
   "name": "Hypergiant Star",
@@ -881,7 +881,7 @@
  },
  "obj-245": {
   "name": "Observable Universe",
-  "icon": "galaxy"
+  "icon": "orbital"
  },
  "obj-246": {
   "name": "Hedgehog",
@@ -933,11 +933,11 @@
  },
  "obj-259": {
   "name": "Freight Train",
-  "icon": "steam-locomotive"
+  "icon": "coal-wagon"
  },
  "obj-260": {
   "name": "Cruise Ship",
-  "icon": "cruiser"
+  "icon": "boat-horizon"
  },
  "obj-261": {
   "name": "High-Speed Ferry",
@@ -945,7 +945,7 @@
  },
  "obj-262": {
   "name": "Semi-Truck",
-  "icon": "truck"
+  "icon": "mine-truck"
  },
  "obj-263": {
   "name": "Supersonic Concorde Jet",
@@ -957,6 +957,6 @@
  },
  "obj-256": {
   "name": "Cable Car",
-  "icon": "lift"
+  "icon": "ropeway"
  }
 }
